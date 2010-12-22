@@ -58,7 +58,7 @@ Detailed example:
    I18n.t('welcome', :gender => nil)
    # => "Dear All"
 
-See I18n::Backend::Inflector module documentation for more examples and definitions.
+See {I18n::Backend::Inflector} module documentation for more examples and definitions.
 
 == Requirements
 
@@ -83,7 +83,7 @@ See I18n::Backend::Inflector module documentation for more examples and definiti
 
 == More information
 
-See i18n-inflector module's documentation for more information.
+See {I18n::Backend::Inflector} module documentation for more information.
 
 == License
 
