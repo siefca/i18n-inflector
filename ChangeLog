@@ -1,3 +1,15 @@
+commit bc666bd326a2bd3724239923f8204d5576d3a855
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 15:58:42 2010 +0100
+
+    Prepared for release 1.0.2
+
+commit 6bbda195d3f4fe0999a1a88b42a8489b0ebbd210
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 15:55:06 2010 +0100
+
+    Release 1.0.1 fixed
+
 commit fb6ecc91e8c8a7d06e8fce986209a0443aa05cc6
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 22 15:52:27 2010 +0100
