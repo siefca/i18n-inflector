@@ -32,7 +32,7 @@ then you can make use of this module.
 == Synopsis
 
   require 'i18n-inflector'
-  i18n.translate(welcome)
+  i18n.translate('welcome')
 
 Detailed example:
 

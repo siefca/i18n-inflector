@@ -42,7 +42,7 @@ module I18n
     #   require 'i18n'
     #   I18n::Backend::Simple.send(:include, I18n::Backend::Inflector)
     #   
-    #   i18n.translate(welcome)
+    #   i18n.translate('welcome')
     #   # where welcome maps to: "Dear @{f:Madam|m:Sir}"
     #
     # == Inflection pattern
@@ -172,13 +172,13 @@ module I18n
     # ==== Examples
     #   # welcome is "Dear @{f:Madam|m:Sir|n:You|All}"
     #   
-    #   I18n.translate(welcome, :gender => :m)
+    #   I18n.translate('welcome', :gender => :m)
     #   # => "Dear Sir"
     #   
-    #   I18n.translate(welcome, :gender => :unknown)
+    #   I18n.translate('welcome', :gender => :unknown)
     #   # => "Dear All"
     #   
-    #   I18n.translate(welcome)
+    #   I18n.translate('welcome')
     #   # => "Dear You"
     # 
     # In the second example the <b>fallback value</b> +All+ was interpolated
@@ -247,7 +247,7 @@ module I18n
     #                                                             :m => 'male'
     #                                                       }}}
     # 
-    #   I18n.translate(welcome, :inflector_raises => true)
+    #   I18n.translate('welcome', :inflector_raises => true)
     #   # => I18n::InvalidOptionForKind: option :gender required
     #        by the pattern "@{m:Sir|f:Madam|Fallback}" was not found
     # 
