@@ -4,7 +4,7 @@
 
 
 
-* http://rubygems.org/gems/i18n-inflector
+* https://rubygems.org/gems/i18n-inflector
 * https://github.com/siefca/i18n-inflector/tree
 * mailto:pw@gnu.org
 
@@ -83,13 +83,13 @@ Detailed example:
 
 You can run tests both with
 
- * `rake test` or just `rake`
- * run a test file directly, e.g. `ruby -Ilib -Itest test/inflector_test.rb`
+* `rake test` or just `rake`
+* run a test file directly, e.g. `ruby -Ilib -Itest test/inflector_test.rb`
 
 == More information
 
-See {I18n::Backend::Inflector} module documentation for more information.
-See "whole documentation":http://rubydoc.info/gems/i18n-inflector/ for more info about usage.
+See "whole documentation"[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
+See {I18n::Backend::Inflector} module documentation for detailed information.
 
 == License
 
