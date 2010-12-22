@@ -21,20 +21,20 @@
 # See the file COPYING for complete licensing information.
 #
 #++
-module I18n # :nodoc:
-  module Backend # :nodoc:
+module I18n
+  module Backend
     module Inflector
 
-      DEVELOPER   = 'Paweł Wilk'                                # :nodoc:
-      EMAIL       = 'pw@gnu.org'                                # :nodoc:
-      VERSION     = '1.0.1'                                     # :nodoc:
-      NAME        = 'i18n-inflector'                            # :nodoc:
-      SUMMARY     = 'Simple Inflector backend module for I18n'  # :nodoc:
-      URL         = 'https://rubygems.org/gems/i18n-inflector/' # :nodoc:
-      DESCRIPTION = 'This backend module for I18n allows you to inflect translations by interpolating patterns.'  # :nodoc:
+      DEVELOPER   = 'Paweł Wilk'                                # @private
+      EMAIL       = 'pw@gnu.org'                                # @private
+      VERSION     = '1.0.1'                                     # @private
+      NAME        = 'i18n-inflector'                            # @private
+      SUMMARY     = 'Simple Inflector backend module for I18n'  # @private
+      URL         = 'https://rubygems.org/gems/i18n-inflector/' # @private
+      DESCRIPTION = 'This backend module for I18n allows you to inflect translations by interpolating patterns.'  # @private
 
       # Contains <tt>@{</tt> string that is used to quickly fallback
-      # to standard translate method if it's not found.
+      # to standard +translate+ method if it's not found.
       FAST_MATCHER  = '@{'
 
       # Contains a regular expression that catches patterns.
@@ -149,8 +149,8 @@ module I18n # :nodoc:
       # 
       # Note that you cannot deduce where aliases are pointing to since the information
       # about a target is replaced by a description here. To get targets use the
-      # inflection_raw_tokens method. To just list aliases and their targets use
-      # the inflection_aliases method.
+      # {#inflection_raw_tokens} method. To just list aliases and their targets use
+      # the {#inflection_aliases} method.
       # === Short name
       # <tt>I18n::Inflector.tokens</tt>
       def inflection_tokens(kind=nil, locale=nil)

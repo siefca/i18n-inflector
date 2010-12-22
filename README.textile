@@ -11,12 +11,11 @@ h2. Tests
 You can run tests both with
 
 * `rake test` or just `rake`
-* run any test file directly, e.g. `ruby -Ilib -Itest test/backend/inflection_test.rb`
-* run all tests with `ruby -Ilib -Itest test/all.rb`
+* run a test file directly, e.g. `ruby -Ilib -Itest test/inflector_test.rb`
 
-You can run all tests against all Gemfiles with
+h2. Usage
 
-* `ruby test/run_all.rb`
+See "module documentation":http://rubydoc.info/gems/i18n-inflector/ for more info about usage.
 
 h2. Authors
 

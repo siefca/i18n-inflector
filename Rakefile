@@ -35,18 +35,21 @@ Hoe.spec 'i18n-inflector' do
   self.description     =  I18n::Backend::Inflector::DESCRIPTION
   self.url             =  I18n::Backend::Inflector::URL
 
+  self.test_globs       = %w(test/**/*_test.rb)
+
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
   self.readme_file     = 'docs/README'
   self.history_file    = 'docs/HISTORY'
 
-  self.extra_rdoc_files = ["docs/README",
-                           "docs/LGPL-LICENSE",
-                           "docs/LEGAL", "docs/HISTORY",
-                           "docs/COPYING"]
+  #self.extra_rdoc_files = ["docs/README",
+  #                         "docs/LGPL-LICENSE",
+  #                         "docs/LEGAL", "docs/HISTORY",
+  #                         "docs/COPYING"]
 
-  self.test_globs       = %w(test/**/*_test.rb)
-
+  self.yard_title       = 'Simple Inflector for I18n'
+  self.yard_opts        = ['--no-private', '--protected', '-r', 'docs/README',
+                           '--files', 'docs/COPYING,docs/LGPL-LICENSE,ChangeLog,docs/HISTORY']
   extra_deps          << ['i18n',             '>= 0.5.0']
   extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
                          ['yard',             '>= 0.6.4'] <<
@@ -59,10 +62,10 @@ Hoe.spec 'i18n-inflector' do
   end
 end
 
-task :docs do
-  FileUtils.mv 'doc/rdoc.css', 'doc/rdoc_base.css'
-  FileUtils.cp 'docs/rdoc.css', 'doc/rdoc.css'
-end
+#task :docs do
+#  FileUtils.mv 'doc/rdoc.css', 'doc/rdoc_base.css'
+#  FileUtils.cp 'docs/rdoc.css', 'doc/rdoc.css'
+#end
 
 task 'Manifest.txt' do
   puts 'generating Manifest.txt from git'
