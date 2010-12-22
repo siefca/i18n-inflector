@@ -1,3 +1,21 @@
+commit 778841d1dab12aafc478e74df61f192a744607f1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 15:40:56 2010 +0100
+
+    Switched fully to YARD
+
+commit 053d21b50b5441a973a870d415e72fb88497d0f2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 14:15:01 2010 +0100
+
+    Tests simplified, Rakefile cleaned, dependencies cleaned, documentation fixed.
+
+commit 3ed077e240660ff09e4ff3df5e698f198b8eafbf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 04:01:25 2010 +0100
+
+    Prepared for v1.0.0
+
 commit 3cf24746a9a4e3b41ef9b4ee11334df76607d6b6
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 22 04:00:13 2010 +0100

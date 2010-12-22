@@ -14,7 +14,5 @@ lib/i18n-inflector.rb
 lib/i18n-inflector/inflector.rb
 lib/i18n-inflector/long_comments.rb
 lib/i18n-inflector/shortcuts.rb
-test/all.rb
-test/backend/inflection_test.rb
-test/run_all.rb
+test/inflector_test.rb
 test/test_helper.rb
