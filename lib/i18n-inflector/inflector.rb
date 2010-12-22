@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
-# Copyright:: Copyright (c) 2010 Paweł Wilk
+# Copyright:: (c) 2010 by Paweł Wilk
 # License::   This program is licensed under the terms of {GNU Lesser General Public License}[link:docs/LGPL-LICENSE.html] or {Ruby License}[link:docs/COPYING.html].
 # 
 # This file contains I18n::Backend::Inflector module,
@@ -21,13 +21,13 @@
 # See the file COPYING for complete licensing information.
 #
 #++
-module I18n
-  module Backend
+module I18n # :nodoc:
+  module Backend # :nodoc:
     module Inflector
       
-      EMAIL     = 'pw@gnu.org'
-      VERSION   = '1.0.0'
-      NAME      = 'i18n-inflector'
+      EMAIL     = 'pw@gnu.org'      # :nodoc:
+      VERSION   = '1.0.0'           # :nodoc:
+      NAME      = 'i18n-inflector'  # :nodoc:
 
       # Contains <tt>@{</tt> string that is used to quickly fallback
       # to standard translate method if it's not found.

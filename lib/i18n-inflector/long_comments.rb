@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
-# Copyright:: Copyright (c) 2010 Paweł Wilk
+# Copyright:: (c) 2010 by Paweł Wilk
 # License::   This program is licensed under the terms of {GNU Lesser General Public License}[link:docs/LGPL-LICENSE.html] or {Ruby License}[link:docs/COPYING.html].
 # 
 # This file contains inline documentation data

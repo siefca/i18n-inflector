@@ -46,7 +46,6 @@ Hoe.spec 'i18n-inflector' do
   developer           "Paweł Wilk", "pw@gnu.org"
   
   self.remote_rdoc_dir = ''
-  self.rspec_options   = ['--options', 'spec/spec.opts']
   self.rsync_args      << '--chmod=a+rX'
   self.readme_file     = 'docs/README'
   self.history_file    = 'docs/HISTORY'
@@ -57,13 +56,11 @@ Hoe.spec 'i18n-inflector' do
                            "docs/COPYING"]
 
   extra_deps          << ["i18n",">= 0.5.0"]
-#  extra_dev_deps      << ['hoe', '>= 2.8.0']
   extra_dev_deps      << ['test_declarative', '>= 0.0.4']
 
   self.spec_extras['rdoc_options'] = proc do |rdoc_options|
-      rdoc_options << "--title=Simple Inflector for I18n"
+      rdoc_options << "--title" << "Simple Inflector for I18n"
   end
-
 end
 
 task :docs do

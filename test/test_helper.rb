@@ -2,7 +2,6 @@ require 'rubygems'
 require 'test/unit'
 require 'bundler/setup'
 require 'i18n-inflector'
-#require 'mocha'
 require 'test_declarative'
 
 class Test::Unit::TestCase
