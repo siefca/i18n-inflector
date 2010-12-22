@@ -1,3 +1,9 @@
+commit fb6ecc91e8c8a7d06e8fce986209a0443aa05cc6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 15:52:27 2010 +0100
+
+    Module linked in README.
+
 commit 678e90c7b04499a71f1c6f907a898a2b5722a853
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 22 15:42:37 2010 +0100
