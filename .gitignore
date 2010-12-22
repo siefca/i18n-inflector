@@ -1,0 +1,15 @@
+.DS_Store
+test/rails/fixtures
+nbproject/
+vendor/**/*
+*.swp
+pkg
+.bundle
+*~
+*.bak
+*.cache
+ABOUT-NLS
+.deps
+*.gem
+doc
+pkg
