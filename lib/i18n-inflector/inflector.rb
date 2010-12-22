@@ -27,7 +27,7 @@ module I18n
 
       DEVELOPER   = 'Paweł Wilk'                                # @private
       EMAIL       = 'pw@gnu.org'                                # @private
-      VERSION     = '1.0.1'                                     # @private
+      VERSION     = '1.0.2'                                     # @private
       NAME        = 'i18n-inflector'                            # @private
       SUMMARY     = 'Simple Inflector backend module for I18n'  # @private
       URL         = 'https://rubygems.org/gems/i18n-inflector/' # @private
