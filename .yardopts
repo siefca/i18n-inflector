@@ -1,6 +1,6 @@
 --title 'Simple Inflector for I18n'
 --protected
---readme docs/README
+--readme README.rdoc
 -
 docs/HISTORY
 ChangeLog

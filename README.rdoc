@@ -29,6 +29,27 @@ If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
 then you can make use of this module.
 
+== Requirements
+
+* i18n[https://rubygems.org/gems/i18n]
+* rake[https://rubygems.org/gems/rake]
+* rubygems[http://docs.rubygems.org/]
+
+== Download
+
+==== Source code
+
+* https://github.com/siefca/i18n-inflector/tree
+* <tt>git clone git://github.com/siefca/i18n-inflector.git</tt>
+
+==== Gem
+
+* https://rubygems.org/gems/i18n-inflector
+
+== Installation
+
+* <tt>sudo gem install i18n-inflector</tt>
+
 == Synopsis
 
   require 'i18n-inflector'
@@ -58,32 +79,17 @@ Detailed example:
    I18n.t('welcome', :gender => nil)
    # => "Dear All"
 
-See {I18n::Backend::Inflector} module documentation for more examples and definitions.
+== Tests
 
-== Requirements
+You can run tests both with
 
-* i18n[https://rubygems.org/gems/i18n]
-* rake[https://rubygems.org/gems/rake]
-* rubygems[http://docs.rubygems.org/]
-
-== Download
-
-==== Source code
-
-* https://github.com/siefca/i18n-inflector/tree
-* <tt>git clone git://github.com/siefca/i18n-inflector.git</tt>
-
-==== Gem
-
-* https://rubygems.org/gems/i18n-inflector
-
-== Installation
-
-* <tt>sudo gem install i18n-inflector</tt>
+ * `rake test` or just `rake`
+ * run a test file directly, e.g. `ruby -Ilib -Itest test/inflector_test.rb`
 
 == More information
 
 See {I18n::Backend::Inflector} module documentation for more information.
+See "whole documentation":http://rubydoc.info/gems/i18n-inflector/ for more info about usage.
 
 == License
 
@@ -98,4 +104,3 @@ THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS
 OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION,
 THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
 FOR A PARTICULAR PURPOSE.
-
