@@ -4,12 +4,10 @@
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 
 require 'rubygems'
-gem 'hoe', '>=2.3.0'
-gem 'hoe-bundler', '>=1.0.0'
+require 'bundler/setup'
 
 require "rake"
 require "rake/clean"
-require "rake/testtask"
 
 require "fileutils"
 require 'i18n-inflector'
@@ -23,28 +21,20 @@ task :install do
   sh "sudo ruby setup.rb install"
 end
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = "#{File.dirname(__FILE__)}/test/all.rb"
-  t.verbose = true
-  t.warning = true
-end
-Rake::Task['test'].comment = "Run all i18n-inflector tests"
-
 ### Gem
 
 Hoe.plugin :bundler
+Hoe.plugin :yard
 
 Hoe.spec 'i18n-inflector' do
-  self.version         =  "1.0.0"
-  self.rubyforge_name  = 'i18n-inflector'
-  self.summary         = 'Simple Inflector backend module for I18n'
-  self.description     = 'This backend module for I18n allows you to inflect translations by interpolating patterns.'
-  self.url             = 'https://rubygems.org/gems/i18n-inflector/'
+  developer               I18n::Backend::Inflector::DEVELOPER, I18n::Backend::Inflector::EMAIL
 
-  developer           "Paweł Wilk", "pw@gnu.org"
-  
+  self.version         =  I18n::Backend::Inflector::VERSION
+  self.rubyforge_name  =  I18n::Backend::Inflector::NAME
+  self.summary         =  I18n::Backend::Inflector::SUMMARY
+  self.description     =  I18n::Backend::Inflector::DESCRIPTION
+  self.url             =  I18n::Backend::Inflector::URL
+
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
   self.readme_file     = 'docs/README'
@@ -55,8 +45,14 @@ Hoe.spec 'i18n-inflector' do
                            "docs/LEGAL", "docs/HISTORY",
                            "docs/COPYING"]
 
-  extra_deps          << ["i18n",">= 0.5.0"]
-  extra_dev_deps      << ['test_declarative', '>= 0.0.4']
+  self.test_globs       = %w(test/**/*_test.rb)
+
+  extra_deps          << ['i18n',             '>= 0.5.0']
+  extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
+                         ['yard',             '>= 0.6.4'] <<
+                         ['bundler',          '>= 1.0.7'] <<
+                         ['hoe-bundler',      '>= 1.0.0'] <<
+                         ['RedCloth',         '>= 4.2.3']
 
   self.spec_extras['rdoc_options'] = proc do |rdoc_options|
       rdoc_options << "--title" << "Simple Inflector for I18n"
@@ -64,10 +60,8 @@ Hoe.spec 'i18n-inflector' do
 end
 
 task :docs do
-  
   FileUtils.mv 'doc/rdoc.css', 'doc/rdoc_base.css'
   FileUtils.cp 'docs/rdoc.css', 'doc/rdoc.css'
-
 end
 
 task 'Manifest.txt' do

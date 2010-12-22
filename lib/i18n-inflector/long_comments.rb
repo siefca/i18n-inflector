@@ -39,8 +39,7 @@ module I18n
     # ability to execute any code yet you need some simple inflection
     # then you can make use of this module.
     # == Usage
-    #   require 'i18n'
-    #   I18n::Backend::Simple.send(:include, I18n::Backend::Inflector)
+    #   require 'i18-inflector'
     #   
     #   i18n.translate('welcome')
     #   # where welcome maps to: "Dear @{f:Madam|m:Sir}"

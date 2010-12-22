@@ -24,10 +24,14 @@
 module I18n # :nodoc:
   module Backend # :nodoc:
     module Inflector
-      
-      EMAIL     = 'pw@gnu.org'      # :nodoc:
-      VERSION   = '1.0.0'           # :nodoc:
-      NAME      = 'i18n-inflector'  # :nodoc:
+
+      DEVELOPER   = 'Paweł Wilk'                                # :nodoc:
+      EMAIL       = 'pw@gnu.org'                                # :nodoc:
+      VERSION     = '1.0.1'                                     # :nodoc:
+      NAME        = 'i18n-inflector'                            # :nodoc:
+      SUMMARY     = 'Simple Inflector backend module for I18n'  # :nodoc:
+      URL         = 'https://rubygems.org/gems/i18n-inflector/' # :nodoc:
+      DESCRIPTION = 'This backend module for I18n allows you to inflect translations by interpolating patterns.'  # :nodoc:
 
       # Contains <tt>@{</tt> string that is used to quickly fallback
       # to standard translate method if it's not found.

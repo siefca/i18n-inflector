@@ -1,8 +1,6 @@
-require 'rubygems'
 require 'test/unit'
-require 'bundler/setup'
-require 'i18n-inflector'
 require 'test_declarative'
+require 'i18n-inflector'
 
 class Test::Unit::TestCase
   def teardown
