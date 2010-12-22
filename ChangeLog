@@ -1,3 +1,15 @@
+commit 3cf24746a9a4e3b41ef9b4ee11334df76607d6b6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 04:00:13 2010 +0100
+
+    Documentation fixes
+
+commit 3ceb7f1aeaa1d682ac3d1ee0d091e5be4caad3b6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 03:48:07 2010 +0100
+
+    Fixes in documentation, dependencies and examples
+
 commit 8f88cedae5b9f15a0e468f568103125933af3f27
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 22 02:26:03 2010 +0100
