@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>1.0.1</tt></b> (<b><tt>Aropsaid</tt></b>)
+<b>i18n-inflector version <tt>1.0/tt></b> (<b><tt>Aropsaid</tt></b>)
 
 
 

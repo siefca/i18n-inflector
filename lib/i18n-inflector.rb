@@ -25,7 +25,7 @@ module I18n
       # @private
       URL         = 'https://rubygems.org/gems/i18n-inflector/'
       # @private
-      DESCRIPTION = 'This backend module for I18n allows inflects translations using patterns interpolation.'
+      DESCRIPTION = 'This backend module for I18n inflects translations using pattern interpolation.'
 
     end
   end

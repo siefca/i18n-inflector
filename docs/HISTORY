@@ -1,3 +1,13 @@
+=== 1.0.3 / 2010-12-25
+
+* major enhancements
+
+  * YARD documentation updated with metatags
+  
+* minor enhancements
+
+  * Some changes in accessors for interpolation switches
+
 === 1.0.2 / 2010-12-22
 
 * minor enhancements
