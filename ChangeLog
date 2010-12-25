@@ -1,3 +1,40 @@
+commit 1425a4ec1101de2b4d15182af012714a842308ed
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Dec 25 21:47:40 2010 +0100
+
+    Serious changes in documentation, accessors refactored
+    
+    - YARD options moved to .yardopts
+    - Added YARD metatags to inline documentation
+    - Exception classes moved to in errors.rb
+    - Method inflection_raw_tokens renamed to inflection_tokens_raw with alias added
+    - Method inflection_true_tokens renamed to inflection_tokens_true with alias added
+    - Shortcut names from I18n::Inflector are now module methods defined within class<<self
+
+commit 397c0e67473315a83dd026dc990c104ce1895541
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 20:37:49 2010 +0100
+
+    Cosmetics in README.rdoc
+
+commit 79e3a3adf00b6fbd4709ab1d60631ae4c8a676f5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 20:13:20 2010 +0100
+
+    Moving to README.rdoc as an index file for documentation
+
+commit b299fef82a0358fecdeb0ff9b634a34b3f30f707
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 20:04:26 2010 +0100
+
+    Removed redundant dependencies and moved YARD options out of Rakefile
+
+commit 0c12a10a5a0b0a6a886cea5bbafd6f77a15ae8a9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 22 15:59:50 2010 +0100
+
+    Release 1.0.2
+
 commit bc666bd326a2bd3724239923f8204d5576d3a855
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 22 15:58:42 2010 +0100
