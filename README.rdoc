@@ -83,12 +83,13 @@ Detailed example:
 
 You can run tests both with
 
-* `rake test` or just `rake`
-* run a test file directly, e.g. `ruby -Ilib -Itest test/inflector_test.rb`
+* <tt>rake test</tt> or just <tt>rake</tt>
+* run a test file directly, e.g. <tt>ruby -Ilib -Itest test/inflector_test.rb</tt>
 
 == More information
 
-See "whole documentation"[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
+See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
+
 See {I18n::Backend::Inflector} module documentation for detailed information.
 
 == License
@@ -97,8 +98,8 @@ Copyright (c) 2010 by Paweł Wilk.
 
 i18n-inflector is copyrighted software owned by Paweł Wilk (pw@gnu.org).
 You may redistribute and/or modify this software as long as you
-comply with either the terms of the LGPL (see the file {LGPL-LICENSE}[link:file.LGPL-LICENSE.html]),
-or Ruby's license (see the file {COPYING}[link:file.COPYING.html]).
+comply with either the terms of the LGPL (see {file:LGPL-LICENSE}),
+or Ruby's license (see {file:COPYING}).
 
 THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS
 OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION,

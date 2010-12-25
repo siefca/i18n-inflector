@@ -11,6 +11,7 @@ docs/LEGAL
 docs/LGPL-LICENSE
 docs/rdoc.css
 lib/i18n-inflector.rb
+lib/i18n-inflector/errors.rb
 lib/i18n-inflector/inflector.rb
 lib/i18n-inflector/long_comments.rb
 lib/i18n-inflector/shortcuts.rb

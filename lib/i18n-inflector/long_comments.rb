@@ -2,24 +2,13 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2010 by Paweł Wilk
-# License::   This program is licensed under the terms of {GNU Lesser General Public License}[link:docs/LGPL-LICENSE.html] or {Ruby License}[link:docs/COPYING.html].
+# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains inline documentation data
 # that would make the file with code less readable
 # if placed there.
 # 
-#--
-# 
-# Copyright (C) 2010 by Paweł Wilk. All Rights Reserved.
-# 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of either: 1) the GNU Lesser General Public License
-# as published by the Free Software Foundation; either version 3 of the
-# License, or (at your option) any later version; or 2) Ruby's License.
-# 
-# See the file COPYING for complete licensing information.
-#
-#++
+
 module I18n
   module Backend
     # Overwrites the Simple backend translate method so that it will interpolate
@@ -55,7 +44,7 @@ module I18n
     # 
     # == Configuration
     # To recognize tokens present in patterns this module uses keys grouped
-    # in the scope called +inflections+ for a given locale. For instance
+    # in the scope called `inflections` for a given locale. For instance
     # (YAML format):
     #   en:
     #     i18n:
@@ -160,15 +149,21 @@ module I18n
     # 
     # == Tokens
     # The token is an element of a pattern. A pattern may have many tokens
-    # of the same kind separated by vertical bars. Each token used in a
+    # of the same kind separated by vertical bars. Each token name used in a
     # pattern should end with colon sign. After this colon a value should
-    # appear (or an empty string). This value is to be picked by interpolation
-    # routine and will replace whole pattern, when it matches the value of an
-    # option passed to I18n.translate method. A name of that
-    # option should be the same as a *kind* of tokens used within a pattern.
-    # The first token in a pattern determines the kind of all tokens used
-    # in that pattern.
-    # ==== Examples
+    # appear (or an empty string).
+    # 
+    # == Interpolation
+    # The value of each token present in a pattern is to be picked by the interpolation
+    # routine and will replace the whole pattern, when the token name from that
+    # pattern matches the value of an option passed to {I18n.translate} method.
+    # This option is called <b>the inflection option</b>. Its name should be
+    # the same as a *kind* of tokens used within a pattern. The first token in a pattern
+    # determines the kind of all tokens used in that pattern. You can pass
+    # many inflection options, each one designated for keeping a token of a
+    # different kind.
+    # 
+    # ==== Examples:
     #   # welcome is "Dear @{f:Madam|m:Sir|n:You|All}"
     #   
     #   I18n.translate('welcome', :gender => :m)
@@ -220,7 +215,7 @@ module I18n
     # To do that you should set option +:inflector_unknown_defaults+ to
     # +false+ and pass it to I18n.translate method. Other way is to set this
     # globally by using the method called inflector_unknown_defaults.
-    # See inflector_unknown_defaults method for examples showing how the
+    # See #inflector_unknown_defaults for examples showing how the
     # translation results are changing when that switch is applied.
     # 
     # == Mixing inflection and standard interpolation patterns
@@ -228,6 +223,7 @@ module I18n
     # patterns inside of inflection patterns. The value of a standard
     # interpolation variable will be evaluated and interpolated before
     # processing an inflection pattern. For example:
+    #
     #   I18nstore_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}!')
     #   
     #   I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
@@ -236,51 +232,54 @@ module I18n
     # == Errors
     # By default the module will silently ignore any interpolation errors.
     # You can turn off this default behavior by passing +:inflector_raises+ option.
-    # For instance:
+    #
+    # === Usage of +:inflector_raises+ option
     #
     #   I18n.locale = :en
     #   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{m:Sir|f:Madam|Fallback}'
-    #   I18n.backend.store_translations 'en', :i18n     =>  { :inflections => {
-    #                                                           :gender   => {
-    #                                                             :f => 'female',
-    #                                                             :m => 'male'
-    #                                                       }}}
-    # 
+    #   I18n.backend.store_translations 'en', :i18n     => { :inflections => {
+    #                                                         :gender   => {
+    #                                                           :f => 'female',
+    #                                                           :m => 'male'
+    #                                                     }}}
+    #   
     #   I18n.translate('welcome', :inflector_raises => true)
-    #   # => I18n::InvalidOptionForKind: option :gender required
-    #        by the pattern "@{m:Sir|f:Madam|Fallback}" was not found
+    #   
+    #   # => I18n::InvalidOptionForKind: option :gender required by the pattern
+    #   #                                "@{m:Sir|f:Madam|Fallback}" was not found
     # 
     # Here are the exceptions that may be raised when option +:inflector_raises+
     # is set to +true+:
     # 
-    # * I18n::InvalidOptionForKind
-    # * I18n::InvalidInflectionToken
-    # * I18n::MisplacedInflectionToken
+    # * {I18n::InvalidOptionForKind I18n::InvalidOptionForKind}
+    # * {I18n::InvalidInflectionToken I18n::InvalidInflectionToken}
+    # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
     # 
     # There are also exceptions that are raised regardless of :+inflector_raises+
     # presence or value.
     # These are usually caused by critical errors encountered during processing
     # inflection data. Here is the list:
     # 
-    # * I18n::InvalidLocale
-    # * I18n::DuplicatedInflectionToken
-    # * I18n::BadInflectionToken
-    # * I18n::BadInflectionAlias
+    # * {I18n::InvalidLocale I18n::InvalidLocale}
+    # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
+    # * {I18n::BadInflectionToken I18n::BadInflectionToken}
+    # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
     #
     module Inflector
       # When this switch is set to +true+ then inflector falls back to the default
-      # token for a kind if an option passed to the translate method that describes
-      # a kind is unknown or +nil+. Note that the value for a default token will be
-      # interpolated only when this token is present in pattern. This switch
+      # token for a kind if an inflection option passed to the {#translate} is unknown
+      # or +nil+. Note that the value of the default token will be
+      # interpolated only when this token is present in a pattern. This switch
       # is by default set to +true+.
       # 
-      # Local option +:inflector_unknown_defaults+ passed to translation method
-      # overrides this setting.
+      # @note Local option +:inflector_unknown_defaults+ passed to translation method
+      #   overrides this setting.
       # 
-      # === Short name
-      # <tt>I18n::Inflector.unknown_defaults</tt>
+      # @see #inflector_unknown_defaults?
+      # @see I18n::Inflector.unknown_defaults Short name: I18n::Inflector.unknown_defaults
+      # @return [Boolean] the state of the switch
       # 
-      # == Examples
+      # @example Usage of +:inflector_unknown_defaults+ option – preparation
       # 
       #   I18n.locale = :en
       #   I18n.backend.store_translations 'en', :i18n => { :inflections => {
@@ -292,7 +291,7 @@ module I18n
       #   I18n.backend.store_translations 'en', 'welcome'      => 'Dear @{n:You|o:Other}'
       #   I18n.backend.store_translations 'en', 'welcome_free' => 'Dear @{n:You|o:Other|Free}'
       #   
-      # === Example 1
+      # @example Example 1
       #   
       #   # :gender option is not present,
       #   # unknown tokens in options are falling back to default
@@ -312,7 +311,7 @@ module I18n
       #   I18n.t('welcome_free', :inflector_unknown_defaults => false)
       #   # => "Dear You"
       #   
-      # === Example 2
+      # @example Example 2
       #   
       #   # :gender option is nil,
       #   # unknown tokens from options are falling back to default token for a kind
@@ -332,7 +331,7 @@ module I18n
       #   I18n.t('welcome_free', :gender => nil, :inflector_unknown_defaults => false)
       #   # => "Dear Free"
       # 
-      # === Example 3
+      # @example Example 3
       #   
       #   # :gender option is unknown,
       #   # unknown tokens from options are falling back to default token for a kind
@@ -351,20 +350,28 @@ module I18n
       #   
       #   I18n.t('welcome_free', :gender => :unknown_blabla, :inflector_unknown_defaults => false)
       #   # => "Dear Free"
-      attr_writer :inflector_unknown_defaults
+      attr_accessor :inflector_unknown_defaults
 
-      # When this switch is set to +true+ then inflector falls back and uses the default
-      # token for a kind if an option passed to the translate method matches some token
-      # for that kind but that particular token is not included in a processed
-      # pattern. This switch is by default set to +false+.
+      # When this switch is set to +true+ then inflector falls back to the default
+      # token for a kind if the given inflection option is correct but doesn't exist in a pattern.
       # 
-      # Local option +:inflector_excluded_defaults+ passed to translation method
-      # overrides this setting.
+      # There might happend that the inflection option
+      # given to {#translate} method will contain some proper token, but that token
+      # will not be present in a processed pattern. Normally an empty string will
+      # be generated from such a pattern or a free text (if a local fallback is present
+      # in a pattern). You can change that behavior and tell interpolating routine to
+      # use the default token for a processed kind in such cases.
       # 
-      # === Short name
-      # <tt>I18n::Inflector.excluded_defaults</tt>
+      # This switch is by default set to +false+.
       # 
-      # == Example
+      # @note Local option +:inflector_excluded_defaults+ passed to the {#translate}
+      #   overrides this setting.
+      # 
+      # @see #inflector_excluded_defaults? 
+      # @see I18n::Inflector.excluded_defaults Short name: I18n::Inflector.excluded_defaults
+      # @return [Boolean] the state of the switch
+      # 
+      # @example Usage of +:inflector_excluded_defaults+ option
       # 
       #   I18n.locale = :en
       #   I18n.backend.store_translations 'en', :i18n => { :inflections => {
@@ -376,23 +383,28 @@ module I18n
       #   
       #   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{n:You|m:Sir}'
       #   
-      #   p I18n.t('welcome', :gender => :o)
+      #   I18n.t('welcome', :gender => :o)
       #   # => "Dear "
       #   
-      #   p I18n.t('welcome', :gender => :o, :inflector_excluded_defaults => true)
+      #   I18n.t('welcome', :gender => :o, :inflector_excluded_defaults => true)
       #   # => "Dear You"
-      attr_writer :inflector_excluded_defaults
+      attr_accessor :inflector_excluded_defaults
       
       # This is a switch that enables extended error reporting. When it's enabled then
-      # errors will be raised when unknown or empty token is present in pattern or in options.
-      # This switch is by default set to +false+.
+      # errors are raised in case of unknown or empty tokens present in a pattern
+      # or in options. This switch is by default set to +false+.
       # 
-      # Local option +:inflector_raises+ passed to translation method overrides this setting.
+      # @note Local option +:inflector_raises+ passed to the {#translate} overrides this setting.
       # 
-      # === Short name
-      # <tt>I18n::Inflector.inflector_raises</tt>
-      attr_writer :inflector_raises
+      # @see #inflector_excluded_defaults?
+      # @see I18n::Inflector.raises Short name: I18n::Inflector.raises
+      # @return [Boolean] the state of the switch
+      attr_accessor :inflector_raises
 
     end
   end
+  
+  # @abstract This exception class is defined in package I18n. It is raised when
+  #   the given and/or processed locale parameter is invalid.
+  class InvalidLocale; end
 end

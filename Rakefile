@@ -39,9 +39,9 @@ Hoe.spec 'i18n-inflector' do
 
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
-  self.readme_file     = 'docs/README'
+  self.readme_file     = 'README.rdoc'
   self.history_file    = 'docs/HISTORY'
-
+  
   extra_deps          << ['i18n',             '>= 0.5.0']
   extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
                          ['yard',             '>= 0.6.4'] <<
