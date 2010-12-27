@@ -1,3 +1,21 @@
+commit 2c87d11e253ed34d427e6c74c052c7a890f75a80
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Dec 27 15:45:53 2010 +0100
+
+    Added @return metatags to shortcuts documentation
+
+commit b269c64ae9be6054d61cac5ac17611c37efccc3f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Dec 26 00:59:05 2010 +0100
+
+    Typo fixed
+
+commit 822737f020057b84179b323e3e156f8521fb7507
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Dec 26 00:16:42 2010 +0100
+
+    Added entry to HISTORY file and fixed the description string
+
 commit e3fde026a01ec3103650f5beac96f831da422c99
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Dec 25 21:48:57 2010 +0100
