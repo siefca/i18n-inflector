@@ -25,7 +25,7 @@ module I18n
 
       # Contains a symbol that indicates an alias.
       ALIAS_MARKER  = '@'
-      
+
       attr_accessor :inflector_raises
       attr_accessor :inflector_unknown_defaults
       attr_accessor :inflector_excluded_defaults
