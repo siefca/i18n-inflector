@@ -2,7 +2,7 @@
 
 source :gemcutter
 
-gem "i18n", ">=0.5.0"
+gem "i18n", ">=0.4.1"
 
 gem "hoe-yard", ">=0.1.2", :group => [:development, :test]
 gem "test_declarative", ">=0.0.4", :group => [:development, :test]

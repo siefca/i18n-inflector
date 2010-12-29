@@ -433,7 +433,8 @@ module I18n
       #   that overrides global setting (see: {#inflector_raises})
       # @return [String] the string with interpolated patterns
       def interpolate_inflections(string, locale, options = {})
-        used_kinds        = options.except(*RESERVED_KEYS)
+        reserved_keys     = defined?(RESERVED_KEYS) ? RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
+        used_kinds        = options.except(*reserved_keys)
         raises            = inflector_raises?             options.delete(:inflector_raises)
         unknown_defaults  = inflector_unknown_defaults?   options.delete(:inflector_unknown_defaults)
         excluded_defaults = inflector_excluded_defaults?  options.delete(:inflector_excluded_defaults)

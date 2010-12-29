@@ -1,8 +1,14 @@
+=== 1.0.5 / 2010-12-29
+
+* major enhancements
+
+  * Compatible with i18n >= 0.4.1
+
 === 1.0.4 / 2010-12-27
 
 * minor enhancements
 
-  * documentation updated
+  * Documentation updated
 
 === 1.0.3 / 2010-12-25
 
