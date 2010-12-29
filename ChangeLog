@@ -1,3 +1,9 @@
+commit c101947a64bb40050ff7a7df48c7207297140b5b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 29 16:18:22 2010 +0100
+
+    Compatible with i18n >= 0.4.1
+
 commit d2916cbe2fb605c95c875cef0c16f9f6bacaf001
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Dec 27 16:02:59 2010 +0100
