@@ -56,6 +56,7 @@ module I18n
       # to the default token of a kind when the inflection option
       # is unknown or empty.
       # 
+      # @api public
       # @note This is a helper method, you can use {#inflector_unknown_defaults accessor} instead
       # @return [Boolean] the value of the global switch or the passed variable
       # @see I18n::Inflector.unknown_defaults? Short name: I18n::Inflector.unknown_defaults?
@@ -76,6 +77,7 @@ module I18n
       # Checks the state of the switch that that enables falling back
       # to the default token when the inflection option is not found in a pattern.
       # 
+      # @api public
       # @note This is a helper method, you can use {#inflector_excluded_defaults accessor} instead.
       # @return [Boolean] the value of the global switch or the passed variable
       # @see I18n::Inflector.excluded_defaults? Short name: I18n::Inflector.excluded_defaults?
@@ -95,6 +97,7 @@ module I18n
     
       # Cleans up internal hashes containg kinds, inflections and aliases.
       # 
+      # @api public
       # @note It calls {I18n::Backend::Simple#reload! I18n::Backend::Simple#reload!}
       # @return [Boolean] the result of calling ancestor's method
       # @see I18n::Inflector.reload! Short name: I18n::Inflector.reload!
@@ -107,6 +110,7 @@ module I18n
 
       # Translates given key taking care of inflections.
       # 
+      # @api public
       # @param [Symbol] locale locale
       # @param [Symbol,String] key translation key
       # @param [Hash] options a set of options to pass to the translation routines.
@@ -135,6 +139,7 @@ module I18n
       
       # Reads default token for the given +kind+.
       # 
+      # @api public
       # @return [Symbol,nil] the default token for the given kind or +nil+
       # @raise [I18n::InvalidLocale] if the given +locale+ name is invalid
       # @see I18n::Inflector.default_token Short name: I18n::Inflector.default_token
@@ -160,6 +165,7 @@ module I18n
 
       # Checks if the given +token+ is an alias.
       # 
+      # @api public
       # @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
       # @raise I18n::InvalidLocale if a given +locale+ is invalid
       # @see I18n::Inflector.is_alias? Short name: I18n::Inflector.is_alias?
@@ -185,6 +191,7 @@ module I18n
 
       # Gets available inflection tokens and their descriptions.
       # 
+      # @api public
       # @see I18n::Inflector.tokens Short name: I18n::Inflector.tokens
       # @raise [I18n::InvalidLocale] if a used locale is invalid
       # @return [Hash] the hash containing available inflection tokens and descriptions
@@ -220,6 +227,7 @@ module I18n
 
       # Gets available inflection tokens and their values.
       # 
+      # @api public
       # @see I18n::Inflector.raw_tokens Short name: I18n::Inflector.raw_tokens
       # @return [Hash] the hash containing available inflection tokens and descriptions (or alias pointers)
       # @raise [I18n::InvalidLocale] if a used locale is invalid
@@ -253,6 +261,7 @@ module I18n
 
       # Gets true inflection tokens and their values.
       # 
+      # @api public
       # @return [Hash] the hash containing available inflection tokens and descriptions
       # @see I18n::Inflector.true_tokens Short name: I18n::Inflector.true_tokens
       # @raise [I18n::InvalidLocale] if a used locale is invalid
@@ -285,6 +294,7 @@ module I18n
 
       # Gets inflection aliases and their pointers.
       # 
+      # @api public
       # @see I18n::Inflector.aliases Short name: I18n::Inflector.aliases
       # @raise [I18n::InvalidLocale] if a given +locale+ is invalid
       # @return [Hash] the Hash containing available inflection aliases (<tt>alias => target</tt>)
@@ -313,6 +323,7 @@ module I18n
 
       # Gets known inflection kinds.
       # 
+      # @api public
       # @see I18n::Inflector.kinds Short name: I18n::Inflector.kinds
       # @return [Array<Symbol>] the array containing known inflection kinds
       # @raise [I18n::InvalidLocale] if a used locale is invalid
@@ -332,6 +343,7 @@ module I18n
 
       # Gets locales which have configured inflection support.
       # 
+      # @api public
       # @see I18n::Inflector.locales Short name: I18n::Inflector.locales
       # @return [Array<Symbol>] the array containing locales that support inflection
       # @note If +kind+ is given it returns only these locales
@@ -377,6 +389,7 @@ module I18n
       
       # Gets the description of the given inflection token.
       # 
+      # @api public
       # @see I18n::Inflector.description Short name: I18n::Inflector.description
       # @note If the given +token+ is really an alias it
       #   returns the description of the true token that

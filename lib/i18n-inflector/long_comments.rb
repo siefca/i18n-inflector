@@ -275,6 +275,7 @@ module I18n
       # @note Local option +:inflector_unknown_defaults+ passed to translation method
       #   overrides this setting.
       # 
+      # @api public
       # @see #inflector_unknown_defaults?
       # @see I18n::Inflector.unknown_defaults Short name: I18n::Inflector.unknown_defaults
       # @return [Boolean] the state of the switch
@@ -367,6 +368,7 @@ module I18n
       # @note Local option +:inflector_excluded_defaults+ passed to the {#translate}
       #   overrides this setting.
       # 
+      # @api public
       # @see #inflector_excluded_defaults? 
       # @see I18n::Inflector.excluded_defaults Short name: I18n::Inflector.excluded_defaults
       # @return [Boolean] the state of the switch
@@ -396,6 +398,7 @@ module I18n
       # 
       # @note Local option +:inflector_raises+ passed to the {#translate} overrides this setting.
       # 
+      # @api public
       # @see #inflector_excluded_defaults?
       # @see I18n::Inflector.raises Short name: I18n::Inflector.raises
       # @return [Boolean] the state of the switch
