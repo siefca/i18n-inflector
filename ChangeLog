@@ -1,3 +1,33 @@
+commit cf0e6b5a0c01de939c0bdeea82b9cd615966b3a8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Dec 30 17:43:49 2010 +0100
+
+    Added two API methods to test tokens: inflection_true_token() and inflecion_kind()
+
+commit a1b2aa5314e7724c145902fec445dd2ef63356c3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Dec 30 02:37:41 2010 +0100
+
+    Added API method inflected_locale? to check if a locale supports inflection
+
+commit 322d88353b88966a2c1f2daa281b2e825156201b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Dec 30 02:35:14 2010 +0100
+
+    Added YARD's @api public metatag to public methods
+
+commit d20c178f9ca63735e5cad860b09a0935c3601365
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Dec 30 02:31:44 2010 +0100
+
+    Moved RESERVED_KEYS reading to module scope from instance method
+
+commit 44b365005abe11ac310ceb3ca55dd598f73ae6b6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Dec 29 16:18:59 2010 +0100
+
+    Release 1.0.5
+
 commit c101947a64bb40050ff7a7df48c7207297140b5b
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Dec 29 16:18:22 2010 +0100
