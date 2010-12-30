@@ -179,6 +179,15 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal [:xx], I18n.backend.inflected_locales(:gender)
   end
 
+  test "inflector inflected_locale?: checks if a language supports inflection" do
+    assert_equal true, I18n.backend.inflected_locale?(:xx)
+    assert_equal false, I18n.backend.inflected_locale?(:pl)
+    I18n.locale = :xx
+    assert_equal true, I18n.backend.inflected_locale?
+    I18n.locale = :pl
+    assert_equal false, I18n.backend.inflected_locale?
+  end
+
   test "inflector available_inflection_kinds: lists inflection kinds" do
     assert_not_nil I18n.backend.available_inflection_kinds(:xx)
     assert_equal [:gender,:person], I18n.backend.available_inflection_kinds(:xx).sort{|k,v| k.to_s<=>v.to_s}

@@ -359,8 +359,28 @@ module I18n
         end
       end
 
+      # Checks if a locale was configured to support inflection.
+      # 
+      # @api public
+      # @see I18n::Inflector.locale? Short name: I18n::Inflector.locale?
+      # @raise [I18n::InvalidLocale] if a used locale is invalid
+      # @return [Boolean] +true+ if a locale supports inflection
+      # @overload inflected_locale?(locale)
+      #   Checks if the given locale was configured to support inflection.
+      #   @param [Symbol] locale the locale to test
+      #   @return [Boolean] +true+ if the given locale supports inflection
+      # @overload inflected_locale?
+      #   Checks if the current locale was configured to support inflection.
+      #   @return [Boolean] +true+ if the current locale supports inflection
+      def inflected_locale?(locale=nil)
+        locale = inflector_prep_locale(locale)
+        init_translations unless initialized?
+        @inflection_tokens.has_key?(locale)
+      end
+
       # Stores translations in memory.
       # 
+      # @api public
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists

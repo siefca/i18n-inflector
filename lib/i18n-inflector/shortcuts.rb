@@ -124,7 +124,14 @@ module I18n
       # @return [Array<Symbol>] the array containing locales that support inflection
       def locales(*args);             I18n.backend.inflected_locales(*args)             end
 
+      # {include:I18n::Backend::Inflector#inflected_locale?}
+      # @api public
+      # @note It's a shortcut for {I18n::Backend::Inflector#inflected_locale?}
+      # @return [Boolean] +true+ when a given locale supports inflection
+      def locale?(*args);              I18n.backend.inflected_locale?(*args)            end
+
       # {include:I18n::Backend::Inflector#inflection_token_description}
+      # @api public
       # @note It's a shortcut for {I18n::Backend::Inflector#inflection_token_description}
       # @return [String,nil] the descriptive string or +nil+
       def description(*args);         I18n.backend.inflection_token_description(*args)  end
