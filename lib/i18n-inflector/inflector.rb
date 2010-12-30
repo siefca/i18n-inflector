@@ -26,12 +26,17 @@ module I18n
       # Contains a symbol that indicates an alias.
       ALIAS_MARKER  = '@'
 
+      # Reserved keys
+      INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
+                                RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
+
       attr_accessor :inflector_raises
       attr_accessor :inflector_unknown_defaults
       attr_accessor :inflector_excluded_defaults
 
       # Checks the state of the switch that enables extended error reporting.
       # 
+      # @api public
       # @note This is a helper method, you can use {#inflector_raises accessor} instead
       # @return [Boolean] the value of the global switch or the passed variable
       # @see I18n::Inflector.raises? Short name: I18n::Inflector.raises?
@@ -433,8 +438,7 @@ module I18n
       #   that overrides global setting (see: {#inflector_raises})
       # @return [String] the string with interpolated patterns
       def interpolate_inflections(string, locale, options = {})
-        reserved_keys     = defined?(RESERVED_KEYS) ? RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
-        used_kinds        = options.except(*reserved_keys)
+        used_kinds        = options.except(*I18n::Backend::Inflector::INFLECTOR_RESERVED_KEYS)
         raises            = inflector_raises?             options.delete(:inflector_raises)
         unknown_defaults  = inflector_unknown_defaults?   options.delete(:inflector_unknown_defaults)
         excluded_defaults = inflector_excluded_defaults?  options.delete(:inflector_excluded_defaults)
