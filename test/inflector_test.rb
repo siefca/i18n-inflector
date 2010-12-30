@@ -187,6 +187,26 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     I18n.locale = :pl
     assert_equal false, I18n.backend.inflected_locale?
   end
+  
+  test "inflector inflection_kind: checks what is the inflection kind of the given token" do
+    assert_equal :gender, I18n.backend.inflection_kind(:neuter, :xx)
+    assert_equal :gender, I18n.backend.inflection_kind(:f, :xx)
+    assert_equal :person, I18n.backend.inflection_kind(:you, :xx)
+    I18n.locale = :xx
+    assert_equal :gender, I18n.backend.inflection_kind(:neuter)
+    assert_equal :gender, I18n.backend.inflection_kind(:f)
+    assert_equal :person, I18n.backend.inflection_kind(:you)  
+    assert_equal nil, I18n.backend.inflection_kind(:faafaffafafa)
+  end
+
+  test "inflector inflection_true_token: gets true token for a given token name" do
+    assert_equal :n, I18n.backend.inflection_true_token(:neuter, :xx)
+    assert_equal :f, I18n.backend.inflection_true_token(:f, :xx)
+    I18n.locale = :xx
+    assert_equal :n, I18n.backend.inflection_true_token(:neuter)
+    assert_equal :f, I18n.backend.inflection_true_token(:f)
+    assert_equal nil, I18n.backend.inflection_true_token(:faafaffafafa)
+  end
 
   test "inflector available_inflection_kinds: lists inflection kinds" do
     assert_not_nil I18n.backend.available_inflection_kinds(:xx)

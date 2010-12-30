@@ -167,7 +167,7 @@ module I18n
       # 
       # @api public
       # @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
-      # @raise I18n::InvalidLocale if a given +locale+ is invalid
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @see I18n::Inflector.is_alias? Short name: I18n::Inflector.is_alias?
       # @overload inflection_is_alias?(token)
       #   Uses current locale to check if the given +token+ is an alias
@@ -178,7 +178,7 @@ module I18n
       #   Uses the given +locale+ to check if the given +token+ is an alias
       #   or a regular token.
       #   @param [Symbol,String] token name of the checked token
-      #   @param [Symbol] locale to use
+      #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
       def inflection_is_alias?(token, locale=nil)
         return false if token.to_s.empty?
@@ -187,6 +187,71 @@ module I18n
         aliases = @inflection_aliases[locale]
         return false if aliases.nil?
         aliases.has_key?(token.to_sym)
+      end
+
+      # Gets true token for the given +token+ (which may be an alias).
+      # 
+      # @api public
+      # @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #   the token is a real token or +nil+ otherwise
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
+      # @see I18n::Inflector.true_token Short name: I18n::Inflector.true_token
+      # @overload inflection_true_token(token)
+      #   Uses current locale to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      # @overload inflection_true_token(token, locale)
+      #   Uses the given +locale+ to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      def inflection_true_token(token, locale=nil)
+        return nil if token.to_s.empty?
+        locale = inflector_prep_locale(locale)
+        init_translations unless initialized?
+        inflections = @inflection_tokens[locale]
+        return nil if inflections.nil?
+        entry = inflections[token]
+        return token unless entry.nil?
+        inflections = @inflection_aliases[locale]
+        return nil if inflections.nil?
+        entry = inflections[token]
+        return nil if entry.nil?
+        entry[:target]
+      end
+
+      # Gets a kind for the given +token+ (which may be an alias).
+      # 
+      # @api public
+      # @return [Symbol,nil] the kind of the given +token+ or alias or +nil+
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
+      # @see I18n::Inflector.kind Short name: I18n::Inflector.kind
+      # @overload inflection_true_token(token)
+      #   Uses current locale to get a kind for the given +token+ which may be an alias.
+      #   @param [Symbol,String] token name of the token or alias
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     for the current locale
+      # @overload inflection_true_token(token, locale)
+      #   Uses the given +locale+ to get a kind for the given +token+ which may be an alias.
+      #   @param [Symbol,String] token name of the token or alias
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     for the given +locale+
+      def inflection_kind(token, locale=nil)
+        return nil if token.to_s.empty?
+        locale = inflector_prep_locale(locale)
+        init_translations unless initialized?
+        inflections = @inflection_tokens[locale]
+        return nil if inflections.nil?
+        entry = inflections[token]
+        return entry[:kind] unless entry.nil?
+        inflections = @inflection_aliases[locale]
+        return nil if inflections.nil?
+        entry = inflections[token]
+        return nil if entry.nil?
+        entry[:kind]
       end
 
       # Gets available inflection tokens and their descriptions.
@@ -296,7 +361,7 @@ module I18n
       # 
       # @api public
       # @see I18n::Inflector.aliases Short name: I18n::Inflector.aliases
-      # @raise [I18n::InvalidLocale] if a given +locale+ is invalid
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @return [Hash] the Hash containing available inflection aliases (<tt>alias => target</tt>)
       # @overload inflection_aliases
       #   Gets inflection aliases and their pointers.
@@ -309,7 +374,7 @@ module I18n
       # @overload inflection_aliases(kind, locale)
       #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
       #   @param [Symbol] kind the kind of aliases to get
-      #   @param [Symbol] locale to use
+      #   @param [Symbol] locale the locale to use
       #   @return [Hash] the Hash containing available inflection
       #     aliases for the given +kind+ and +locale+
       def inflection_aliases(kind=nil, locale=nil)

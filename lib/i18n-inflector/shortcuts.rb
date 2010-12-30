@@ -106,6 +106,13 @@ module I18n
       # @return [Hash] the Hash containing available inflection tokens (without aliases) and their descriptions
       def true_tokens(*args);         I18n.backend.inflection_tokens_true(*args)        end
 
+      # {include:I18n::Backend::Inflector#inflection_true_token}
+      # @api public
+      # @note It's a shortcut for {I18n::Backend::Inflector#inflection_true_token}
+      # @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #   the token is a real token or +nil+ otherwise
+      def true_token(*args);          I18n.backend.inflection_true_token(*args)         end
+
       # {include:I18n::Backend::Inflector#inflection_aliases}
       # @api public
       # @note It's a shortcut for {I18n::Backend::Inflector#inflection_aliases}
@@ -118,6 +125,12 @@ module I18n
       # @return [Array<Symbol>] the array containing known inflection kinds
       def kinds(*args);               I18n.backend.available_inflection_kinds(*args)    end
 
+      # {include:I18n::Backend::Inflector#inflection_kind}
+      # @api public
+      # @note It's a shortcut for {I18n::Backend::Inflector#inflection_kind}
+      # @return [Symbol,nil] the kind of the given +token+ or alias or +nil+
+      def kind(*args);                I18n.backend.inflection_kind(*args)               end
+
       # {include:I18n::Backend::Inflector#inflected_locales}
       # @api public
       # @note It's a shortcut for {I18n::Backend::Inflector#inflected_locales}
@@ -128,7 +141,7 @@ module I18n
       # @api public
       # @note It's a shortcut for {I18n::Backend::Inflector#inflected_locale?}
       # @return [Boolean] +true+ when a given locale supports inflection
-      def locale?(*args);              I18n.backend.inflected_locale?(*args)            end
+      def locale?(*args);             I18n.backend.inflected_locale?(*args)             end
 
       # {include:I18n::Backend::Inflector#inflection_token_description}
       # @api public
