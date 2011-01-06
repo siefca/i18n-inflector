@@ -67,6 +67,11 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
      end
    end
 
+  test "inflector translate: allows pattern-only translation data" do
+    store_translations(:xx, 'clear_welcome' => '@{f:Lady|m:Sir|n:You|All}')
+    assert_equal 'Lady', I18n.t('clear_welcome', :gender => 'f', :locale => :xx)
+  end
+
   test "inflector translate: picks Lady for :f gender option" do
     assert_equal 'Dear Lady!', I18n.t('welcome', :gender => :f, :locale => :xx)
   end

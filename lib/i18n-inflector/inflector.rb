@@ -18,7 +18,7 @@ module I18n
       FAST_MATCHER  = '@{'
 
       # Contains a regular expression that catches patterns.
-      PATTERN       = /([^@\\])@\{([^\}]+)\}/
+      PATTERN       = /([^@\\]?)@\{([^\}]+)\}/
 
       # Contains a regular expression that catches tokens.
       TOKENS        = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
