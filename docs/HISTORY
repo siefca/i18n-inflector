@@ -1,3 +1,9 @@
+=== 1.0.7 / 2011-01-07
+
+* major bugfixes
+
+  * Fixed interpolation when a translated string begins with a pattern
+
 === 1.0.6 / 2010-12-30
 
 * minor enhancements

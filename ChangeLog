@@ -1,3 +1,21 @@
+commit 7bb3d12c15221b3d2bb9cb74ff9cda86378ce5c7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 6 23:53:52 2011 +0100
+
+    Fixed bug that caused translation data containing anything but a pattern to not be interpolated
+
+commit 70fceb583e8201ac5ae5d8a6210e160024fd3c83
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 6 23:52:26 2011 +0100
+
+    Typo in documentation fixed
+
+commit 948438fdcbb940b5f02186b7fe337348c7e86930
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Dec 30 18:00:22 2010 +0100
+
+    Release 1.0.6
+
 commit cf0e6b5a0c01de939c0bdeea82b9cd615966b3a8
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Dec 30 17:43:49 2010 +0100
