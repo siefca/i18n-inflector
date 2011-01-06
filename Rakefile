@@ -68,7 +68,7 @@ end
 
 desc "Create signed tag in Git"
 task :tag do
-  sh %{git tag -u #{I18n::Backend::Inflector::EMAIL} v#{I18n::Backend::Inflector::VERSION} -m 'version #{I18n::Backend::Inflector::VERSION}'}
+  sh %{git tag -s v#{I18n::Backend::Inflector::VERSION} -m 'version #{I18n::Backend::Inflector::VERSION}'}
 end
 
 desc "Create external GnuPG signature for Gem"
