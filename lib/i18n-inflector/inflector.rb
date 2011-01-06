@@ -753,7 +753,7 @@ module I18n
       end
 
       # Uses the inflections subtree and creates internal mappings
-      # to resolve genders assigned to inflection tokens and aliases, including defaults.
+      # to resolve kinds assigned to inflection tokens and aliases, including defaults.
       # @return [Hash] the internal Hash containing inflection tokens
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
