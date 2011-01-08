@@ -1,3 +1,21 @@
+commit a58d0636a559419e6c3f715562d2240ee9f6e1ff
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 8 16:29:40 2011 +0100
+
+    Enabled escaping of patterns and added some documentation about it and tests
+
+commit 3e0a295246dd90a18cc164d71f064fb11d8d2364
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 7 00:08:18 2011 +0100
+
+    Using default GPG key for signing tags that's referenced in the global configuration of the git tool
+
+commit 591de41dd9e6418457ee6273121ac25ee7e0d4b8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 6 23:54:41 2011 +0100
+
+    Release 1.0.7
+
 commit 7bb3d12c15221b3d2bb9cb74ff9cda86378ce5c7
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jan 6 23:53:52 2011 +0100
