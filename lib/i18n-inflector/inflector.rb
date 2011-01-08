@@ -18,13 +18,16 @@ module I18n
       FAST_MATCHER  = '@{'
 
       # Contains a regular expression that catches patterns.
-      PATTERN       = /([^@\\]?)@\{([^\}]+)\}/
+      PATTERN       = /(.?)@\{([^\}]+)\}/
 
       # Contains a regular expression that catches tokens.
       TOKENS        = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
 
       # Contains a symbol that indicates an alias.
       ALIAS_MARKER  = '@'
+
+      # Contains a list of escape symbols that cause pattern to be escaped.
+      ESCAPES       = { '@' => true, '\\' => true }
 
       # Reserved keys
       INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
@@ -546,15 +549,19 @@ module I18n
 
         string.gsub(I18n::Backend::Inflector::PATTERN) do
           pattern_fix     = $1
+          pattern_content = $2
           ext_pattern     = $&
           parsed_kind     = nil
           ext_value       = nil
           ext_freetext    = ''
           found           = false
           parsed_default_v= nil
-          ext_pattern     = ext_pattern[1..-1] unless pattern_fix.nil?
 
-          $2.scan(I18n::Backend::Inflector::TOKENS) do
+          # leave escaped pattern as is
+          next ext_pattern[1..-1] if I18n::Backend::Inflector::ESCAPES.has_key?(pattern_fix)
+
+          # process pattern content's
+          pattern_content.scan(I18n::Backend::Inflector::TOKENS) do
             ext_token     = $1.to_s
             ext_value     = $2.to_s
             ext_freetext  = $3.to_s

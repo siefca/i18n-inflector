@@ -50,7 +50,7 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
       store_translations(:xx, :i18n => { :inflections => { :gender => { :o => 'other' }, :person => { :o => 'o' }}})
     end
   end
-  
+
   test "inflector store_translations: raises I18n::BadInflectionAlias when bad alias is given" do
      assert_raise I18n::BadInflectionAlias do
        store_translations(:xx, :i18n => { :inflections => { :gender => { :o => '@nonexistant' }}})
@@ -72,6 +72,13 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal 'Lady', I18n.t('clear_welcome', :gender => 'f', :locale => :xx)
   end
 
+  test "inflector translate: allows patterns to be escaped using @@ or \\@" do
+    store_translations(:xx, 'escaped_welcome' => '@@{f:AAAAA|m:BBBBB}')
+    assert_equal '@{f:AAAAA|m:BBBBB}', I18n.t('escaped_welcome', :gender => 'f', :locale => :xx)
+    store_translations(:xx, 'escaped_welcome' => '\@{f:AAAAA|m:BBBBB}')
+    assert_equal '@{f:AAAAA|m:BBBBB}', I18n.t('escaped_welcome', :gender => 'f', :locale => :xx)
+  end
+
   test "inflector translate: picks Lady for :f gender option" do
     assert_equal 'Dear Lady!', I18n.t('welcome', :gender => :f, :locale => :xx)
   end
@@ -79,35 +86,45 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
   test "inflector translate: picks Lady for f gender option" do
     assert_equal 'Dear Lady!', I18n.t('welcome', :gender => 'f', :locale => :xx)
   end
-  
+
   test "inflector translate: picks Sir for :m gender option"  do
     assert_equal 'Dear Sir!', I18n.t('welcome', :gender => :m, :locale => :xx)
   end
-  
+
   test "inflector translate: picks Sir for :masculine gender option" do
     assert_equal 'Dear Sir!', I18n.t('welcome', :gender => :masculine, :locale => :xx)
   end
-  
+
   test "inflector translate: picks Sir for masculine gender option" do
     assert_equal 'Dear Sir!', I18n.t('welcome', :gender => 'masculine', :locale => :xx)
   end
-  
+
+  test "inflector translate: picks an empty string when no default token is present and no free text is there" do
+    store_translations(:xx, 'none_welcome' => '@{n:You|f:Lady}')
+    assert_equal '', I18n.t('none_welcome', :gender => 'masculine', :locale => :xx)
+  end
+
+  test "inflector translate: allows multiple patterns in the same data" do
+    store_translations(:xx, 'multiple_welcome' => '@@{f:AAAAA|m:BBBBB} @{f:Lady|m:Sir|n:You|All} @{f:Lady|All}@{m:Sir|All}@{n:You|All}')
+    assert_equal '@{f:AAAAA|m:BBBBB} Sir AllSirAll', I18n.t('multiple_welcome', :gender => 'masculine', :locale => :xx)
+  end
+
   test "inflector translate: falls back to default for the unknown gender option" do
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :unknown, :locale => :xx)
   end
-  
+
   test "inflector translate: falls back to default for a gender option set to nil" do
     assert_equal 'Dear You!', I18n.t('welcome', :gender => nil, :locale => :xx)
   end
-  
+
   test "inflector translate: falls back to default for no gender option" do
     assert_equal 'Dear You!', I18n.t('welcome', :locale => :xx)
   end
-  
+
   test "inflector translate: falls back to free text for the proper gender option but not present in pattern" do
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :s, :locale => :xx)
   end
-  
+
   test "inflector translate: falls back to free text when :inflector_unknown_defaults is false" do
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :unknown,  :locale => :xx, :inflector_unknown_defaults => false)
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :s,        :locale => :xx, :inflector_unknown_defaults => false)
@@ -117,12 +134,12 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
   test "inflector translate: falls back to default for no gender option when :inflector_unknown_defaults is false" do
     assert_equal 'Dear You!', I18n.t('welcome', :locale => :xx, :inflector_unknown_defaults => false)
   end
-  
+
   test "inflector translate: falls back to free text for the unknown gender option when global inflector_unknown_defaults is false" do
     I18n.backend.inflector_unknown_defaults = false
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :unknown, :locale => :xx)
   end
-  
+
   test "inflector translate: falls back to default for the unknown gender option when global inflector_unknown_defaults is overriden" do
     I18n.backend.inflector_unknown_defaults = false
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :unknown, :locale => :xx, :inflector_unknown_defaults => true)
@@ -192,7 +209,7 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     I18n.locale = :pl
     assert_equal false, I18n.backend.inflected_locale?
   end
-  
+
   test "inflector inflection_kind: checks what is the inflection kind of the given token" do
     assert_equal :gender, I18n.backend.inflection_kind(:neuter, :xx)
     assert_equal :gender, I18n.backend.inflection_kind(:f, :xx)
@@ -264,7 +281,7 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal a, I18n.backend.inflection_aliases(:gender)
     assert_equal a, I18n.backend.inflection_aliases
   end
-  
+
   test "inflector inflection_token_description: returns token's description" do
     assert_equal "male", I18n.backend.inflection_token_description(:m, :xx)
     I18n.locale = :xx
@@ -272,7 +289,7 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal nil, I18n.backend.inflection_token_description(:nonexistent, :xx)
     assert_equal "neuter", I18n.backend.inflection_token_description(:neutral, :xx)
   end
-  
+
   test "inflector inflection_is_alias?: tests whether a token is an alias" do
       assert_equal true, I18n.backend.inflection_is_alias?(:neutral, :xx)
       assert_equal false, I18n.backend.inflection_is_alias?(:you, :xx)
