@@ -238,7 +238,7 @@ module I18n
     #   I18n.backend.store_translations(:xx, 'hi' => 'This is the @@{pattern}!')
     #   
     #   I18n.t('hi', :gender => :m, :locale => :xx)
-    #   # => This is the @@{pattern}!
+    #   # => This is the @{pattern}!
     # 
     # == Errors
     # By default the module will silently ignore any interpolation errors.
