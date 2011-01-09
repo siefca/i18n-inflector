@@ -1,3 +1,21 @@
+commit fb02e573ec85a29efac5e7cd3f2f5f01c7ff3859
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 9 07:06:11 2011 +0100
+
+    Version information moved out of main include file and Backend namespace, dependencies fixed
+
+commit dff3f3214f4601d1ac5351b1f7444b200abc7101
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 9 07:03:15 2011 +0100
+
+    Year change to 2011 in doco
+
+commit f100799dff8d5b289db6fa7e7348e17439847037
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 8 16:47:16 2011 +0100
+
+    Fixed typo in doc
+
 commit 5b6fbbf2bffdcf5cd082532068ad7900454db163
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Jan 8 16:30:23 2011 +0100
