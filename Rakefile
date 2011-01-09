@@ -10,7 +10,7 @@ require "rake"
 require "rake/clean"
 
 require "fileutils"
-require 'i18n-inflector'
+require 'i18n-inflector/version'
 
 require 'hoe'
 
@@ -27,13 +27,13 @@ Hoe.plugin :bundler
 Hoe.plugin :yard
 
 Hoe.spec 'i18n-inflector' do
-  developer               I18n::Backend::Inflector::DEVELOPER, I18n::Backend::Inflector::EMAIL
+  developer               I18n::Inflector::DEVELOPER, I18n::Inflector::EMAIL
 
-  self.version         =  I18n::Backend::Inflector::VERSION
-  self.rubyforge_name  =  I18n::Backend::Inflector::NAME
-  self.summary         =  I18n::Backend::Inflector::SUMMARY
-  self.description     =  I18n::Backend::Inflector::DESCRIPTION
-  self.url             =  I18n::Backend::Inflector::URL
+  self.version         =  I18n::Inflector::VERSION
+  self.rubyforge_name  =  I18n::Inflector::NAME
+  self.summary         =  I18n::Inflector::SUMMARY
+  self.description     =  I18n::Inflector::DESCRIPTION
+  self.url             =  I18n::Inflector::URL
 
   self.test_globs       = %w(test/**/*_test.rb)
 
@@ -46,7 +46,8 @@ Hoe.spec 'i18n-inflector' do
   extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
                          ['yard',             '>= 0.6.4'] <<
                          ['bundler',          '>= 1.0.7'] <<
-                         ['hoe-bundler',      '>= 1.0.0']
+                         ['hoe-bundler',      '>= 1.0.0'] <<
+                         ['hoe-yard',         '>= 0.1.2']
 end
 
 task 'Manifest.txt' do
@@ -68,12 +69,12 @@ end
 
 desc "Create signed tag in Git"
 task :tag do
-  sh %{git tag -s v#{I18n::Backend::Inflector::VERSION} -m 'version #{I18n::Backend::Inflector::VERSION}'}
+  sh %{git tag -s v#{I18n::Inflector::VERSION} -m 'version #{I18n::Inflector::VERSION}'}
 end
 
 desc "Create external GnuPG signature for Gem"
 task :gemsign do
-  sh %{gpg -u #{I18n::Backend::Inflector::EMAIL} -ab pkg/#{I18n::Backend::Inflector::NAME}-#{I18n::Backend::Inflector::VERSION}.gem \
-           -o pkg/#{I18n::Backend::Inflector::NAME}-#{I18n::Backend::Inflector::VERSION}.gem.sig}
+  sh %{gpg -u #{I18n::Inflector::EMAIL} -ab pkg/#{I18n::Inflector::NAME}-#{I18n::Inflector::VERSION}.gem \
+           -o pkg/#{I18n::Inflector::NAME}-#{I18n::Inflector::VERSION}.gem.sig}
 end
 
