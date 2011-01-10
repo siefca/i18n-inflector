@@ -92,6 +92,11 @@ See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more inf
 
 See {I18n::Backend::Inflector} module documentation for detailed information.
 
+== See also
+
+See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails] if you need
+the Rails plug-in that integrates this module with ActionController.
+
 == License
 
 Copyright (c) 2011 by Paweł Wilk.
