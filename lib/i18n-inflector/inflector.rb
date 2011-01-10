@@ -674,14 +674,13 @@ module I18n
       # 
       # @return [void]
       def inflector_try_init
-        return nil if defined? @inflector_initialized
-        @inflection_tokens          ||= {}
+        return nil if (defined?(@inflection_tokens) && !@inflection_tokens.nil?)
+        @inflection_tokens            = {}
         @inflection_aliases         ||= {}
         @inflection_defaults        ||= {}
         @inflector_excluded_defaults  = false
         @inflector_unknown_defaults   = true
         @inflector_raises             = false
-        @inflector_initialized        = true
         nil
       end
 
