@@ -14,7 +14,7 @@ module I18n
     # @private
     EMAIL       = 'pw@gnu.org'
     # @private
-    VERSION     = '1.0.8'
+    VERSION     = '1.0.10'
     # @private
     NAME        = 'i18n-inflector'
     # @private

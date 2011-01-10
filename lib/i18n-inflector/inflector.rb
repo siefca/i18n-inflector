@@ -40,7 +40,7 @@ module I18n
       # Checks the state of the switch that enables extended error reporting.
       # 
       # @api public
-      # @note This is a helper method, you can use {#inflector_raises accessor} instead
+      # @note This is a helper method, you can use {#inflector_raises accessor} instead.
       # @return [Boolean] the value of the global switch or the passed variable
       # @see I18n::Inflector.raises? Short name: I18n::Inflector.raises?
       # @see #inflector_raises=
@@ -60,7 +60,7 @@ module I18n
       # is unknown or empty.
       # 
       # @api public
-      # @note This is a helper method, you can use {#inflector_unknown_defaults accessor} instead
+      # @note This is a helper method, you can use {#inflector_unknown_defaults accessor} instead.
       # @return [Boolean] the value of the global switch or the passed variable
       # @see I18n::Inflector.unknown_defaults? Short name: I18n::Inflector.unknown_defaults?
       # @see #inflector_unknown_defaults=
@@ -404,6 +404,7 @@ module I18n
       #   @return [Array<Symbol>] the array containing known inflection kinds
       def available_inflection_kinds(locale=nil)
         locale  = inflector_prep_locale(locale)
+        init_translations unless initialized?
         subtree = inflection_subtree(locale)
         return [] if subtree.nil?
         subtree.keys
@@ -468,13 +469,13 @@ module I18n
               @inflection_tokens.delete   locale
               @inflection_aliases.delete  locale
               @inflection_defaults.delete locale
-              load_inflection_tokens      locale
+              load_inflection_tokens(locale, r[:i18n][:inflections])
             end
           end
         end
         r
       end
-      
+
       # Gets the description of the given inflection token.
       # 
       # @api public
@@ -673,12 +674,14 @@ module I18n
       # 
       # @return [void]
       def inflector_try_init
-        @inflection_tokens            ||= {}
-        @inflection_aliases           ||= {}
-        @inflection_defaults          ||= {}
-        @inflector_excluded_defaults  ||= false
-        @inflector_unknown_defaults   ||= true
-        @inflector_raises             ||= false
+        return nil if defined? @inflector_initialized
+        @inflection_tokens          ||= {}
+        @inflection_aliases         ||= {}
+        @inflection_defaults        ||= {}
+        @inflector_excluded_defaults  = false
+        @inflector_unknown_defaults   = true
+        @inflector_raises             = false
+        @inflector_initialized        = true
         nil
       end
 
@@ -692,10 +695,8 @@ module I18n
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
       # @return [Boolean] +true+ if everything went fine
       def init_translations
-        r = super
         inflector_try_init
-        available_locales.each{ |locale| load_inflection_tokens(locale) }
-        r
+        super
       end
 
       # Removes inflection patterns from the translated string.
@@ -709,31 +710,50 @@ module I18n
       # Gives access to the internal structure containing configuration data
       # for a given locale.
       # 
+      # @note Under some very rare conditions this method may be called while
+      #   translation data is loading. It must always return when translations
+      #   are not initialized. Otherwise it will cause loops and someone in Poland
+      #   will eat a kittien!
       # @param [Symbol] locale the locale to use
-      # @return [Hash] part of the translation data that
-      #   reflects inflections for a given locale
+      # @return [Hash,nil] part of the translation data that
+      #   reflects inflections for a given locale or +nil+
+      #   if translations are not initialized
       def inflection_subtree(locale)
+        return nil unless initialized?
         lookup(locale, :"i18n.inflections", [], :fallback => true, :raise => :false)
       end
 
-      # Resolves an alias for a token if token is an alias.
+      # Resolves an alias for a token if the given +token+ is an alias.
       # 
       # @note It does take care of aliasing loops (max traverses is set to 64).
-      # @param [Symbol] token the token name
-      # @param [Symbol] kind the kind of the given token
-      # @param [Symbol] locale the locale to use
-      # @return [Symbol] the true token that alias points to if the given +token+
-      #   is an alias or the given +token+ if it is a true token
       # @raise [I18n::BadInflectionToken] if a name of the token that alias points to is corrupted
       # @raise [I18n::BadInflectionAlias] if an alias points to token that does not exists
-      def shorten_inflection_alias(token, kind, locale, count=0)
+      # @return [Symbol] the true token that alias points to if the given +token+
+      #   is an alias or the given +token+ if it is a true token
+      # @overload shorten_inflection_alias(token, kind, locale)
+      #   Resolves an alias for a token if the given +token+ is an alias for the given +locale+ and +kind+.
+      #   @note This version uses internal subtree and needs the translation data to be initialized.
+      #   @param [Symbol] token the token name
+      #   @param [Symbol] kind the kind of the given token
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol] the true token that alias points to if the given +token+
+      #     is an alias or the given +token+ if it is a true token
+      # @overload shorten_inflection_alias(token, kind, locale, subtree)
+      #   Resolves an alias for a token if the given +token+ is an alias for the given +locale+ and +kind+.
+      #   @param [Symbol] token the token name
+      #   @param [Symbol] kind the kind of the given token
+      #   @param [Symbol] locale the locale to use
+      #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
+      #   @return [Symbol] the true token that alias points to if the given +token+
+      #     is an alias or the given +token+ if it is a true token
+      def shorten_inflection_alias(token, kind, locale, subtree=nil, count=0)
         count += 1
         return nil if count > 64
   
-        inflections = inflection_subtree(locale)
-        return nil if (inflections.nil? || inflections.empty?)
+        inflections_tree = subtree || inflection_subtree(locale)
+        return nil if (inflections_tree.nil? || inflections_tree.empty?)
 
-        kind_subtree  = inflections[kind]
+        kind_subtree  = inflections_tree[kind]
         value         = kind_subtree[token].to_s
 
         if value.slice(0,1) != I18n::Backend::Inflector::ALIAS_MARKER
@@ -753,7 +773,7 @@ module I18n
           if kind_subtree[token].nil?
             raise BadInflectionAlias.new(locale, orig_token, kind, token)
           else
-            shorten_inflection_alias(token, kind, locale, count)
+            shorten_inflection_alias(token, kind, locale, inflections_tree, count)
           end
         end
 
@@ -761,25 +781,32 @@ module I18n
 
       # Uses the inflections subtree and creates internal mappings
       # to resolve kinds assigned to inflection tokens and aliases, including defaults.
-      # @return [Hash] the internal Hash containing inflection tokens
+      # @return [Hash,nil] the internal Hash containing inflection tokens or +nil+ if something went wrong
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
-      # @overload load_inflection_tokens
-      #   Loads inflection tokens for the current locale.
-      #   @return [Hash] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
       # @overload load_inflection_tokens(locale)
-      #   Loads inflection tokens for the given locale.
-      #   @return [Hash] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
-      def load_inflection_tokens(locale=nil)
+      #   @note That version calls the {inflection_subtree} method to obtain internal translations data.
+      #   Loads inflection tokens for the given locale using internal hash of stored translations. Requires
+      #   translations to be initialized.
+      #   @param [Symbol] locale the locale to use and work for
+      #   @return [Hash,nil] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
+      #     or +nil+ if translations were not initialized
+      # @overload load_inflection_tokens(locale, subtree)
+      #   Loads inflection tokens for the given locale using data given in an argument
+      #   @param [Symbol] locale the locale to use and work for
+      #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
+      #   @return [Hash,nil] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
+      #   or +nil+ if the given subtree was wrong or empty
+      def load_inflection_tokens(locale, subtree=nil)
         return @inflection_tokens[locale] if @inflection_tokens.has_key?(locale)
-        inflections = inflection_subtree(locale)
-        return nil if (inflections.nil? || inflections.empty?)
+        inflections_tree = subtree || inflection_subtree(locale)
+        return nil if (inflections_tree.nil? || inflections_tree.empty?)
         ivars     = @inflection_tokens[locale]    = {}
         aliases   = @inflection_aliases[locale]   = {}
         defaults  = @inflection_defaults[locale]  = {}
 
-        inflections.each_pair do |kind, tokens|
+        inflections_tree.each_pair do |kind, tokens|
           tokens.each_pair do |token, description|
             
             # test for duplicate
@@ -808,13 +835,13 @@ module I18n
 
             # handle alias
             if description.slice(0,1) == I18n::Backend::Inflector::ALIAS_MARKER
-              real_token = shorten_inflection_alias(token, kind, locale)
+              real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
               unless real_token.nil?
                 real_token = real_token.to_sym
                 aliases[token] = {}
                 aliases[token][:kind]         = kind
                 aliases[token][:target]       = real_token
-                aliases[token][:description]  = inflections[kind][real_token].to_s
+                aliases[token][:description]  = inflections_tree[kind][real_token].to_s
               end
               next
             end
@@ -824,14 +851,14 @@ module I18n
             ivars[token][:description]  = description.to_s
           end
         end
-        
+
         # validate defaults
         defaults.each_pair do |kind, pointer|
           unless ivars.has_key?(pointer)
             # default may be an alias
             target = aliases[pointer]
             target = target[:target] unless target.nil?
-            real_token = (target || shorten_inflection_alias(:default, kind, locale))
+            real_token = (target || shorten_inflection_alias(:default, kind, locale, inflections_tree))
             raise I18n::BadInflectionAlias.new(locale, :default, kind, pointer) if real_token.nil?
             defaults[kind] = real_token.to_sym            
           end

@@ -1,3 +1,15 @@
+=== 1.0.10 / 2011-01-10
+
+* major bugfixes
+
+  * Removed cause of infinite loops while initializing translations
+  * Disabled lookup from being used before translations are initialized
+  * Fixed initialization routine (dangerous typo when setting booleans)
+
+* minor enhancements
+
+  * Switched to lazy loading of inflection data for certain locales
+
 === 1.0.8 / 2011-01-08
 
 * major enhancements
