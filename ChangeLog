@@ -1,3 +1,21 @@
+commit 2a3e10b2b9310c37a66a88f0511e24336671ee80
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 10 04:19:21 2011 +0100
+
+    Serious bugfixes and enhancements; removed cause of the infinite loop while loading translations
+
+commit 34321a02570226c07948f306bf3a68dff9d8ecb1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 10 01:38:22 2011 +0100
+
+    Added TODO
+
+commit 5e3f970ffd3bd9d56bad8fe910439d2689e83da1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 9 07:06:39 2011 +0100
+
+    ChangeLog updated
+
 commit fb02e573ec85a29efac5e7cd3f2f5f01c7ff3859
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sun Jan 9 07:06:11 2011 +0100
