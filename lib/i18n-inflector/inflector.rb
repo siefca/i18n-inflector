@@ -26,6 +26,9 @@ module I18n
       # Contains a symbol that indicates an alias.
       ALIAS_MARKER  = '@'
 
+      # Conatins a symbol used to separate multiple tokens.
+      OPERATOR_MULTI = ','
+
       # Contains a list of escape symbols that cause pattern to be escaped.
       ESCAPES       = { '@' => true, '\\' => true }
 
@@ -566,6 +569,7 @@ module I18n
             ext_token     = $1.to_s
             ext_value     = $2.to_s
             ext_freetext  = $3.to_s
+            tokens        = Hash.new(false)
             kind          = nil
             option        = nil
 
@@ -578,25 +582,39 @@ module I18n
               next
             end
 
-            # set token and get current kind for it
-            token   = ext_token.to_sym
-            t_entry = inflections[token]
-            
-            # kind not found for a given token?
-            if t_entry.nil?
-              raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
-              next
+            # split tokens if comma is present and put to fast list
+            ext_token.split(I18n::Backend::Inflector::OPERATOR_MULTI).each do |t|
+              # token name corrupted
+              if t.empty?
+                raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+                next
+              end
+
+              # get kind for that token
+              t     = t.to_sym
+              kind  = inflections[t]
+              if kind.nil?
+                raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+                next
+              end
+              kind = kind[:kind]
+
+              # set processed kind after matching first token in a pattern
+              if parsed_kind.nil?
+                parsed_kind = kind
+              elsif parsed_kind != kind
+                # different kinds in one pattern are prohibited
+                raise I18n::MisplacedInflectionToken.new(ext_pattern, t, parsed_kind) if raises
+                next
+              end
+
+              # use that token
+              tokens[t] = true
             end
 
-            # set kind
-            kind = t_entry[:kind]
-
-            # set processed kind after matching first token in pattern
-            if parsed_kind.nil?
-              parsed_kind = kind
-            elsif parsed_kind != kind
-              raise I18n::MisplacedInflectionToken.new(ext_pattern, token, parsed_kind) if raises
-              next
+            # self-explanatory
+            if tokens.empty?
+              raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
             end
 
             # memorize default option for further processing
@@ -626,23 +644,23 @@ module I18n
 
             # if the option is still unknown
             if option.nil?
-              raise I18n::InvalidOptionForKind.new(ext_pattern, kind, ext_token, option) if raises
+              raise I18n::InvalidOptionForKind.new(ext_pattern, kind, ext_token, nil) if raises
               next
             end
 
             # memorize default token's value for further processing
             # outside this block if excluded_defaults switch is on
-            parsed_default_v = ext_value if (excluded_defaults && token == default_token)
+            parsed_default_v = ext_value if (excluded_defaults && tokens[default_token])
 
-            # throw the value if a given option matches the token
-            next unless option == token
+            # throw the value if a given option matches one of the tokens from group
+            next unless tokens[option]
 
             # skip further evaluation of the pattern
             # since the right token has been found
             found = true
             break
 
-          end # single token:value processing
+          end # single token (or a group) processing
 
           result = nil
 

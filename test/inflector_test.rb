@@ -157,11 +157,6 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :s, :locale => :xx)
   end
 
-  test "inflector translate: works with %{} patterns" do
-    store_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}!')
-    assert_equal 'Dear Dude!', I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
-  end
-
   test "inflector translate: raises I18n::InvalidOptionForKind when bad kind is given and inflector_raises is true" do
     assert_nothing_raised I18n::InvalidOptionForKind do
       I18n.t('welcome', :locale => :xx, :inflector_raises => true)
@@ -194,6 +189,16 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
       I18n.backend.inflector_raises = true
       I18n.t('hi', :locale => :xx)
     end
+  end
+
+  test "inflector translate: works with %{} patterns" do
+    store_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}!')
+    assert_equal 'Dear Dude!', I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
+  end
+
+  test "inflector translate: works with tokens separated by commas" do
+    store_translations(:xx, 'hi' => 'Dear @{f,m:Someone}!')
+    assert_equal 'Dear Someone!', I18n.t('hi', :gender => :m, :locale => :xx)
   end
 
   test "inflector inflected_locales: lists languages that support inflection" do

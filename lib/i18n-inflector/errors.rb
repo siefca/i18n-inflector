@@ -45,7 +45,7 @@ module I18n
     def initialize(pattern, token, kind)
       @pattern, @token, @kind = pattern, token, kind
       super "inflection token #{token.inspect} from pattern #{pattern.inspect} " +
-            "is not of expected kind #{kind.inspect}"
+            "is not of the expected kind #{kind.inspect}"
     end
   end
 
