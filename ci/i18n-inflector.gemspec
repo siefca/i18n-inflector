@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.3.5'
   s.specification_version = 3
 
-  s.add_dependency             'i18n',              '>= 0.5.0'
+  s.add_dependency             'i18n',              '>= 0.4.1'
   s.add_development_dependency 'test_declarative',  '>= 0.0.4'
   s.add_development_dependency 'rspec',             '>= 2.3.0'
   s.add_development_dependency 'yard',              '>= 1.0.7'

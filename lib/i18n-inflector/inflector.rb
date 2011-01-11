@@ -29,6 +29,9 @@ module I18n
       # Conatins a symbol used to separate multiple tokens.
       OPERATOR_MULTI = ','
 
+      # Conatins a symbol used to mark tokens as negative.
+      OPERATOR_NOT  = '!'
+
       # Contains a list of escape symbols that cause pattern to be escaped.
       ESCAPES       = { '@' => true, '\\' => true }
 
@@ -37,6 +40,7 @@ module I18n
                                 RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
 
       attr_accessor :inflector_raises
+      attr_accessor :inflector_aliased_patterns
       attr_accessor :inflector_unknown_defaults
       attr_accessor :inflector_excluded_defaults
 
@@ -56,6 +60,24 @@ module I18n
       #   @return [Boolean] +true+ if the passed +value+ is not +false+
       def inflector_raises?(option=nil)
         option.nil? ? @inflector_raises : option!=false
+      end
+
+      # Checks the state of the switch that enables usage of aliases in patterns.
+      # 
+      # @api public
+      # @note This is a helper method, you can use {#inflector_aliased_patterns accessor} instead.
+      # @return [Boolean] the value of the global switch or the passed variable
+      # @see I18n::Inflector.aliased_patterns? Short name: I18n::Inflector.aliased_patterns?
+      # @see #inflector_aliased_patterns=
+      # @overload inflector_aliased_patterns?
+      #   Checks the state of the switch that enables usage of aliases in patterns.
+      #   @return [Boolean] the value of the global switch
+      # @overload inflector_aliased_patterns?(value)
+      #   Returns the given value.
+      #   @param [Boolean] value the value to be returned
+      #   @return [Boolean] +true+ if the passed +value+ is not +false+
+      def inflector_aliased_patterns?(option=nil)
+        option.nil? ? @inflector_aliased_patterns : option!=false      
       end
 
       # Checks the state of the switch that that enables falling back
@@ -545,6 +567,7 @@ module I18n
       def interpolate_inflections(string, locale, options = {})
         used_kinds        = options.except(*I18n::Backend::Inflector::INFLECTOR_RESERVED_KEYS)
         raises            = inflector_raises?             options.delete(:inflector_raises)
+        aliased_patterns  = inflector_aliased_patterns?   options.delete(:inflector_aliased_patterns)
         unknown_defaults  = inflector_unknown_defaults?   options.delete(:inflector_unknown_defaults)
         excluded_defaults = inflector_excluded_defaults?  options.delete(:inflector_excluded_defaults)
         inflections       = @inflection_tokens[locale]
@@ -570,6 +593,7 @@ module I18n
             ext_value     = $2.to_s
             ext_freetext  = $3.to_s
             tokens        = Hash.new(false)
+            negatives     = Hash.new(false)
             kind          = nil
             option        = nil
 
@@ -582,19 +606,29 @@ module I18n
               next
             end
 
-            # split tokens if comma is present and put to fast list
+            # split tokens if comma is present and put into fast list
             ext_token.split(I18n::Backend::Inflector::OPERATOR_MULTI).each do |t|
               # token name corrupted
-              if t.empty?
-                raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+              if (t.empty?)
+                raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
+              end
+
+              # mark negative-matching tokens and put them to negatives fast list
+              if t[0..0] == I18n::Backend::Inflector::OPERATOR_NOT
+                t = t[1..-1]
+                if (t.empty?)
+                  raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
+                  next
+                end
+                negatives[t.to_sym] = true
               end
 
               # get kind for that token
               t     = t.to_sym
               kind  = inflections[t]
               if kind.nil?
-                raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+                raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
               end
               kind = kind[:kind]
@@ -609,11 +643,11 @@ module I18n
               end
 
               # use that token
-              tokens[t] = true
+              tokens[t] = true unless negatives[t]
             end
 
             # self-explanatory
-            if tokens.empty?
+            if (tokens.empty? && negatives.empty?)
               raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
             end
 
@@ -653,7 +687,8 @@ module I18n
             parsed_default_v = ext_value if (excluded_defaults && tokens[default_token])
 
             # throw the value if a given option matches one of the tokens from group
-            next unless tokens[option]
+            # or negatively matches one of the negated tokens
+            next if (!tokens[option] && (negatives.empty? || negatives[option]))
 
             # skip further evaluation of the pattern
             # since the right token has been found
@@ -698,6 +733,7 @@ module I18n
         @inflection_defaults        ||= {}
         @inflector_excluded_defaults  = false
         @inflector_unknown_defaults   = true
+        @inflector_aliased_patterns   = false
         @inflector_raises             = false
         nil
       end
@@ -773,7 +809,7 @@ module I18n
         kind_subtree  = inflections_tree[kind]
         value         = kind_subtree[token].to_s
 
-        if value.slice(0,1) != I18n::Backend::Inflector::ALIAS_MARKER
+        if value[0..0] != I18n::Backend::Inflector::ALIAS_MARKER
           if kind_subtree.has_key?(token)
             return token
           else
@@ -851,7 +887,7 @@ module I18n
             end
 
             # handle alias
-            if description.slice(0,1) == I18n::Backend::Inflector::ALIAS_MARKER
+            if description[0..0] == I18n::Backend::Inflector::ALIAS_MARKER
               real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
               unless real_token.nil?
                 real_token = real_token.to_sym

@@ -201,6 +201,19 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
     assert_equal 'Dear Someone!', I18n.t('hi', :gender => :m, :locale => :xx)
   end
 
+  test "inflector translate: works with negative tokens" do
+    store_translations(:xx, 'hi' => 'Dear @{!m:Lady|m:Sir|n:You|All}!')
+    assert_equal 'Dear Lady!', I18n.t('hi', :gender => :n, :locale => :xx)
+    assert_equal 'Dear Sir!', I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Dear Lady!', I18n.t('hi', :locale => :xx)
+    assert_equal 'Dear Lady!', I18n.t('hi', :gender => :unknown, :locale => :xx)
+  end
+  
+  test "inflector translate: works with tokens separated by commas and negative tokens" do
+    store_translations(:xx, 'hi' => 'Dear @{f,m:Someone}!')
+    assert_equal 'Dear Someone!', I18n.t('hi', :gender => :m, :locale => :xx)
+  end
+
   test "inflector inflected_locales: lists languages that support inflection" do
     assert_equal [:xx], I18n.backend.inflected_locales
     assert_equal [:xx], I18n.backend.inflected_locales(:gender)

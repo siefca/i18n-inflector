@@ -415,6 +415,21 @@ module I18n
       # @return [Boolean] the state of the switch
       attr_accessor :inflector_raises
 
+      # This is a switch that enables usage of aliases in patterns. When it's enabled then
+      # aliases may be used in inflection patterns, not only true tokens. This operation
+      # is not time consuming (resolving is done only when translations are loaded)
+      # but may make your translation data a bit messy if you're not alert.
+      # That's why this switch is by default set to +false+.
+      # 
+      # @note Local option +:inflector_aliased_patterns+ passed to the {#translate}
+      # overrides this setting.
+      # 
+      # @api public
+      # @see #inflector_aliased_patterns?
+      # @see I18n::Inflector.aliased_patterns Short name: I18n::Inflector.aliased_patterns
+      # @return [Boolean] the state of the switch
+      attr_accessor :inflector_aliased_patterns
+
     end
   end
   
