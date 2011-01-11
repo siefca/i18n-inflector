@@ -204,9 +204,15 @@ class I18nBackendInflectionTest < Test::Unit::TestCase
   test "inflector inflected_locale?: checks if a language supports inflection" do
     assert_equal true, I18n.backend.inflected_locale?(:xx)
     assert_equal false, I18n.backend.inflected_locale?(:pl)
+    assert_equal false, I18n.backend.inflected_locale?(nil)
+    assert_equal false, I18n.backend.inflected_locale?("")
     I18n.locale = :xx
     assert_equal true, I18n.backend.inflected_locale?
     I18n.locale = :pl
+    assert_equal false, I18n.backend.inflected_locale?
+    I18n.locale = nil
+    assert_equal false, I18n.backend.inflected_locale?
+    I18n.locale = ""
     assert_equal false, I18n.backend.inflected_locale?
   end
 
