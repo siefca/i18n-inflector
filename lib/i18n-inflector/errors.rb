@@ -37,7 +37,16 @@ module I18n
             "pattern #{pattern.inspect} is invalid"
     end
   end
-  
+
+  # This is raised when some argument is malformed.
+  class MalformedInflectionArgument < ArgumentError
+    attr_reader :name
+    def initialize(name)
+      @name = name
+      super "argument #{name.inspect} is malformed (empty or nil)"
+    end
+  end
+
   # This is raised when an inflection token used in a pattern does not match
   # an assumed kind determined by reading previous tokens from that pattern.
   class MisplacedInflectionToken < ArgumentError
@@ -69,22 +78,25 @@ module I18n
     def initialize(locale, token, kind, pointer)
       @locale, @token, @kind, @pointer = locale, token, kind, pointer
       what = token == :default ? "default token" : "alias"
-      super "the #{what} #{token.inspect} of kind #{kind.inspect} " +
-            "for language #{locale.inspect} points to an unknown token #{pointer.inspect}"
+      lang = locale.nil? ? "" : "for language #{locale.inspect} "
+      kinn = kind.nil? ?   "" : "of kind #{kind.inspect} "
+      super "the #{what} #{token.inspect}" + kinn + lang +
+            "points to an unknown token #{pointer.inspect}"
     end
   end
-  
+
   # This is raised when an inflection token or its description has a bad name. This
   # includes an empty name or a name containing prohibited characters.
   class BadInflectionToken < ArgumentError
     attr_reader :locale, :token, :kind, :description
-    def initialize(locale, token, kind, description=nil)
+    def initialize(locale, token, kind=nil, description=nil)
       @locale, @token, @kind, @description = locale, token, kind, description
+      kinn = kind.nil? ? "" : "of kind #{kind.inspect} "
       if description.nil?
-        super "Inflection token #{token.inspect} of kind #{kind.inspect} "+
+        super "Inflection token #{token.inspect} " + kinn +
               "for language #{locale.inspect} has a bad name"
       else
-        super "Inflection token #{token.inspect} of kind #{kind.inspect} "+
+        super "Inflection token #{token.inspect} " + kinn +
               "for language #{locale.inspect} has a bad description #{description.inspect}"
       end
     end

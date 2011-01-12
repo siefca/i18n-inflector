@@ -67,12 +67,12 @@ module I18n
       #   @return [Symbol,nil] the default token for the given kind or +nil+ if
       #     there is no default token
       def default_token(kind, locale=nil)
-        locale = inflector_prep_locale(locale)
-        return nil if kind.to_s.empty?
+        kind, locale = inflector_prep_kl(kind, locale)
+        return nil if kind.nil?
         I18n.backend.inflector_try_init_backend
-        inflections = @inflection_defaults[locale]
-        return nil if inflections.nil?
-        inflections[kind.to_sym]
+        idb = @idb[locale]
+        return nil if idb.nil?
+        idb.get_default_token(kind)
       end
 
       # Checks if the given +token+ is an alias.
@@ -80,95 +80,98 @@ module I18n
       # @api public
       # @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
-      # @overload is_alias?(token)
+      # @overload has_alias?(token)
       #   Uses current locale to check if the given +token+ is an alias.
       #   @param [Symbol,String] token name of the checked token
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
-      # @overload is_alias?(token, locale)
+      # @overload has_alias?(token, locale)
       #   Uses the given +locale+ to check if the given +token+ is an alias.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
-      # @overload is_alias?(token, kind, locale)
+      # @overload has_alias?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is an alias.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
-      def is_alias?(*args)
+      def has_alias?(*args)
         token, kind, locale = tkl_args(args)
-        return false if token.to_s.empty?
-        locale = inflector_prep_locale(locale)
+        return false if (!kind.nil? && kind.to_s.empty?)
+        return false if token.nil?
         I18n.backend.inflector_try_init_backend
-        ialiases = @inflection_aliases[locale]
-        return false if ialiases.nil?
-        ialiases.has_key?(token.to_sym)
+        idb = @idb[locale]
+        return false if idb.nil?
+        r = idb.has_alias?(token)
+        kind.nil? ? r : (r && idb.get_kind?(token) == kind)
       end
-      alias_method :token_is_alias?, :is_alias?
+      alias_method :token_has_alias?, :has_alias?
 
       # Checks if the given +token+ is a true token (not alias).
       # 
       # @api public
       # @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
-      # @overload is_true_token?(token)
+      # @overload has_true_token?(token)
       #   Uses current locale to check if the given +token+ is a true token.
       #   @param [Symbol,String] token name of the checked token
       #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
-      # @overload is_true_token?(token, locale)
+      # @overload has_true_token?(token, locale)
       #   Uses the given +locale+ to check if the given +token+ is a true token.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
-      # @overload is_true_token?(token, kind, locale)
+      # @overload has_true_token?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is a true token.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
-      def is_true_token?(*args)
+      def has_true_token?(*args)
         token, kind, locale = tkl_args(args)
-        return false if token.to_s.empty?
-        locale = inflector_prep_locale(locale)
+        return false if (!kind.nil? && kind.to_s.empty?)
+        return false if token.nil?
         I18n.backend.inflector_try_init_backend
-        itokens = @inflection_tokens[locale]
-        return false if itokens.nil?
-        itokens.has_key?(token.to_sym)
+        idb = @idb[locale]
+        return false if idb.nil?
+        token = token.to_sym
+        r = idb.has_true_token?(token)
+        kind.nil? ? r : (r && idb.get_kind?(token) == kind)
       end
-      alias_method :token_is_true?, :is_true_token?
+      alias_method :token_has_true?, :has_true_token?
 
        # Checks if the given +token+ exists. It may be an alias or a true token.
        # 
        # @api public
        # @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
        # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
-       # @overload is_token?(token)
+       # @overload has_token?(token)
        #   Uses current locale to check if the given +token+ is a token.
        #   @param [Symbol,String] token name of the checked token
        #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
-       # @overload is_token?(token, locale)
+       # @overload has_token?(token, locale)
        #   Uses the given +locale+ to check if the given +token+ exists.
        #   @param [Symbol,String] token name of the checked token
        #   @param [Symbol] locale the locale to use
        #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
-       # @overload is_token?(token, kind, locale)
+       # @overload has_token?(token, kind, locale)
        #   Uses the given +locale+ and +kind+ to check if the given +token+ exists.
        #   @param [Symbol,String] token name of the checked token
        #   @param [Symbol] kind the kind used to narrow the check
        #   @param [Symbol] locale the locale to use
        #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
-       def is_token?(*args)
+       def has_token?(*args)
          token, kind, locale = tkl_args(args)
-         return false if token.to_s.empty?
-         locale = inflector_prep_locale(locale)
+         return false if (!kind.nil? && kind.to_s.empty?)
+         return false if token.nil?
          I18n.backend.inflector_try_init_backend
-         itokens = @inflection_tokens[locale]
-         return true if (!itokens.nil? && itokens.has_key?(token.to_sym))
-         ialiases = @inflection_aliases[locale]
-         return true if (!ialiases.nil? && ialiases.has_key?(token.to_sym))
-         return false
+         idb = @idb[locale]
+         return false if idb.nil?
+         token = token.to_sym
+         r = idb.has_token?(token)
+         kind.nil? ? r : (r && idb.get_kind?(token) == kind)
        end
-       alias_method :token_exists?, :is_token?
+       alias_method :token_exists?, :has_token?
 
       # Gets true token for the given +token+ (which may be an alias).
       # 
@@ -191,17 +194,10 @@ module I18n
         return nil if token.to_s.empty?
         locale = inflector_prep_locale(locale)
         I18n.backend.inflector_try_init_backend
-        inflections = @inflection_tokens[locale]
-        return nil if inflections.nil?
-        entry = inflections[token]
-        return token unless entry.nil?
-        inflections = @inflection_aliases[locale]
-        return nil if inflections.nil?
-        entry = inflections[token]
-        return nil if entry.nil?
-        entry[:target]
+        idb = @idb[locale]
+        return nil if idb.nil?
+        idb.get_true_token(token.to_sym)
       end
-      alias_method :get_true_token, :true_token
 
       # Gets a kind for the given +token+ (which may be an alias).
       # 
@@ -223,17 +219,10 @@ module I18n
         return nil if token.to_s.empty?
         locale = inflector_prep_locale(locale)
         I18n.backend.inflector_try_init_backend
-        inflections = @inflection_tokens[locale]
-        return nil if inflections.nil?
-        entry = inflections[token]
-        return entry[:kind] unless entry.nil?
-        inflections = @inflection_aliases[locale]
-        return nil if inflections.nil?
-        entry = inflections[token]
-        return nil if entry.nil?
-        entry[:kind]
+        idb = @idb[locale]
+        return nil if idb.nil?
+        idb.get_kind(token.to_sym)
       end
-      alias_method :get_kind, :kind
 
       # Gets available inflection tokens and their descriptions.
       # 
@@ -261,13 +250,11 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases, for current locale
       def tokens(kind=nil, locale=nil)
-        locale      = inflector_prep_locale(locale)
-        true_tokens = true_tokens(kind, locale)
-        aliases     = @inflection_aliases[locale]
-        return true_tokens if aliases.nil?
-        aliases = aliases.reject{|k,v| v[:kind]!=kind} unless kind.nil?
-        aliases = aliases.merge(aliases){|k,v| v[:description]}
-        true_tokens.merge(aliases)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind, locale = inflector_prep_kl(kind, locale)
+        idb     = @idb[locale]
+        return {} if idb.nil?
+        idb.get_tokens(kind)
       end
 
       # Gets available inflection tokens and their values.
@@ -276,7 +263,7 @@ module I18n
       # @return [Hash] the hash containing available inflection tokens and descriptions (or alias pointers)
       # @raise [I18n::InvalidLocale] if a used locale is invalid
       # @note You may deduce whether the returned values are aliases or true tokens
-      #       by testing if a value is a type of Symbol or String.
+      #   by testing if a value is a type of Symbol or String.
       # @overload tokens_raw
       #   Gets available inflection tokens and their values.
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -296,9 +283,11 @@ module I18n
       #     and their descriptions as values for the given +kind+ and +locale+.
       #     In case of aliases the returned values are Symbols
       def tokens_raw(kind=nil, locale=nil)
-        true_tokens = true_tokens(kind, locale)
-        aliases     = aliases(kind, locale)
-        true_tokens.merge(aliases)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind, locale = inflector_prep_kl(kind, locale)
+        idb = @idb[locale]
+        return {} if idb.nil?
+        idb.get_raw_tokens(kind)
       end
       alias_method :raw_tokens, :tokens_raw
 
@@ -323,15 +312,15 @@ module I18n
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+ and +locale+
-      def tokens_true(kind=nil, locale=nil)
-        locale = inflector_prep_locale(locale)
+      def true_tokens(kind=nil, locale=nil)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind, locale = inflector_prep_kl(kind, locale)
         I18n.backend.inflector_try_init_backend
-        inflections = @inflection_tokens[locale]
-        return {} if inflections.nil?
-        inflections = inflections.reject{|k,v| v[:kind]!=kind} unless kind.nil?
-        inflections.merge(inflections){|k,v| v[:description]}
+        idb = @idb[locale]
+        return {} if idb.nil?
+        inflections = idb.get_true_tokens(kind)
       end
-      alias_method :true_tokens, :tokens_true
+      alias_method :tokens_true, :true_tokens
 
       # Gets inflection aliases and their pointers.
       # 
@@ -353,12 +342,12 @@ module I18n
       #   @return [Hash] the Hash containing available inflection
       #     aliases for the given +kind+ and +locale+
       def aliases(kind=nil, locale=nil)
-        locale = inflector_prep_locale(locale)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind, locale = inflector_prep_kl(kind, locale)
         I18n.backend.inflector_try_init_backend
-        aliases = @inflection_aliases[locale]
-        return {} if aliases.nil?
-        aliases = aliases.reject{|k,v| v[:kind]!=kind} unless kind.nil?
-        aliases.merge(aliases){|k,v| v[:target]}
+        idb = @idb[locale]
+        return {} if idb.nil?
+        idb.get_aliases(kind)
       end
 
       # Gets known inflection kinds.
@@ -374,11 +363,11 @@ module I18n
       #   @param [Symbol] locale the locale for which operation has to be done
       #   @return [Array<Symbol>] the array containing known inflection kinds
       def kinds(locale=nil)
-        locale  = inflector_prep_locale(locale)
+        locale = inflector_prep_locale(locale)
         I18n.backend.inflector_try_init_backend
-        kinds = @inflection_kinds[locale]
-        return [] if kinds.nil?
-        kinds.keys
+        idb = @idb[locale]
+        return [] if idb.nil?
+        idb.get_kinds
       end
       alias_method :inflection_kinds, :kinds
 
@@ -390,17 +379,21 @@ module I18n
       # @note If +kind+ is given it returns only these locales
       #   that are inflected and support inflection by this kind.
       def inflected_locales(kind=nil)
+        return [] if (!kind.nil? && kind.to_s.empty?)
         I18n.backend.inflector_try_init_backend
-        inflected_locales = (@inflection_tokens.keys || [])
-        return inflected_locales if kind.to_s.empty?
+        inflected_locales = (@idb.keys || [])
+        return inflected_locales if kind.nil?
         kind = kind.to_sym
-        inflected_locales.select do |loc|
-          kinds = @inflection_kinds[loc]
-          !kinds.nil? && kinds[kind]
-        end
+        inflected_locales.reject{|l| @idb[l].nil? || !@idb[l].has_kind?(kind)}
       end
       alias_method :locales, :inflected_locales
       alias_method :supported_locales, :inflected_locales
+
+      def has_kind?(locale=nil)
+        locale = inflector_prep_locale(locale)
+        I18n.backend.inflector_try_init_backend
+        @idb[locale].has_kind?(kind)
+      end
 
       # Checks if a locale was configured to support inflection.
       # 
@@ -415,10 +408,10 @@ module I18n
       #   Checks if the current locale was configured to support inflection.
       #   @return [Boolean] +true+ if the current locale supports inflection
       def inflected_locale?(locale=nil)
-        locale = inflector_prep_locale(locale) rescue nil
+        locale = inflector_prep_locale(locale) rescue false
         return false if locale.nil?
         I18n.backend.inflector_try_init_backend
-        @inflection_tokens.has_key?(locale)
+        not @idb[locale].nil?
       end
       alias_method :locale?, :inflected_locale?
       alias_method :locale_supported?, :inflected_locale?
@@ -443,38 +436,30 @@ module I18n
       #   @return [String,nil] the descriptive string or +nil+ if something
       #     went wrong (e.g. token was not found)
       def token_description(token, locale=nil)
+        raise I18n::MalformedInflectionArgument.new if token.to_s.empty?
         locale = inflector_prep_locale(locale)
         return nil if token.to_s.empty?
         I18n.backend.inflector_try_init_backend
-        inflections = @inflection_tokens[locale]
-        aliases     = @inflection_aliases[locale]
-        return nil if (inflections.nil? || aliases.nil?)
-        token = token.to_sym
-        match = (inflections[token] || aliases[token])
-        return nil if match.nil?
-        match[:description]
+        idb = @idb[locale]
+        return nil if idb.nil?
+        idb.get_description(token.to_sym)
       end
-      alias_method :get_token_description, :token_description
 
       protected
   
       # @private
-      def init_frontend(kinds, tokens, aliases, defaults)
-        @inflection_kinds     = kinds
-        @inflection_tokens    = tokens
-        @inflection_aliases   = aliases
-        @inflection_defaults  = defaults
+      def init_frontend(idb)
+        @idb = idb
       end
 
       # @private
-      def tkl_args(args)
-        token, kind, locale = case args.count
-        when 1 then [args[0], nil, nil]
-        when 2 then [args[0], nil, args[1]]
-        when 3 then args
-        else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
-        end
-        [token,kind,locale]
+      def verify_token(token)
+        raise I18n::MalformedInflectionArgument.new if token.to_s.empty?
+      end
+
+      # @private
+      def verify_kind(kind)
+        raise I18n::MalformedInflectionArgument.new if (!kind.nil? && kind.to_s.empty?)
       end
 
     end

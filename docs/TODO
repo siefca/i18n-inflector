@@ -1,8 +1,12 @@
 == Near future
 
-* finish is_* methods with kind testing
-* add method is_kind? i kind_exists?
-* change @inflection_ to one hash
+* finish is_* methods with kind testing [done]
+* replace internal aliases with tokens with marker [done]
+* move error messages out of InflectionData and do the tests on higher level
+* add method is_kind? and kind_exists? [done]
+* change @inflection_ to one hash [done]
+* add error for reporting bad arguments in API calls [done]
+* interpolation: use one hash to store both positive- and negative- matching tokens
 * allow aliases in patterns (switched) [aliases loading and replacement during initial read]
 * rewrite docs for switching methods
 

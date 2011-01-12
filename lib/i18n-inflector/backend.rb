@@ -27,11 +27,8 @@ module I18n
       # @return [Boolean] the result of calling ancestor's method
       # @see I18n::Inflector.reload! Short name: I18n::Inflector.reload!
       def reload!
-        @inflection_kinds     = nil
-        @inflection_tokens    = nil
-        @inflection_aliases   = nil
-        @inflection_defaults  = nil
-        I18n::Inflector.send(:init_frontend, kinds, tokens, aliases, defaults)
+        @idb = nil
+        I18n::Inflector.send(:init_frontend, @idb)
         super
       end
 
@@ -56,8 +53,8 @@ module I18n
           return translated_string
         end
 
-        inflection_tokens = @inflection_tokens[locale]
-        if (inflection_tokens.nil? || inflection_tokens.empty?)
+        inflections = @idb[locale]
+        if (inflections.nil? || inflections.empty?)
           return clear_inflection_patterns(translated_string)
         end
 
@@ -83,10 +80,7 @@ module I18n
           unless subdata.nil?
             subdata = (subdata[:inflections] || subdata['inflections'])
             unless subdata.nil?
-              @inflection_kinds.delete    locale
-              @inflection_tokens.delete   locale
-              @inflection_aliases.delete  locale
-              @inflection_defaults.delete locale
+              @idb.delete locale
               load_inflection_tokens(locale, r[:i18n][:inflections])
             end
           end
@@ -200,15 +194,15 @@ module I18n
         aliased_patterns  = inflector_aliased_patterns?   options.delete(:inflector_aliased_patterns)
         unknown_defaults  = inflector_unknown_defaults?   options.delete(:inflector_unknown_defaults)
         excluded_defaults = inflector_excluded_defaults?  options.delete(:inflector_excluded_defaults)
-        inflections       = @inflection_tokens[locale]
-        defaults          = @inflection_defaults[locale]
-        aliases           = @inflection_aliases[locale]
+
+        idb               = @idb[locale]
 
         string.gsub(I18n::Inflector::PATTERN) do
           pattern_fix     = $1
           pattern_content = $2
           ext_pattern     = $&
           parsed_kind     = nil
+          default_token   = nil
           ext_value       = nil
           ext_freetext    = ''
           found           = false
@@ -239,7 +233,7 @@ module I18n
             # split tokens if comma is present and put into fast list
             ext_token.split(I18n::Inflector::OPERATOR_MULTI).each do |t|
               # token name corrupted
-              if (t.empty?)
+              if t.empty?
                 raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
               end
@@ -247,25 +241,26 @@ module I18n
               # mark negative-matching tokens and put them to negatives fast list
               if t[0..0] == I18n::Inflector::OPERATOR_NOT
                 t = t[1..-1]
-                if (t.empty?)
+                if t.empty?
                   raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                   next
                 end
                 negatives[t.to_sym] = true
               end
+              
+              t = t.to_sym
 
               # get kind for that token
-              t     = t.to_sym
-              kind  = inflections[t]
+              kind  = idb.get_kind(t)
               if kind.nil?
                 raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
               end
-              kind = kind[:kind]
 
               # set processed kind after matching first token in a pattern
               if parsed_kind.nil?
-                parsed_kind = kind
+                parsed_kind   = kind
+                default_token = idb.get_default_token(parsed_kind)
               elsif parsed_kind != kind
                 # different kinds in one pattern are prohibited
                 raise I18n::MisplacedInflectionToken.new(ext_pattern, t, parsed_kind) if raises
@@ -281,9 +276,6 @@ module I18n
               raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
             end
 
-            # memorize default option for further processing
-            default_token = defaults[kind]
-
             # fetch the kind's option or fetch default if an option does not exists
             option = options.has_key?(kind) ? options[kind] : default_token
 
@@ -293,16 +285,12 @@ module I18n
               option = unknown_defaults ? default_token : nil
             else
               # validate option and if it's unknown try in aliases
-              option = option.to_sym
-              unless inflections.has_key?(option)
-                option = aliases[option]
-                if option.nil?
-                  # if still nothing then fall back to default value
-                  # for a kind in unknown_defaults switch is on
-                  option = unknown_defaults ? default_token : nil
-                else
-                  option = option[:target]
-                end
+              option = idb.get_true_token(option.to_sym)
+
+              # if still nothing then fall back to default value
+              # for a kind in unknown_defaults switch is on
+              if option.nil?
+                option = unknown_defaults ? default_token : nil
               end
             end
 
@@ -312,9 +300,9 @@ module I18n
               next
             end
 
-            # memorize default token's value for further processing
+            # memorize default value for further processing
             # outside this block if excluded_defaults switch is on
-            parsed_default_v = ext_value if (excluded_defaults && tokens[default_token])
+            parsed_default_v = ext_value if (excluded_defaults && !default_token.nil?)
 
             # throw the value if a given option matches one of the tokens from group
             # or negatively matches one of the negated tokens
@@ -336,15 +324,15 @@ module I18n
             result = ext_value
           elsif (excluded_defaults && !parsed_kind.nil?)
             # if there is excluded_defaults switch turned on
-            # and a correct token was found in options but
+            # and a correct token was found in an inflection option but
             # has not been found in a pattern then interpolate
             # the pattern with a value picked for the default
-            # token for that kind if a default token was present
+            # token for that kind if a default token was present ??????????fixme????????
             # in a pattern
             kind    = nil
             token   = options[parsed_kind]
-            kind    = inflections[token]  unless token.nil?
-            result  = parsed_default_v    unless (kind.nil? || kind[:kind].nil?)
+            kind    = idb.get_kind(token)
+            result  = parsed_default_v unless kind.nil?
           end
 
           pattern_fix + (result || ext_freetext)
@@ -357,23 +345,16 @@ module I18n
       # 
       # @return [void]
       def inflector_try_init
-        return nil if (defined?(@inflection_tokens) && !@inflection_tokens.nil?)
+        return nil if (defined?(@idb) && !@idb.nil?)
 
-        @inflection_tokens            = {}
-        @inflection_aliases         ||= {}
-        @inflection_defaults        ||= {}
-        @inflection_kinds           ||= {}
+        @idb = {}
 
         @inflector_excluded_defaults  = false
         @inflector_unknown_defaults   = true
         @inflector_aliased_patterns   = false
         @inflector_raises             = false
 
-        I18n::Inflector.send(:init_frontend,
-                             @inflection_kinds,
-                             @inflection_tokens,
-                             @inflection_aliases,
-                             @inflection_defaults)
+        I18n::Inflector.send(:init_frontend, @idb)
         nil
       end
 
@@ -473,7 +454,7 @@ module I18n
 
       # Uses the inflections subtree and creates internal mappings
       # to resolve kinds assigned to inflection tokens and aliases, including defaults.
-      # @return [Hash,nil] the internal Hash containing inflection tokens or +nil+ if something went wrong
+      # @return [Hash,nil] the internal Hash containing inflections tokens or +nil+ if something went wrong
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
@@ -482,83 +463,75 @@ module I18n
       #   Loads inflection tokens for the given locale using internal hash of stored translations. Requires
       #   translations to be initialized.
       #   @param [Symbol] locale the locale to use and work for
-      #   @return [Hash,nil] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
-      #     or +nil+ if translations were not initialized
+      #   @return [Hash,nil] the internal Hash containing inflections or +nil+ if translations were not initialized
       # @overload load_inflection_tokens(locale, subtree)
       #   Loads inflection tokens for the given locale using data given in an argument
       #   @param [Symbol] locale the locale to use and work for
       #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
-      #   @return [Hash,nil] the internal Hash containing inflection tokens (<tt>token => kind</tt>)
-      #   or +nil+ if the given subtree was wrong or empty
+      #   @return [Hash,nil] the internal Hash containing inflections or +nil+ if the given subtree was wrong or empty
       def load_inflection_tokens(locale, subtree=nil)
-        return @inflection_tokens[locale] if @inflection_tokens.has_key?(locale)
+        return @idb[locale] if @idb.has_key?(locale)
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
-        kinds     = @inflection_kinds[locale]     = Hash.new(false)
-        ivars     = @inflection_tokens[locale]    = {}
-        aliases   = @inflection_aliases[locale]   = {}
-        defaults  = @inflection_defaults[locale]  = {}
+
+        @idb[locale]  = I18n::Inflector::InflectionData.new
+        idb           = @idb[locale]
 
         inflections_tree.each_pair do |kind, tokens|
-          kinds[kind] = true
           tokens.each_pair do |token, description|
-            
+
             # test for duplicate
-            if ivars.has_key?(token)
-              raise I18n::DuplicatedInflectionToken.new(ivars[token], kind, token)
+            if idb.has_token?(token)
+              raise I18n::DuplicatedInflectionToken.new(idb.get_kind(token), kind, token)
             end
 
             # validate token's name
-            if token.nil?
-              raise I18n::BadInflectionToken.new(locale, token, kind)
-            end
-
+            raise I18n::BadInflectionToken.new(locale, token, kind) if token.nil?
+            
             # validate token's description
             if description.nil?
               raise I18n::BadInflectionToken.new(locale, token, kind, description)
+            elsif description[0..0] == I18n::Inflector::ALIAS_MARKER
+              next
             end
 
             # handle default token for a kind
             if token == :default
-              if defaults.has_key?(kind) # should never happend unless someone is messing with @translations
+              if idb.has_default_token?(kind) # should never happend unless someone is messing with @translations
                 raise I18n::DuplicatedInflectionToken.new(kind, nil, token)
               end
-              defaults[kind] = description.to_sym
+              idb.set_default_token(kind, description)
               next
             end
-
-            # handle alias
-            if description[0..0] == I18n::Inflector::ALIAS_MARKER
-              real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
-              unless real_token.nil?
-                real_token = real_token.to_sym
-                aliases[token] = {}
-                aliases[token][:kind]         = kind
-                aliases[token][:target]       = real_token
-                aliases[token][:description]  = inflections_tree[kind][real_token].to_s
-              end
-              next
-            end
-
-            ivars[token] = {}
-            ivars[token][:kind]         = kind.to_sym
-            ivars[token][:description]  = description.to_s
+ 
+            idb.add_token(token, kind, description)
           end
         end
 
-        # validate defaults
-        defaults.each_pair do |kind, pointer|
-          unless ivars.has_key?(pointer)
-            # default may be an alias
-            target = aliases[pointer]
-            target = target[:target] unless target.nil?
-            real_token = (target || shorten_inflection_alias(:default, kind, locale, inflections_tree))
-            raise I18n::BadInflectionAlias.new(locale, :default, kind, pointer) if real_token.nil?
-            defaults[kind] = real_token.to_sym            
+        # handle aliases
+        inflections_tree.each_pair do |kind, tokens|
+          tokens.each_pair do |token, description|
+            next if description[0..0] != I18n::Inflector::ALIAS_MARKER
+            real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
+            begin
+              idb.add_alias(token, real_token)
+              #kind, real_token, inflections_tree[kind][real_token]) unless real_token.nil?
+            rescue I18n::BadInflectionAlias, I18n::BadInflectionToken => e
+              e.locale  = locale
+              e.kind  ||= kind 
+              raise
+            end
           end
         end
 
-        ivars
+        begin
+          idb.validate_default_tokens
+        rescue I18n::BadInflectionAlias => e
+          e.locale = locale
+          raise
+        end
+
+        idb
       end
 
     end

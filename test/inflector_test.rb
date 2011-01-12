@@ -261,7 +261,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal [:gender,:person], I18n::Inflector.kinds.sort{|k,v| k.to_s<=>v.to_s}
   end
 
-  test "inflector tokens: lists inflection tokens" do
+  test "inflector tokens: lists all inflection tokens including aliases" do
     h = {:m=>"male",:f=>"female",:n=>"neuter",:s=>"strange",
          :masculine=>"male",:feminine=>"female",:neuter=>"neuter",
          :neutral=>"neuter"}
@@ -314,11 +314,11 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal "neuter", I18n::Inflector.token_description(:neutral, :xx)
   end
 
-  test "inflector is_alias?: tests whether a token is an alias" do
-      assert_equal true, I18n::Inflector.is_alias?(:neutral, :xx)
-      assert_equal false, I18n::Inflector.is_alias?(:you, :xx)
+  test "inflector has_alias?: tests whether a token is an alias" do
+      assert_equal true, I18n::Inflector.has_alias?(:neutral, :xx)
+      assert_equal false, I18n::Inflector.has_alias?(:you, :xx)
       I18n.locale = :xx
-      assert_equal true, I18n::Inflector.is_alias?(:neutral)
+      assert_equal true, I18n::Inflector.has_alias?(:neutral)
   end
     
 end
