@@ -11,14 +11,22 @@
 
 module I18n
   module Backend
+    
+    # This module contains methods that are adding
+    # tokenized inflection support to internal I18n classes.
+    # Usually you don't have to know what's here to use it.
     module Inflector
 
       include I18n::Inflector::Util
 
-      attr_accessor :inflector_raises
-      attr_accessor :inflector_aliased_patterns
-      attr_accessor :inflector_unknown_defaults
-      attr_accessor :inflector_excluded_defaults
+      # This is the accessor that allows to set
+      # a few switches controlling the inflection engine.
+      # 
+      # @return [I18n::Inflector::InflectionOptions] the inflection options
+      def inflection_options
+        inflector_try_init
+        @inflection_options
+      end
 
       # Cleans up internal hashes containg kinds, inflections and aliases.
       # 
@@ -190,10 +198,11 @@ module I18n
       # @return [String] the string with interpolated patterns
       def interpolate_inflections(string, locale, options = {})
         used_kinds        = options.except(*I18n::Inflector::INFLECTOR_RESERVED_KEYS)
-        raises            = inflector_raises?             options.delete(:inflector_raises)
-        aliased_patterns  = inflector_aliased_patterns?   options.delete(:inflector_aliased_patterns)
-        unknown_defaults  = inflector_unknown_defaults?   options.delete(:inflector_unknown_defaults)
-        excluded_defaults = inflector_excluded_defaults?  options.delete(:inflector_excluded_defaults)
+        sw, op            = @inflection_options, options
+        raises            = (s=op.delete :inflector_raises).nil?            ? sw.raises            : s 
+        aliased_patterns  = (s=op.delete :inflector_aliased_patterns).nil?  ? sw.aliased_patterns  : s
+        unknown_defaults  = (s=op.delete :inflector_unknown_defaults).nil?  ? sw.unknown_defaults  : s
+        excluded_defaults = (s=op.delete :inflector_excluded_defaults).nil? ? sw.excluded_defaults : s
 
         idb               = @idb[locale]
 
@@ -348,12 +357,7 @@ module I18n
         return nil if (defined?(@idb) && !@idb.nil?)
 
         @idb = {}
-
-        @inflector_excluded_defaults  = false
-        @inflector_unknown_defaults   = true
-        @inflector_aliased_patterns   = false
-        @inflector_raises             = false
-
+        @inflection_options ||= I18n::Inflector::InflectionOptions.new
         I18n::Inflector.send(:init_frontend, @idb)
         nil
       end
@@ -513,7 +517,7 @@ module I18n
           tokens.each_pair do |token, description|
             next if description[0..0] != I18n::Inflector::ALIAS_MARKER
             real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
-            idb.add_alias(token, real_token) unless real_token.to_s.empty?
+            idb.add_alias(token, real_token) unless real_token.nil?
           end
         end
 

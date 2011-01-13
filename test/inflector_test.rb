@@ -28,12 +28,12 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector has methods to test its switches" do
-    assert_equal true,  I18n.backend.inflector_unknown_defaults   = true
-    assert_equal false, I18n.backend.inflector_excluded_defaults  = false
-    assert_equal false, I18n.backend.inflector_raises             = false
-    assert_equal false, I18n.backend.inflector_raises?
-    assert_equal true,  I18n.backend.inflector_unknown_defaults?
-    assert_equal false, I18n.backend.inflector_excluded_defaults?
+    assert_equal true,  I18n::Inflector.options.unknown_defaults   = true
+    assert_equal false, I18n::Inflector.options.excluded_defaults  = false
+    assert_equal false, I18n::Inflector.options.raises             = false
+    assert_equal false, I18n::Inflector.options.raises
+    assert_equal true,  I18n::Inflector.options.unknown_defaults
+    assert_equal false, I18n::Inflector.options.excluded_defaults
   end
 
   test "backend inflector store_translations: regenerates inflection structures when translations are loaded" do
@@ -136,24 +136,24 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector translate: falls back to free text for the unknown gender option when global inflector_unknown_defaults is false" do
-    I18n.backend.inflector_unknown_defaults = false
+    I18n::Inflector.options.unknown_defaults = false
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :unknown, :locale => :xx)
   end
 
   test "backend inflector translate: falls back to default for the unknown gender option when global inflector_unknown_defaults is overriden" do
-    I18n.backend.inflector_unknown_defaults = false
+    I18n::Inflector.options.unknown_defaults = false
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :unknown, :locale => :xx, :inflector_unknown_defaults => true)
   end
-    
+
   test "backend inflector translate: falls back to default token for ommited gender option when :inflector_excluded_defaults is true" do
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :s, :locale => :xx, :inflector_excluded_defaults => true)
-    I18n.backend.inflector_excluded_defaults = true
+    I18n::Inflector.options.excluded_defaults = true
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :s, :locale => :xx)
   end
 
   test "backend inflector translate: falls back to free text for ommited gender option when :inflector_excluded_defaults is false" do
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :s, :locale => :xx, :inflector_excluded_defaults => false)
-    I18n.backend.inflector_excluded_defaults = false
+    I18n::Inflector.options.excluded_defaults = false
     assert_equal 'Dear All!', I18n.t('welcome', :gender => :s, :locale => :xx)
   end
 
@@ -168,7 +168,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_raise(I18n::InvalidOptionForKind) { I18n.t('welcome', :locale => :xx, :gender => "", :inflector_raises => true) }
     assert_raise(I18n::InvalidOptionForKind) { I18n.t('welcome', :locale => :xx, :gender => nil, :inflector_raises => true) }
     assert_raise I18n::InvalidOptionForKind do
-     I18n.backend.inflector_raises = true
+     I18n::Inflector.options.raises = true
      I18n.t('welcome', :locale => :xx)
     end
   end
@@ -177,7 +177,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     store_translations(:xx, 'hi' => 'Dear @{f:Lady|o:BAD_TOKEN|n:You|First}!')
     assert_raise(I18n::InvalidInflectionToken) { I18n.t('hi', :locale => :xx, :inflector_raises => true) }
     assert_raise I18n::InvalidInflectionToken do
-      I18n.backend.inflector_raises = true
+      I18n::Inflector.options.raises = true
       I18n.t('hi', :locale => :xx)
     end
   end
@@ -186,7 +186,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     store_translations(:xx, 'hi' => 'Dear @{f:Lady|i:Me|n:You|First}!')
     assert_raise(I18n::MisplacedInflectionToken) { I18n.t('hi', :locale => :xx, :inflector_raises => true) }
     assert_raise I18n::MisplacedInflectionToken do
-      I18n.backend.inflector_raises = true
+      I18n::Inflector.options.raises = true
       I18n.t('hi', :locale => :xx)
     end
   end
@@ -203,10 +203,10 @@ class I18nInflectorTest < Test::Unit::TestCase
 
   test "backend inflector translate: works with negative tokens" do
     store_translations(:xx, 'hi' => 'Dear @{!m:Lady|m:Sir|n:You|All}!')
-    assert_equal 'Dear Lady!', I18n.t('hi', :gender => :n, :locale => :xx)
-    assert_equal 'Dear Sir!', I18n.t('hi', :gender => :m, :locale => :xx)
-    assert_equal 'Dear Lady!', I18n.t('hi', :locale => :xx)
-    assert_equal 'Dear Lady!', I18n.t('hi', :gender => :unknown, :locale => :xx)
+    assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :n, :locale => :xx)
+    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Dear Lady!',  I18n.t('hi', :locale => :xx)
+    assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :unknown, :locale => :xx)
   end
   
   test "backend inflector translate: works with tokens separated by commas and negative tokens" do

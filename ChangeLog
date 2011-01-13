@@ -1,3 +1,9 @@
+commit a7cbc568ca90d67a4c7ef2b9c9c08f1c5dbc94f0
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 13 01:56:15 2011 +0100
+
+    Errors moved out if I18n::Inflector::InflectionData, documentation updated a bit
+
 commit 324a647292c9e9d5121b0b2bd18fb83151458afb
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Jan 12 22:13:52 2011 +0100

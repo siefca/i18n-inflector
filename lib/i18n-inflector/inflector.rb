@@ -41,6 +41,10 @@ module I18n
                               RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
 
     class <<self
+
+      # Options controlling the engine.
+      attr_accessor :options
+
       # Cleans up internal hashes containg kinds, inflections and aliases.
       # 
       # @api public
@@ -470,7 +474,8 @@ module I18n
       # @return [void]
       # @param [InflectionData] idb inflection data from backend
       def init_frontend(idb)
-        @idb = idb
+        @idb      = idb
+        @options  = I18n.backend.inflection_options
       end
 
     end

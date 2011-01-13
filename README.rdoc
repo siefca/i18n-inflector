@@ -90,7 +90,9 @@ You can run tests both with
 
 See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
 
-See {I18n::Backend::Inflector} module documentation for detailed information.
+See {I18n::Inflector} module documentation for information about API and detailed usage.
+
+See {I18n::Backend::Inflector} module documentation for detailed information about internals.
 
 == See also
 

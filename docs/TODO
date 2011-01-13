@@ -1,20 +1,14 @@
 == Near future
 
-* create accessor called options to controll options from backend
-
-* use original inflection data in some API methods when kind is given, it will be faster
-
-* allow aliases in patterns (switched) [aliases loading and replacement during initial read]
+* use original translation data (tree) in some API methods when kind is given, it will be faster
 
 * rewrite docs for switching methods
 
-* review all docs [done]
-* move error messages out of InflectionData and do the tests on higher level [done]
-* finish is_* methods with kind testing [done]
-* replace internal aliases with tokens with marker [done]
-* add method is_kind? and kind_exists? [done]
-* change @inflection_ to one hash [done]
-* add error for reporting bad arguments in API calls [done]
+* doco for negative matches and multiple (groups of tokens) matches
+
+* allow aliases in patterns (switched) [aliases loading and replacement during initial read]
+
+* create accessor called options to controll options from frontend [done, requires removal of old methods]
 
 == Far future
 
