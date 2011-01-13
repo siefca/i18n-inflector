@@ -327,7 +327,7 @@ module I18n
             # and a correct token was found in an inflection option but
             # has not been found in a pattern then interpolate
             # the pattern with a value picked for the default
-            # token for that kind if a default token was present ??????????fixme????????
+            # token for that kind if a default token was present
             # in a pattern
             kind    = nil
             token   = options[parsed_kind]
@@ -486,8 +486,8 @@ module I18n
             end
 
             # validate token's name
-            raise I18n::BadInflectionToken.new(locale, token, kind) if token.nil?
-            
+            raise I18n::BadInflectionToken.new(locale, token, kind) if token.to_s.empty?
+
             # validate token's description
             if description.nil?
               raise I18n::BadInflectionToken.new(locale, token, kind, description)
@@ -513,23 +513,13 @@ module I18n
           tokens.each_pair do |token, description|
             next if description[0..0] != I18n::Inflector::ALIAS_MARKER
             real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
-            begin
-              idb.add_alias(token, real_token)
-              #kind, real_token, inflections_tree[kind][real_token]) unless real_token.nil?
-            rescue I18n::BadInflectionAlias, I18n::BadInflectionToken => e
-              e.locale  = locale
-              e.kind  ||= kind 
-              raise
-            end
+            idb.add_alias(token, real_token) unless real_token.to_s.empty?
           end
         end
 
-        begin
-          idb.validate_default_tokens
-        rescue I18n::BadInflectionAlias => e
-          e.locale = locale
-          raise
-        end
+        # process and validate defaults
+        valid = idb.validate_default_tokens
+        raise I18n::BadInflectionAlias.new(locale, :default, valid[0], valid[1]) unless valid.nil?
 
         idb
       end

@@ -22,24 +22,24 @@ module I18n
       # @param [Symbol,String] locale the locale identifier
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Symbol] the given locale or the global locale
-      #   and usable or the global locale for I18n
       def inflector_prep_locale(locale=nil)
         locale ||= I18n.locale
         raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
         locale.to_sym
       end
 
-
-      # Processes +locale+ name and validates
-      # if it's correct (not empty and not +nil+).
+      # Processes +locale+ name and +kind+ identifier and validates
+      # if they are correct (not empty and not +nil+).
       # 
       # @note If the +locale+ is not correct, it
       #   tries to use locale from {I18n.locale} and validates it
       #   as well.
       # @param [Symbol,String] locale the locale identifier
+      # @param [Symbol,String] kind the kind identifier
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @return [Symbol] the given locale or the global locale
-      #   and usable or the global locale for I18n
+      # @return [Array<Symbol,Symbol>] the given +locale+ or the global locale
+      #   and the given +kind+ converted to Symbol or replaced by +nil+
+      #   if it's empty
       def inflector_prep_kl(kind=nil, locale=nil)
         locale ||= I18n.locale
         raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
@@ -47,6 +47,28 @@ module I18n
         [kind, locale.to_sym]
       end
 
+      # This method is the internal helper that prepares arguments
+      # containing +token+, +kind+ and +locale+.
+      # 
+      # @note This method leaves +kind+ as is when it's +nil+ or empty. It sets
+      #   +token+ to +nil+ when it's empty.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @raise [ArgumentError] if the count of arguments is invalid
+      # @return [Array<Symbol,Symbol,Symbol] the array containing
+      #   cleaned and validated +token+, +kind+ and +locale+
+      # @overload tkl_args(token, kind, locale)
+      #   Prepares arguments containing +token+, +kind+ and +locale+.
+      #   @param [String,Hash] token the token
+      #   @param [String,Hash] kind the inflection kind
+      #   @param [String,Hash] locale the locale identifier
+      #   @return [Array<Symbol,Symbol,Symbol] the array containing
+      #     cleaned and validated +token+, +kind+ and +locale+
+      # @overload tkl_args(token, locale)
+      #   Prepares arguments containing +token+ and +locale+.
+      #   @param [String,Hash] token the token
+      #   @param [String,Hash] locale the locale identifier
+      #   @return [Array<Symbol,Symbol,Symbol] the array containing
+      #     cleaned and validated +token+, +kind+ and +locale+
       def tkl_args(args)
         token, kind, locale = case args.count
         when 1 then [args[0], nil, nil]

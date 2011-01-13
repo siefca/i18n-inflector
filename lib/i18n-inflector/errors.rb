@@ -38,15 +38,6 @@ module I18n
     end
   end
 
-  # This is raised when some argument is malformed.
-  class MalformedInflectionArgument < ArgumentError
-    attr_reader :name
-    def initialize(name)
-      @name = name
-      super "argument #{name.inspect} is malformed (empty or nil)"
-    end
-  end
-
   # This is raised when an inflection token used in a pattern does not match
   # an assumed kind determined by reading previous tokens from that pattern.
   class MisplacedInflectionToken < ArgumentError

@@ -13,10 +13,13 @@ docs/LGPL-LICENSE
 docs/TODO
 docs/rdoc.css
 lib/i18n-inflector.rb
+lib/i18n-inflector/backend.rb
 lib/i18n-inflector/errors.rb
+lib/i18n-inflector/inflection_data.rb
 lib/i18n-inflector/inflector.rb
 lib/i18n-inflector/long_comments.rb
 lib/i18n-inflector/shortcuts.rb
+lib/i18n-inflector/util.rb
 lib/i18n-inflector/version.rb
 test/inflector_test.rb
 test/test_helper.rb

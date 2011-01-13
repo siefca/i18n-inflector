@@ -1,3 +1,49 @@
+commit 324a647292c9e9d5121b0b2bd18fb83151458afb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 12 22:13:52 2011 +0100
+
+    Code refactored. Added class InflectionData and keeping all data in its instance
+    
+    Aliases are now keeped along with tokens in one hash, there are also some new API methods
+
+commit faa4ca16bbafb572e7d209e139b8664406040a43
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 12 01:36:26 2011 +0100
+
+    Serious refactoring and namespace changes
+    
+    - Most of inflector-specific API methods are now in I18n::Inflector
+    - Core logic (loading and translations) in I18n::Backend::Inflector
+    - Useful methods used in both modules listed above in I18n::Inflector::Util
+    - Added new method for checking if token exists
+    - Added bridge between I18n::Inflector and I18n::Backend::Inflector (init_frontend)
+    - Started working on feature for is_* methods (additional argument narrows tests to some kind)
+    - Changed method names to more intuitive
+
+commit edc402233f62b6a135882a28fc1c284d5a5fee99
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 11 21:50:28 2011 +0100
+
+    Added support for negative matches in patterns
+
+commit 6cf50a1b31c61a0f0ddb102d8b5f1a68bf769247
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 11 16:04:16 2011 +0100
+
+    Added support for token groups seaprated by commas
+
+commit e399d04ba157e16fe45c55b41ff5cb313ce6da3e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 11 08:21:32 2011 +0100
+
+    Inflected locale testing is not raising errors when entered locale is invalid
+
+commit a336e2376c3e0e2e50f1404529dd5e726732583b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 10 05:38:14 2011 +0100
+
+    Fix for apps initializing translations via YAML files
+
 commit dc81afa48b36336b9efde0ce9019637edc0474f8
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Jan 10 04:23:49 2011 +0100

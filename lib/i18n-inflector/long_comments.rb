@@ -28,7 +28,7 @@ module I18n
   # ability to execute any code yet you need some simple inflection
   # then you can make use of this module.
   # 
-  # This library contains two usable modules {I18n::Inflector} containing common
+  # This library contains two modules: {I18n::Inflector} containing common
   # operations that you can perform and {I18n::Backend::Inflector} containing
   # altered version of {I18n::Backend::Inflector#translate translate} and
   # other backend methods.

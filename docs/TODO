@@ -1,18 +1,23 @@
 == Near future
 
+* create accessor called options to controll options from backend
+
+* use original inflection data in some API methods when kind is given, it will be faster
+
+* allow aliases in patterns (switched) [aliases loading and replacement during initial read]
+
+* rewrite docs for switching methods
+
+* review all docs [done]
+* move error messages out of InflectionData and do the tests on higher level [done]
 * finish is_* methods with kind testing [done]
 * replace internal aliases with tokens with marker [done]
-* move error messages out of InflectionData and do the tests on higher level
 * add method is_kind? and kind_exists? [done]
 * change @inflection_ to one hash [done]
 * add error for reporting bad arguments in API calls [done]
-* interpolation: use one hash to store both positive- and negative- matching tokens
-* allow aliases in patterns (switched) [aliases loading and replacement during initial read]
-* rewrite docs for switching methods
-
-* use tilde symbols (~) to allow multiple negative matches. the values will be joined as they are interpolated (with other negative matches or a positive; it just means that the processing won't stop on some particular token) – is this good idea anyway?
 
 == Far future
 
 * named patterns: @gender{m:xx|f:xxx|n:xzc} - such pattern may allow multiple tokens but it breaks the logic unless some marker will be given in configuration like !gender: that would inform engine that exact kind must be present in a pattern
 
+* use tilde symbols (~) to allow multiple negative matches. the values will be joined as they are interpolated (with other negative matches or a positive; it just means that the processing won't stop on some particular token) – is this good idea anyway?
