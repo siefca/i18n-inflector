@@ -1,8 +1,8 @@
 == Near future
 
-* use original translation data (tree) in some API methods when kind is given, it will be faster
-
 * rewrite docs for switching methods
+
+* add some negative tests (e.g. empty kind, kinds as nils or empty striongs, tokens as empty strings...)
 
 * doco for negative matches and multiple (groups of tokens) matches
 

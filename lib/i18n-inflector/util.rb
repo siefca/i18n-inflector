@@ -22,29 +22,10 @@ module I18n
       # @param [Symbol,String] locale the locale identifier
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Symbol] the given locale or the global locale
-      def inflector_prep_locale(locale=nil)
+      def prep_locale(locale=nil)
         locale ||= I18n.locale
         raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
         locale.to_sym
-      end
-
-      # Processes +locale+ name and +kind+ identifier and validates
-      # if they are correct (not empty and not +nil+).
-      # 
-      # @note If the +locale+ is not correct, it
-      #   tries to use locale from {I18n.locale} and validates it
-      #   as well.
-      # @param [Symbol,String] locale the locale identifier
-      # @param [Symbol,String] kind the kind identifier
-      # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @return [Array<Symbol,Symbol>] the given +locale+ or the global locale
-      #   and the given +kind+ converted to Symbol or replaced by +nil+
-      #   if it's empty
-      def inflector_prep_kl(kind=nil, locale=nil)
-        locale ||= I18n.locale
-        raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
-        kind = kind.to_s.empty? ? nil : kind.to_sym
-        [kind, locale.to_sym]
       end
 
       # This method is the internal helper that prepares arguments
@@ -76,9 +57,6 @@ module I18n
         when 3 then args
         else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
         end
-        token   = token.to_s.empty? ? nil : token.to_sym
-        kind    = kind.to_s.empty? ? kind : kind.to_sym
-        locale  = inflector_prep_locale(locale)
         [token,kind,locale]
       end
 

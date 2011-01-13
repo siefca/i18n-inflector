@@ -13,13 +13,17 @@ module I18n
     # This class contains structures for keeping parsed translation data
     # and basic operations for performing on them.
     class InflectionData
-
+      
       # Initializes internal structures.
-      def initialize
+      def initialize(locale=nil)
         @kinds    = Hash.new(false)
         @tokens   = {}
         @defaults = {}
+        @locale   = locale
       end
+
+      # Locale that this database works on.
+      attr_reader :locale
 
       # Adds an alias (overwriting existing alias).
       # 
@@ -242,7 +246,9 @@ module I18n
       # for kinds and replaces targets with true tokens
       # if they are aliases.
       # 
-      # @return[void]
+      # @return[nil,Array<Symbol>] +nil+ if everything went fine,
+      #   returns two dimensional array containing kind and target
+      #   in case of error while geting a token
       def validate_default_tokens
         @defaults.each_pair do |kind, pointer|
           ttok = get_true_token(pointer)

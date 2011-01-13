@@ -1,3 +1,18 @@
+commit 0fc113797bdd9ff7bd3d1e953385c6670064b936
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 13 06:36:19 2011 +0100
+
+    I18n::Inflector is a regular module and inflector is sticked to the backend again
+    
+    New class I18n::Inflector::Core is API to deal with inflection data.
+    Inflector is now @inflector in altered I18n::Backend::Simple and I18n.inflector is a proxy method
+
+commit cf547a804c4c90418e8cfb69de405660a959eba9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 13 05:25:21 2011 +0100
+
+    Options are now kind of InflectionOptions and are controlled by I18n::Inflector class methods
+
 commit a7cbc568ca90d67a4c7ef2b9c9c08f1c5dbc94f0
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jan 13 01:56:15 2011 +0100
