@@ -19,6 +19,10 @@ module I18n
 
       include I18n::Inflector::Util
 
+      # This accessor allows to reach API methods of the
+      # inflector object associated with this class.
+      attr_reader :inflector
+
       # This is the accessor that allows to set
       # a few switches controlling the inflection engine.
       # 
@@ -35,8 +39,7 @@ module I18n
       # @return [Boolean] the result of calling ancestor's method
       # @see I18n::Inflector.reload! Short name: I18n::Inflector.reload!
       def reload!
-        @idb = nil
-        I18n::Inflector.send(:init_frontend, @idb)
+        @inflector = nil
         super
       end
 
@@ -354,11 +357,10 @@ module I18n
       # 
       # @return [void]
       def inflector_try_init
-        return nil if (defined?(@idb) && !@idb.nil?)
-
-        @idb = {}
-        @inflection_options ||= I18n::Inflector::InflectionOptions.new
-        I18n::Inflector.send(:init_frontend, @idb)
+        return nil if (defined?(@inflector) && !@inflector.nil?)
+        @inflector            = I18n::Inflector::Core.new
+        @idb                  = @inflector.instance_variable_get(:@idb)
+        @inflection_options   = @inflector.options
         nil
       end
 

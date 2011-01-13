@@ -10,10 +10,14 @@
 # defined in translation data and manipulate on that data.
 
 module I18n
+
+  class <<self
+    def inflector
+      I18n.backend.inflector
+    end
+  end
+
   module Inflector
-
-    extend I18n::Inflector::Util
-
     # Contains <tt>@{</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
     FAST_MATCHER  = '@{'
@@ -40,7 +44,14 @@ module I18n
     INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
                               RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
 
-    class <<self
+    class Core
+
+      include I18n::Inflector::Util
+
+      def initialize
+        @idb = {}
+        @options = I18n::Inflector::InflectionOptions.new
+      end
 
       # Options controlling the engine.
       attr_accessor :options
@@ -466,6 +477,8 @@ module I18n
 
       protected
   
+      # @private
+      # DEPRECATED
       # This method initializes internal instance variable which is
       # kind of {I18n::Inflector::InflectionData} that allows accessing
       # inflection data loaded by backend. It's used by {I18n::Inflector::Backend}
@@ -473,10 +486,10 @@ module I18n
       # 
       # @return [void]
       # @param [InflectionData] idb inflection data from backend
-      def init_frontend(idb)
-        @idb      = idb
-        @options  = I18n.backend.inflection_options
-      end
+      #def init_frontend(idb)
+      #  @idb      = I18n.backend.idb
+      #  @options  = I18n.backend.inflection_options
+      #end
 
     end
 
