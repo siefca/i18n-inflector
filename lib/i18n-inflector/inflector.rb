@@ -49,11 +49,18 @@ module I18n
     INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
                               RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
 
-    # Instances of this class are inflectors that are attached
+    # Instances of this class, the inflectors, are attached
     # to I18n backends. This class contains common operations
-    # that programmer can perform on inflector. It keeps the
+    # that programmer can perform on inflections. It keeps the
     # database of {I18n::Inflector::InflectionData} instances
-    # and has methods to use them in an easy way.
+    # and has methods to access them in an easy way.
+    # 
+    # ==== Usage
+    # You can access the instance of this class attached to
+    # default I18n backend by entering:
+    #   I18n.backend.inflector
+    # or in a short form:
+    #   I18n.inflector
     class Core
 
       include I18n::Inflector::Util
@@ -244,7 +251,7 @@ module I18n
          token = token.to_sym
          kind  = kind.to_sym unless kind.nil?
          db    = data_safe(locale)
-         r = db(locale).has_token?(token)
+         r     = db(locale).has_token?(token)
          kind.nil? ? r : (r && db.get_kind?(token) == kind)
        end
        alias_method :token_exists?, :has_token?
@@ -448,7 +455,7 @@ module I18n
       # @api public
       # @return [Array<Symbol>] the array containing locales that support inflection
       # @note If +kind+ is given it returns only these locales
-      #   that are inflected and support inflection by this kind.
+      #   that support inflection by this kind.
       def inflected_locales(kind=nil)
         return [] if (!kind.nil? && kind.to_s.empty?)
         inflected_locales = (@idb.keys || [])
@@ -573,10 +580,13 @@ module I18n
                   raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                   next
                 end
-                negatives[t.to_sym] = true
+                t = t.to_sym
+                t = idb.get_true_token(t) if aliased_patterns
+                negatives[t] = true
               end
 
               t = t.to_sym
+              t = idb.get_true_token(t) if aliased_patterns
 
               # get kind for that token
               kind  = idb.get_kind(t)
@@ -634,7 +644,10 @@ module I18n
 
             # throw the value if a given option matches one of the tokens from group
             # or negatively matches one of the negated tokens
-            next if (!tokens[option] && (negatives.empty? || negatives[option]))
+            case negatives.count
+            when 0 then next unless tokens[option]
+            when 1 then next if  negatives[option]
+            end
 
             # skip further evaluation of the pattern
             # since the right token has been found

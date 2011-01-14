@@ -249,8 +249,9 @@ module I18n
   #   # => Dear Dude!
   # 
   # === Token groups
-  # It is possible to join many tokens giving the same value in a group.
-  # You can separate them using commas.
+  # It is possible to assign some value to more than one token.
+  # You can create group of tokens by separating them using commas.
+  # The comma has the meaning of logical OR in such a token group.
   # 
   # ===== YAML:
   # Note: <em>Uses inflection configuration given in the first example.</em> 
@@ -264,6 +265,9 @@ module I18n
   # You can place exclamation mark before a token that should be
   # matched negatively. It's value will be used for a pattern
   # <b>if the given inflection option contains other token</b>.
+  # You can use inversed matching tokens in token groups but
+  # note that using more than one inversed token separated
+  # by a comma will cause the expression to mach every time.
   # 
   # ===== YAML:
   # Note: <em>Uses inflection configuration given in the first example.</em> 
@@ -278,6 +282,13 @@ module I18n
   #   
   #   I18n.t('welcome', :gender => :m)
   #   # => Hello !
+  # 
+  # === Aliases in a pattern
+  # Normally it possible to use only true tokens in patterns, not aliases.
+  # However, if you feel lucky and you're not affraid of messy patterns
+  # you can use the switch {I18n::Inflector::InflectionOptions#aliased_patterns}
+  # or corresponding +:inflector_aliased_patterns+ option passed to translation
+  # method.
   # 
   # === Escaping a pattern
   # If there is a need to translate something that matches an inflection

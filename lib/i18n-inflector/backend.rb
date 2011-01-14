@@ -10,7 +10,7 @@
 # defined in translation data.
 
 module I18n
-  
+
   # @abstract This namespace is shared with I18n subsystem.
   module Backend
 
@@ -42,6 +42,8 @@ module I18n
       # Translates given key taking care of inflections.
       # 
       # @api public
+      # @see I18n::Inflector::Core#interpolate
+      # @see I18n::Inflector::InflectionOptions
       # @param [Symbol] locale locale
       # @param [Symbol,String] key translation key
       # @param [Hash] options a set of options to pass to the translation routines.
@@ -209,8 +211,6 @@ module I18n
       #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
       #   @return [Hash,nil] the internal Hash containing inflections or +nil+ if the given subtree was wrong or empty
       def load_inflection_tokens(locale, subtree=nil)
-        #return @inflector.send(:data, locale) if @inflector.inflected_locale?(locale)
-
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
 

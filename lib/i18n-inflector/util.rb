@@ -9,7 +9,7 @@
 
 module I18n
   module Inflector
-    
+
     # This module contains some methods that are helpful.
     module Util
 
@@ -37,20 +37,20 @@ module I18n
       #   +token+ to +nil+ when it's empty.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @raise [ArgumentError] if the count of arguments is invalid
-      # @return [Array<Symbol,Symbol,Symbol] the array containing
+      # @return [Array<Symbol,Symbol,Symbol>] the array containing
       #   cleaned and validated +token+, +kind+ and +locale+
       # @overload tkl_args(token, kind, locale)
       #   Prepares arguments containing +token+, +kind+ and +locale+.
       #   @param [String,Hash] token the token
       #   @param [String,Hash] kind the inflection kind
       #   @param [String,Hash] locale the locale identifier
-      #   @return [Array<Symbol,Symbol,Symbol] the array containing
+      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
       #     cleaned and validated +token+, +kind+ and +locale+
       # @overload tkl_args(token, locale)
       #   Prepares arguments containing +token+ and +locale+.
       #   @param [String,Hash] token the token
       #   @param [String,Hash] locale the locale identifier
-      #   @return [Array<Symbol,Symbol,Symbol] the array containing
+      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
       #     cleaned and validated +token+, +kind+ and +locale+
       def tkl_args(args)
         token, kind, locale = case args.count

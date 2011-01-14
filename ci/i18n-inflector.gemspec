@@ -28,5 +28,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'yard',              '>= 1.0.7'
   s.add_development_dependency 'hoe-yard',          '>= 0.1.2'
   s.add_development_dependency 'hoe-bundler',       '>= 1.0.0'
-  
+
 end

@@ -1,6 +1,6 @@
 # encoding: utf-8
 # -*- ruby -*-
- 
+
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 
 require 'rubygems'
@@ -41,7 +41,7 @@ Hoe.spec 'i18n-inflector' do
   self.rsync_args      << '--chmod=a+rX'
   self.readme_file     = 'README.rdoc'
   self.history_file    = 'docs/HISTORY'
-  
+
   extra_deps          << ['i18n',             '>= 0.4.1']
   extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
                          ['yard',             '>= 0.6.4'] <<

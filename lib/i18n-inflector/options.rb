@@ -18,6 +18,10 @@ module I18n
     #   I18n.backend.inflector.options.<option_name>
     # or just:
     #   I18n.inflector.options.<option_name>
+    # A global option may be overriden by passing a proper option to
+    # the translation method. Such option should have the name of a
+    # global option but prefixed with +inflector_+:
+    #   translate('welcome', :inflector_<option_name> => value)
     class InflectionOptions
 
       # This is a switch that enables extended error reporting. When it's enabled then
@@ -32,10 +36,9 @@ module I18n
       # @param [Boolean] state +true+ enables, +false+ disables this switch
       attr_accessor :raises
 
-      # This is a switch that enables usage of aliases in patterns. When it's enabled then
+      # This is a switch that enables you to use aliases in patterns. When it's enabled then
       # aliases may be used in inflection patterns, not only true tokens. This operation
-      # is not time consuming (resolving is done only when translations are loaded)
-      # but may make your translation data a bit messy if you're not alert.
+      # may make your translation data a bit messy if you're not alert.
       # That's why this switch is by default set to +false+.
       # 
       # @note Local option +:aliased_patterns+ passed to the {I18n::Backend::Inflector#translate}

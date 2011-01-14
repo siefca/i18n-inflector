@@ -1,3 +1,15 @@
+commit 2fb80a5725325071b9dbad85c8662e263edcfbcc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 02:55:12 2011 +0100
+
+    README.rdoc fixed
+
+commit f39db3b5a29ee34706326d337cc766983a1bfb9b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 02:51:52 2011 +0100
+
+    Added RELATIONS to documentation
+
 commit bf8a9799aa0600eddecbf95a981947cf2ef805ef
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jan 14 02:51:06 2011 +0100

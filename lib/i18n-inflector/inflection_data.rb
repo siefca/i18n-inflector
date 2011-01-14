@@ -14,7 +14,7 @@ module I18n
     # This class contains structures for keeping parsed translation data
     # and basic operations for performing on them.
     class InflectionData
-      
+
       # Initializes internal structures.
       def initialize(locale=nil)
         @kinds    = Hash.new(false)
@@ -185,7 +185,7 @@ module I18n
         tokens = tokens.reject{|k,v| v[:kind]!=kind} unless kind.nil?
         tokens.merge(tokens){|k,v| v[:description]}
       end
-      
+
       # Gets a target token for the alias.
       # 
       # @param [Symbol] alias_name the identifier of an alias
@@ -194,7 +194,7 @@ module I18n
       def get_target_for_alias(alias_name)
         @tokens.has_key?(alias_name) ? @tokens[alias_name][:target] : nil
       end
-            
+
       # Gets a kind of the given token or alias.
       # 
       # @param [Symbol] token identifier of a token
@@ -215,14 +215,14 @@ module I18n
         return nil unless @tokens.has_key?(token)
         return @tokens[token][:target] || token
       end
-      
+
       # Gets all known kinds.
       # 
       # @return [Array<Symbol>] an array containing all the known kinds
       def get_kinds
         @kinds.keys
       end
-      
+
       # Reads the default token of a kind.
       # 
       # @note It will always return true token (not an alias).
@@ -242,13 +242,13 @@ module I18n
       def get_description(token)
         @tokens.has_key?(token) ? @tokens[token][:description] : nil
       end
-      
+
       # This method validates default tokens assigned
       # for kinds and replaces targets with true tokens
       # if they are aliases.
       # 
-      # @return[nil,Array<Symbol>] +nil+ if everything went fine,
-      #   returns two dimensional array containing kind and target
+      # @return [nil,Array<Symbol>] +nil+ if everything went fine,
+      #   two dimensional array containing kind and target
       #   in case of error while geting a token
       def validate_default_tokens
         @defaults.each_pair do |kind, pointer|
@@ -258,7 +258,7 @@ module I18n
         end
         return nil
       end
-      
+
       # Test if the inflection data have no elements.
       # 
       # @return [Boolean] +true+ if the inflection data
