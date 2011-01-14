@@ -17,10 +17,11 @@ module I18n
 
       # Initializes internal structures.
       def initialize(locale=nil)
-        @kinds    = Hash.new(false)
-        @tokens   = {}
-        @defaults = {}
-        @locale   = locale
+        dummy_token = {:kind=>nil,:target=>nil,:description=>nil}
+        @kinds      = Hash.new(false)
+        @tokens     = Hash.new(dummy_token)
+        @defaults   = {}
+        @locale     = locale
       end
 
       # Locale that this database works on.
@@ -87,8 +88,9 @@ module I18n
       #     the given kind, +false+ otherwise 
       def has_true_token?(token, kind=nil)
         o = @tokens[token]
-        return false if (o.nil? || !o[:target].nil?)
-        kind.nil? ? true : o[:kind] == kind
+        k = o[:kind]
+        return false if (k.nil? || !o[:target].nil?)
+        kind.nil? ? true : k == kind
       end
 
       # Tests if a token (or alias) is present.
@@ -106,9 +108,8 @@ module I18n
       #     (which may be an alias) exists and if kind of
       #     the given kind
       def has_token?(token, kind=nil)
-        o = @tokens[token]
-        return !o.nil? if (o.nil? || kind.nil?)
-        o[:kind] == kind ? o : nil
+        k = @tokens[token][:kind]
+        kind.nil? ? !k.nil? : k == kind
       end
 
       # Tests if a kind exists.
@@ -143,7 +144,7 @@ module I18n
       #     being a kind of the given kind, +false+ otherwise
       def has_alias?(alias_name, kind=nil)
         o = @tokens[alias_name]
-        return false if (o.nil? || o[:target].nil?)
+        return false if o[:target].nil?
         kind.nil? ? true : o[:kind] == kind
       end
 
@@ -192,7 +193,7 @@ module I18n
       #   have targets (Symbol) assigned.
       # @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
-      # @overload get_raw_tokens(kind)
+      # @overload get_raw_tokens
       #   Reads the all the tokens.
       #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
@@ -232,7 +233,7 @@ module I18n
       # @return [Symbol,nil] the token that the given alias points to
       #   or +nil+ if it isn't really an alias
       def get_target_for_alias(alias_name)
-        @tokens.has_key?(alias_name) ? @tokens[alias_name][:target] : nil
+        @tokens[alias_name][:target]
       end
 
       # Gets a kind of the given token or alias.
@@ -241,7 +242,7 @@ module I18n
       # @return [Symbol,nil] the kind of the given +token+
       #   or +nil+ if the token is unknown
       def get_kind(token)
-        @tokens.has_key?(token) ? @tokens[token][:kind] : nil
+        @tokens[token][:kind]
       end
 
       # Gets a true token for the given identifier.
@@ -264,10 +265,11 @@ module I18n
       #     given kind
       def get_true_token(token, kind=nil)
         o = @tokens[token]
-        return nil if o.nil?
+        k = o[:kind]
+        return nil if k.nil?
         r = (o[:target] || token)
         return r if kind.nil?
-        o[:kind] == kind ? r : nil
+        k == kind ? r : nil
       end
 
       # Gets all known kinds.
@@ -294,7 +296,7 @@ module I18n
       # @return [String,nil] the string containing description of the given
       #   token (which may be an alias) or +nil+ if the token is unknown
       def get_description(token)
-        @tokens.has_key?(token) ? @tokens[token][:description] : nil
+        @tokens[token][:description]
       end
 
       # This method validates default tokens assigned

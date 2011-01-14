@@ -262,6 +262,17 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal false, I18n.inflector.locale_supported?
   end
 
+  test "inflector has_token?: checks if a token exists" do
+    assert_equal true, I18n.inflector.has_token?(:neuter, :gender, :xx)
+    assert_equal true, I18n.inflector.has_token?(:neuter, :xx)
+    assert_equal true, I18n.inflector.has_token?(:f, :xx)
+    assert_equal true, I18n.inflector.has_token?(:you, :xx)
+    I18n.locale = :xx
+    assert_equal true, I18n.inflector.has_token?(:f)
+    assert_equal true, I18n.inflector.has_token?(:you)  
+    assert_equal false,I18n.inflector.has_token?(:faafaffafafa)
+  end
+
   test "inflector kind: checks what is the inflection kind of the given token" do
     assert_equal :gender, I18n.inflector.kind(:neuter, :xx)
     assert_equal :gender, I18n.inflector.kind(:f, :xx)
@@ -280,20 +291,20 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal :n,  I18n.inflector.true_token(:neuter)
     assert_equal :f,  I18n.inflector.true_token(:f)
     assert_equal :f,  I18n.inflector.true_token(:f, :xx)
-    assert_equal nil,  I18n.inflector.true_token(:f, :person, :xx)
-    assert_equal nil,  I18n.inflector.true_token(:f, :nokind, :xx)
+    assert_equal nil, I18n.inflector.true_token(:f, :person, :xx)
+    assert_equal nil, I18n.inflector.true_token(:f, :nokind, :xx)
     assert_equal nil, I18n.inflector.true_token(:faafaffafafa)
   end
 
   test "inflector has_true_token?: tests if true token exists for a given token name" do
-    assert_equal false,  I18n.inflector.has_true_token?(:neuter, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:neuter, :xx)
     assert_equal true,  I18n.inflector.has_true_token?(:f, :xx)
     I18n.locale = :xx
-    assert_equal false,  I18n.inflector.has_true_token?(:neuter)
+    assert_equal false, I18n.inflector.has_true_token?(:neuter)
     assert_equal true,  I18n.inflector.has_true_token?(:f)
     assert_equal true,  I18n.inflector.has_true_token?(:f, :xx)
-    assert_equal false,  I18n.inflector.has_true_token?(:f, :person, :xx)
-    assert_equal false,  I18n.inflector.has_true_token?(:f, :nokind, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:f, :person, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:f, :nokind, :xx)
     assert_equal false, I18n.inflector.has_true_token?(:faafaffafafa)
   end
 
