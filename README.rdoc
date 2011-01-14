@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.0</tt></b> (<b><tt>Harverster</tt></b>)
+<b>i18n-inflector version <tt>2.0</tt></b> (<b><tt>Harvester</tt></b>)
 
 
 

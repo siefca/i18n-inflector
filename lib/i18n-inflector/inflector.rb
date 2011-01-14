@@ -184,9 +184,7 @@ module I18n
         return false if (!kind.nil? && kind.to_s.empty?)
         token = token.to_sym
         kind  = kind.to_sym unless kind.nil?
-        db    = data_safe(locale)
-        r     = db.has_alias?(token)
-        kind.nil? ? r : (r && db.get_kind?(token) == kind)
+        data_safe(locale).has_alias?(token, kind)
       end
       alias_method :token_has_alias?, :has_alias?
 
@@ -216,10 +214,8 @@ module I18n
         return false if token.to_s.empty?
         return false if (!kind.nil? && kind.to_s.empty?)
         token = token.to_sym
-        kind  = kind.to_sym unless k.nil?
-        db    = data_safe(locale)
-        r     = db.has_true_token?(token)
-        kind.nil? ? r : (r && db.get_kind?(token) == kind)
+        kind  = kind.to_sym unless kind.nil?
+        data_safe(locale).has_true_token?(token, kind)
       end
       alias_method :token_has_true?, :has_true_token?
 
@@ -250,9 +246,7 @@ module I18n
          return false if (!kind.nil? && kind.to_s.empty?)
          token = token.to_sym
          kind  = kind.to_sym unless kind.nil?
-         db    = data_safe(locale)
-         r     = db(locale).has_token?(token)
-         kind.nil? ? r : (r && db.get_kind?(token) == kind)
+         data_safe(locale).has_token?(token, kind)
        end
        alias_method :token_exists?, :has_token?
 
@@ -273,10 +267,22 @@ module I18n
       #   @param [Symbol] locale the locale to use
       #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
       #     the token is a real token or +nil+ otherwise
-      def true_token(token, locale=nil)
+      # @overload true_token(token, kind, locale)
+      #   Uses the given +locale+ and +kind+ to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol,String] kind the kind used to narrow the check
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      def true_token(*args)
+        token, kind, locale = tkl_args(args)
         return nil if token.to_s.empty?
-        data_safe(locale).get_true_token(token.to_sym)
+        return nil if (!kind.nil? && kind.to_s.empty?)
+        token = token.to_sym
+        kind  = kind.to_sym unless kind.nil?
+        data_safe(locale).get_true_token(token, kind)
       end
+      alias_method :resolve_alias, :true_token
 
       # Gets a kind for the given +token+ (which may be an alias).
       # 
