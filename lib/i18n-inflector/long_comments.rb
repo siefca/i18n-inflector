@@ -10,7 +10,7 @@
 # 
 
 module I18n
-  # @version 1.2
+  # @version 2.0
   # This module contains inflection classes and modules for enabling
   # the inflection support in I18n translations.
   # Its submodule overwrites the Simple backend translate method
