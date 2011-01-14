@@ -279,7 +279,22 @@ class I18nInflectorTest < Test::Unit::TestCase
     I18n.locale = :xx
     assert_equal :n,  I18n.inflector.true_token(:neuter)
     assert_equal :f,  I18n.inflector.true_token(:f)
+    assert_equal :f,  I18n.inflector.true_token(:f, :xx)
+    assert_equal nil,  I18n.inflector.true_token(:f, :person, :xx)
+    assert_equal nil,  I18n.inflector.true_token(:f, :nokind, :xx)
     assert_equal nil, I18n.inflector.true_token(:faafaffafafa)
+  end
+
+  test "inflector has_true_token?: tests if true token exists for a given token name" do
+    assert_equal false,  I18n.inflector.has_true_token?(:neuter, :xx)
+    assert_equal true,  I18n.inflector.has_true_token?(:f, :xx)
+    I18n.locale = :xx
+    assert_equal false,  I18n.inflector.has_true_token?(:neuter)
+    assert_equal true,  I18n.inflector.has_true_token?(:f)
+    assert_equal true,  I18n.inflector.has_true_token?(:f, :xx)
+    assert_equal false,  I18n.inflector.has_true_token?(:f, :person, :xx)
+    assert_equal false,  I18n.inflector.has_true_token?(:f, :nokind, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:faafaffafafa)
   end
 
   test "inflector kinds: lists inflection kinds" do
@@ -345,6 +360,9 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "inflector has_alias?: tests whether a token is an alias" do
       assert_equal true,  I18n.inflector.has_alias?(:neutral, :xx)
       assert_equal false, I18n.inflector.has_alias?(:you, :xx)
+      assert_equal true,  I18n.inflector.has_alias?(:neutral, :gender, :xx)
+      assert_equal false, I18n.inflector.has_alias?(:you, :gender, :xx)
+      assert_equal false, I18n.inflector.has_alias?(:neutral, :nokind, :xx)
       I18n.locale = :xx
       assert_equal true,  I18n.inflector.has_alias?(:neutral)
   end
