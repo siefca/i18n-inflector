@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>1.0</tt></b> (<b><tt>Aropsaid</tt></b>)
+<b>i18n-inflector version <tt>1.2</tt></b> (<b><tt>Harverster</tt></b>)
 
 
 
@@ -82,16 +82,19 @@ you need Rails integration.
 
 Detailed example:
 
-  I18n.locale = :en
-  I18n.backend.store_translations 'en', :i18n => { :inflections => {
-                                                     :gender => {
-                                                       :f => 'female',
-                                                       :m => 'male',
-                                                       :n => 'neuter',
-                                                       :default => 'n' }}}
+===== YAML:
+  en:
+    i18n:
+      inflections:
+        gender:
+          f:        "female"
+          m:        "male"
+          n:        "neuter"
+          default:  n
    
-   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{f:Lady|m:Sir|n:You|All}'
-  
+    welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
+
+===== Code:
    I18n.t('welcome')
    # => "Dear You"
    
@@ -123,6 +126,11 @@ See {I18n::Backend::Inflector} module documentation for detailed information abo
 
 See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails] if you need
 the Rails plug-in that integrates this module with ActionController.
+
+== Credits
+
+{Heise Media Polska}[http://www.heise-online.pl/] supports Free Software and has
+contributed to this library by paying for me to eat when I've been coding.
 
 == License
 

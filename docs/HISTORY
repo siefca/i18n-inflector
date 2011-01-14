@@ -1,3 +1,18 @@
+=== 1.2.0 / 2011-01-14
+
+* major enhancements
+
+  * API changed
+  * Added a class for keeping internal inflection data: I18n::Inflector::InflectionData
+  * Added a class for keeping options: I18n::Inflector::InflectionOptions
+  * Added a class for controlling the inflection: I18n::Inflector::Core
+  * Added a module for utilities: I18n::Inflector::Util
+  * Added token groups support
+  * Added inversed matching of tokens in inflection patterns
+  * Added support for aliases in inflection patterns
+  * Most of the methods from I18n::Backend::Inflector moved to Core submodule
+  * Most methods rewritten
+
 === 1.0.10 / 2011-01-10
 
 * major bugfixes
@@ -47,7 +62,7 @@
 * major enhancements
 
   * YARD documentation updated with metatags
-  
+
 * minor enhancements
 
   * Some changes in accessors for interpolation switches

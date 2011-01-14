@@ -1,3 +1,9 @@
+commit c86af221fe2a3d7f0bcba863a2ef9e2a91d4825a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 12:31:47 2011 +0100
+
+    Documentation updates, code cleanups
+
 commit 2fb80a5725325071b9dbad85c8662e263edcfbcc
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jan 14 02:55:12 2011 +0100
