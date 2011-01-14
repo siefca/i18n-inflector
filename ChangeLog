@@ -1,3 +1,23 @@
+commit bf8a9799aa0600eddecbf95a981947cf2ef805ef
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 02:51:06 2011 +0100
+
+    Documentation updated
+
+commit 4bf626399b4556ee2a4aaa76a9a7559bd20464a3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 13 18:47:08 2011 +0100
+
+    Serious refactoring
+    
+    - Interpolating method moved to I18n::Inflector
+    - Loading inflections now creates InflactionData object that feeds I18n::Inflector::Core
+    - Locale management created in I18n::Inflector::Core (pluggable databases)
+    - Added safe_data() and data() methods to Core in order to simplify inflection database calls
+    - Removed send() calls, removed bridge; not needed anymore
+    - InflectionData initializer can now be feeded with locale (it's also stored there)
+    - Removed unneeded I18n::Inflector::Util incusion in I18n::Inflector::Backend
+
 commit 0fc113797bdd9ff7bd3d1e953385c6670064b936
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jan 13 06:36:19 2011 +0100
