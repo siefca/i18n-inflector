@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains inline documentation data
 # that would make the file with code less readable
@@ -10,34 +10,25 @@
 # 
 
 module I18n
-  # Overwrites the Simple backend translate method so that it will interpolate
-  # additional inflection tokens present in translations. These tokens may
-  # appear in *patterns* which are contained within <tt>@{</tt> and <tt>}</tt>
-  # symbols.
-  # 
-  # You can choose different kinds (gender, title, person, time, author, etc.)
-  # of tokens to group them in a meaningful, semantical sets. That means you can
-  # apply Inflector to do simple inflection by a gender or a person, when some
-  # language requires it.
-  # 
-  # To achieve similar functionality lambdas can be used but there might be
-  # some areas of appliance that including proc objects in translations
-  # is prohibited.
-  # 
-  # If you have a troop of happy translators that shouldn't have the
-  # ability to execute any code yet you need some simple inflection
-  # then you can make use of this module.
-  # 
-  # This library contains two modules: {I18n::Inflector} containing common
-  # operations that you can perform and {I18n::Backend::Inflector} containing
-  # altered version of {I18n::Backend::Inflector#translate translate} and
-  # other backend methods.
+  # @version 1.2
+  # This module contains inflection classes and modules for enabling
+  # the inflection support in I18n translations.
+  # Its submodule overwrites the Simple backend translate method
+  # so that it will interpolate additional inflection tokens present
+  # in translations. These tokens may appear in *patterns* which
+  # are contained within <tt>@{</tt> and <tt>}</tt> symbols.
   # 
   # == Usage
   #   require 'i18-inflector'
   #   
-  #   i18n.translate('welcome')
-  #   # where welcome maps to: "Dear @{f:Madam|m:Sir}"
+  #   i18n.translate('welcome', :gender => :f)
+  #   # => Dear Madam
+  #   
+  #   i18n.inflector.kinds
+  #   # => [:gender]
+  # 
+  #   i18n.inflector.true_tokens.keys
+  #   # => [:f, :m, :n]
   #
   # == Inflection pattern
   # An example inflection pattern contained in a translation record looks like:
@@ -86,7 +77,13 @@ module I18n
   # fast.
   # 
   # Kind is also used to instruct I18n.translate method which
-  # token it should pick. This will be explained later. 
+  # token it should pick. This will be explained later.
+  # 
+  # === Tokens
+  # The token is an element of a pattern. A pattern may have many tokens
+  # of the same kind separated by vertical bars. Each token name used in a
+  # pattern should end with colon sign. After this colon a value should
+  # appear (or an empty string).
   #
   # === Aliases
   # Aliases are special tokens that point to other tokens. They cannot
@@ -153,12 +150,6 @@ module I18n
   # but might be helpful (e.g. in UI). For obvious reasons you cannot
   # describe aliases.
   # 
-  # == Tokens
-  # The token is an element of a pattern. A pattern may have many tokens
-  # of the same kind separated by vertical bars. Each token name used in a
-  # pattern should end with colon sign. After this colon a value should
-  # appear (or an empty string).
-  # 
   # == Interpolation
   # The value of each token present in a pattern is to be picked by the interpolation
   # routine and will replace the whole pattern, when the token name from that
@@ -169,9 +160,23 @@ module I18n
   # many inflection options, each one designated for keeping a token of a
   # different kind.
   # 
-  # ==== Examples:
-  #   # welcome is "Dear @{f:Madam|m:Sir|n:You|All}"
+  # === Examples:
+  # 
+  # ===== YAML:
+  # Let's assume that the translation data in YAML format listed
+  # below is used in any later example, unless other inflections
+  # are given.
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         gender:
+  #           m:       "male"
+  #           f:       "female"
+  #           n:       "neuter"
+  #           default: n
   #   
+  #     welcome:  "Dear @{f:Madam|m:Sir|n:You|All}"
+  # ===== Code:
   #   I18n.translate('welcome', :gender => :m)
   #   # => "Dear Sir"
   #   
@@ -186,7 +191,7 @@ module I18n
   # That differs from the latest example, in which there was no option given,
   # so the default token for a kind had been applied (in this case +n+).
   # 
-  # == Local fallbacks (free text)
+  # === Local fallbacks (free text)
   # The fallback value will be used when any of the given tokens from
   # pattern cannot be interpolated.
   # 
@@ -194,18 +199,23 @@ module I18n
   # to use fallback values in most cases. Local fallbacks will then be
   # applied only when a given option contains a proper value for some
   # kind but it's just not present in a pattern, for example:
-  #
-  #   I18n.locale = :en
-  #   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{n:You|All}'   
-  #   I18n.backend.store_translations 'en', :i18n     => { :inflections => {
-  #                                         :gender   => { :n => 'neuter', :o => 'other' }}}
-  #   
+  # 
+  # ===== YAML:
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         gender:
+  #           n:    'neuter'
+  #           o:    'other'
+  #       
+  #     welcome:    "Dear @{n:You|All}"
+  # 
+  # ===== Code:
   #   I18n.translate('welcome', :gender => :o, :raises => true)
   #   # => "Dear All"
-  #   
   #   # since the token :o was configured but not used in the pattern
   #
-  # == Unknown and empty tokens in options
+  # === Unknown and empty tokens in options
   # If an option containing token is not present at all then the interpolation
   # routine will try the default token for a processed kind if the default
   # token is present in a pattern. The same thing will happend if the option
@@ -224,26 +234,63 @@ module I18n
   # See #unknown_defaults for examples showing how the
   # translation results are changing when that switch is applied.
   # 
-  # == Mixing inflection and standard interpolation patterns
+  # === Mixing inflection and standard interpolation patterns
   # The Inflector module allows you to include standard <tt>%{}</tt>
   # patterns inside of inflection patterns. The value of a standard
   # interpolation variable will be evaluated and interpolated *before*
   # processing an inflection pattern. For example:
-  #
-  #   I18n.backend.store_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}!')
-  #   
+  # 
+  # ===== YAML:
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     hi:   "Dear @{f:Lady|m:%{test}}!"
+  # ===== Code:
   #   I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
   #   # => Dear Dude!
   # 
-  # == Escaping a pattern
+  # === Token groups
+  # It is possible to join many tokens giving the same value in a group.
+  # You can separate them using commas.
+  # 
+  # ===== YAML:
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     welcome:  "Hello @{m,f:Ladies and Gentlemen|n:You}!"
+  # ===== Code:
+  #   I18n.t('welcome', :gender => :f)
+  #   # => Hello Ladies and Gentlemen!
+  # 
+  # === Inverse matching of tokens
+  # You can place exclamation mark before a token that should be
+  # matched negatively. It's value will be used for a pattern
+  # <b>if the given inflection option contains other token</b>.
+  # 
+  # ===== YAML:
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     welcome:  "Hello @{!m:Ladies|n:You}!"
+  # ===== Code:
+  #   I18n.t('welcome', :gender => :n)
+  #   # => Hello Ladies!
+  #   
+  #   I18n.t('welcome', :gender => :f)
+  #   # => Hello Ladies!
+  #   
+  #   I18n.t('welcome', :gender => :m)
+  #   # => Hello !
+  # 
+  # === Escaping a pattern
   # If there is a need to translate something that matches an inflection
   # pattern the escape symbols can be used to disable the interpolation. These
   # symbols are <tt>\\</tt> and +@+ and they should be placed just before
   # a pattern that should be left untouched. For instance:
   # 
-  #   I18n.backend.store_translations(:xx, 'hi' => 'This is the @@{pattern}!')
-  #   
-  #   I18n.t('hi', :gender => :m, :locale => :xx)
+  # ===== YAML:
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     welcome:  "This is the @@{pattern}!"
+  # ===== Code:
+  #   I18n.t('welcome', :gender => :m, :locale => :xx)
   #   # => This is the @{pattern}!
   # 
   # == Errors
@@ -251,17 +298,13 @@ module I18n
   # You can turn off this default behavior by passing +:raises+ option.
   #
   # === Usage of +:raises+ option
-  #
-  #   I18n.locale = :en
-  #   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{m:Sir|f:Madam|Fallback}'
-  #   I18n.backend.store_translations 'en', :i18n     => { :inflections => {
-  #                                                         :gender   => {
-  #                                                           :f => 'female',
-  #                                                           :m => 'male'
-  #                                                     }}}
-  #   
-  #   I18n.translate('welcome', :raises => true)
-  #   
+  # 
+  # ===== YAML
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     welcome:  "Dear @{m:Sir|f:Madam|Fallback}"
+  # ===== Code:
+  #   I18n.t('welcome', :raises => true)   
   #   # => I18n::InvalidOptionForKind: option :gender required by the pattern
   #   #                                "@{m:Sir|f:Madam|Fallback}" was not found
   # 
@@ -283,158 +326,6 @@ module I18n
   # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
   #
   module Inflector
-    # When this switch is set to +true+ then inflector falls back to the default
-    # token for a kind if an inflection option passed to the {#translate} is unknown
-    # or +nil+. Note that the value of the default token will be
-    # interpolated only when this token is present in a pattern. This switch
-    # is by default set to +true+.
-    # 
-    # @note Local option +:unknown_defaults+ passed to translation method
-    #   overrides this setting.
-    # 
-    # @api public
-    # @see #unknown_defaults?
-    # @see I18n::Inflector.unknown_defaults Short name: I18n::Inflector.unknown_defaults
-    # @return [Boolean] the state of the switch
-    # 
-    # @example Usage of +:unknown_defaults+ option – preparation
-    # 
-    #   I18n.locale = :en
-    #   I18n.backend.store_translations 'en', :i18n => { :inflections => {
-    #                                                     :gender => {
-    #                                                       :n => 'neuter',
-    #                                                       :o => 'other',
-    #                                                       :default => 'n' }}}
-    #   
-    #   I18n.backend.store_translations 'en', 'welcome'      => 'Dear @{n:You|o:Other}'
-    #   I18n.backend.store_translations 'en', 'welcome_free' => 'Dear @{n:You|o:Other|Free}'
-    #   
-    # @example Example 1
-    #   
-    #   # :gender option is not present,
-    #   # unknown tokens in options are falling back to default
-    #    
-    #   I18n.t('welcome')
-    #   # => "Dear You"
-    #   
-    #   # :gender option is not present,
-    #   # unknown tokens from options are not falling back to default
-    #   
-    #   I18n.t('welcome', :unknown_defaults => false)
-    #   # => "Dear You"
-    #   
-    #   # :gender option is not present, free text is present,
-    #   # unknown tokens from options are not falling back to default
-    #   
-    #   I18n.t('welcome_free', :unknown_defaults => false)
-    #   # => "Dear You"
-    #   
-    # @example Example 2
-    #   
-    #   # :gender option is nil,
-    #   # unknown tokens from options are falling back to default token for a kind
-    #   
-    #   I18n.t('welcome', :gender => nil)
-    #   # => "Dear You"
-    #   
-    #   # :gender option is nil
-    #   # unknown tokens from options are not falling back to default token for a kind
-    #   
-    #   I18n.t('welcome', :gender => nil, :unknown_defaults => false)
-    #   # => "Dear "
-    #   
-    #   # :gender option is nil, free text is present
-    #   # unknown tokens from options are not falling back to default token for a kind
-    #   
-    #   I18n.t('welcome_free', :gender => nil, :unknown_defaults => false)
-    #   # => "Dear Free"
-    # 
-    # @example Example 3
-    #   
-    #   # :gender option is unknown,
-    #   # unknown tokens from options are falling back to default token for a kind
-    #   
-    #   I18n.t('welcome', :gender => :unknown_blabla)
-    #   # => "Dear You"
-    #   
-    #   # :gender option is unknown,
-    #   # unknown tokens from options are not falling back to default token for a kind
-    #   
-    #   I18n.t('welcome', :gender => :unknown_blabla, :unknown_defaults => false)
-    #   # => "Dear "
-    #   
-    #   # :gender option is unknown, free text is present
-    #   # unknown tokens from options are not falling back to default token for a kind
-    #   
-    #   I18n.t('welcome_free', :gender => :unknown_blabla, :unknown_defaults => false)
-    #   # => "Dear Free"
-    attr_accessor :unknown_defaults
-
-    # When this switch is set to +true+ then inflector falls back to the default
-    # token for a kind if the given inflection option is correct but doesn't exist in a pattern.
-    # 
-    # There might happend that the inflection option
-    # given to {#translate} method will contain some proper token, but that token
-    # will not be present in a processed pattern. Normally an empty string will
-    # be generated from such a pattern or a free text (if a local fallback is present
-    # in a pattern). You can change that behavior and tell interpolating routine to
-    # use the default token for a processed kind in such cases.
-    # 
-    # This switch is by default set to +false+.
-    # 
-    # @note Local option +:excluded_defaults+ passed to the {#translate}
-    #   overrides this setting.
-    # 
-    # @api public
-    # @see #excluded_defaults? 
-    # @see I18n::Inflector.excluded_defaults Short name: I18n::Inflector.excluded_defaults
-    # @return [Boolean] the state of the switch
-    # 
-    # @example Usage of +:excluded_defaults+ option
-    # 
-    #   I18n.locale = :en
-    #   I18n.backend.store_translations 'en', :i18n => { :inflections => {
-    #                                                     :gender => {
-    #                                                       :n => 'neuter',
-    #                                                       :m => 'male',
-    #                                                       :o => 'other',
-    #                                                       :default => 'n' }}}
-    #   
-    #   I18n.backend.store_translations 'en', 'welcome' => 'Dear @{n:You|m:Sir}'
-    #   
-    #   I18n.t('welcome', :gender => :o)
-    #   # => "Dear "
-    #   
-    #   I18n.t('welcome', :gender => :o, :excluded_defaults => true)
-    #   # => "Dear You"
-    attr_accessor :excluded_defaults
-
-    # This is a switch that enables extended error reporting. When it's enabled then
-    # errors are raised in case of unknown or empty tokens present in a pattern
-    # or in options. This switch is by default set to +false+.
-    # 
-    # @note Local option +:raises+ passed to the {#translate} overrides this setting.
-    # 
-    # @api public
-    # @see #excluded_defaults?
-    # @see I18n::Inflector.raises Short name: I18n::Inflector.raises
-    # @return [Boolean] the state of the switch
-    attr_accessor :raises
-
-    # This is a switch that enables usage of aliases in patterns. When it's enabled then
-    # aliases may be used in inflection patterns, not only true tokens. This operation
-    # is not time consuming (resolving is done only when translations are loaded)
-    # but may make your translation data a bit messy if you're not alert.
-    # That's why this switch is by default set to +false+.
-    # 
-    # @note Local option +:aliased_patterns+ passed to the {#translate}
-    # overrides this setting.
-    # 
-    # @api public
-    # @see #aliased_patterns?
-    # @see I18n::Inflector.aliased_patterns Short name: I18n::Inflector.aliased_patterns
-    # @return [Boolean] the state of the switch
-    attr_accessor :aliased_patterns
 
   end
 

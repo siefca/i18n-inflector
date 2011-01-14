@@ -4,8 +4,9 @@
 --no-private
 --hide-void-return
 -
+docs/RELATIONS
 docs/HISTORY
 ChangeLog
 docs/COPYING
-docs/LGPL-LICENSE
+docs/LGPL
 docs/TODO

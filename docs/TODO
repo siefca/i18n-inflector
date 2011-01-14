@@ -1,14 +1,8 @@
 == Near future
 
-* rewrite docs for switching methods
-
 * add some negative tests (e.g. empty kind, kinds as nils or empty striongs, tokens as empty strings...)
-
-* doco for negative matches and multiple (groups of tokens) matches
-
 * allow aliases in patterns (switched) [aliases loading and replacement during initial read]
-
-* create accessor called options to controll options from frontend [done, requires removal of old methods]
+* add combined test (! and ,)
 
 == Far future
 

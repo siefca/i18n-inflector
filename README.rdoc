@@ -21,13 +21,37 @@ of tokens to group them in a meaningful, semantical sets. That means you can
 apply Inflector to do simple inflection by a gender or a person, when some
 language requires it.
 
-To achieve similar functionality lambdas can be used but there might be
-some areas of appliance that including proc objects in translations
-is prohibited.
+Example translation data:
+
+en:
+  i18n:
+    inflections:
+      gender:
+        f:        "female"
+        m:        "male"
+        n:        "neuter"
+        male:     @m
+        female:   @f
+        default:  neuter
+
+  welcome:  "Dear {f:Lady|m:Sir|n:You|All}"
+
+== Why?
+
+It's intended to be used in a web projects or other projects where
+tranlations are performed by many people, yet there is a need to
+substitute fragments of text depending on user's gender, person or
+other data.
+
+To achieve similar functionality lambdas can be used but including
+proc objects in translations may be considered as the unsafe idea.
 
 If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
-then you can make use of this module.
+then you should use this module.
+
+See i18n-inflector-rails[https://rubygems.org/gems/i18n-inflector-rails] if
+you need Rails integration.
 
 == Requirements
 
@@ -105,7 +129,7 @@ Copyright (c) 2011 by Paweł Wilk.
 
 i18n-inflector is copyrighted software owned by Paweł Wilk (pw@gnu.org).
 You may redistribute and/or modify this software as long as you
-comply with either the terms of the LGPL (see {file:LGPL-LICENSE}),
+comply with either the terms of the LGPL (see {file:LGPL}),
 or Ruby's license (see {file:COPYING}).
 
 THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS

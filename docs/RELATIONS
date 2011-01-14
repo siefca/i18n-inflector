@@ -1,0 +1,25 @@
+== This library contains
+
+* Module {I18n::Inflector} containing everything
+* Class {I18n::Inflector::Core} used to create inflector object attached to I18n backend
+* Class {I18n::Inflector::InflectionData} used by {I18n::Inflector::Core} instances to store
+  inflection data and manipulate them, also is used by {I18n::Backend::Inflector} instances when loading
+  translations to create new database within {I18n::Inflector::Core} instance attachend to backend
+* Class {I18n::Inflector::InflectionOptions} is used inside of {I18n::Inflector::Core} for keeping
+  switches and options 
+* Module {I18n::Backend::Inflector} used to alter methods of {I18n::Backend::Simple}
+
+== Relations
+
+* {I18n.backend} is the currently used backend and the instance of {I18n::Backend::Simple}
+* {I18n.backend.inflector} is the instance of {I18n::Inflector::Core} attached to backend
+* {I18n.inflector} is the proxy module method that calls inflector for currently used backend {I18n.backend.inflector}
+* {I18n.backend.inflector.options} is the instance of {I18n::Inflector::InflectionOptions} and
+  mainly it controls a behavior of interpolation method
+* {I18n::Inflector::Core} has an instance variable defined that contains database of translation data
+* Each entry in the internal database of {I18n::Inflector::Core} is indexed by locale and is kind of 
+  {I18n::Inflector::InflectionData}
+* When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
+  takes the loaded data, processes the +i18n.inflections+ part for each locale and creates configuration
+  that is keeped as an instance of {I18n::Inflector::InflectionData}. That data is registered within the
+  inflecor object attached to backend that loaded the translations.

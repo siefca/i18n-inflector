@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains I18n::Backend::Inflector module,
 # which extends I18n::Backend::Simple by adding the ability
@@ -10,10 +10,15 @@
 # defined in translation data.
 
 module I18n
+  
+  # @abstract This namespace is shared with I18n subsystem.
   module Backend
-    
+
     # This module contains methods that are adding
     # tokenized inflection support to internal I18n classes.
+    # It is intened to be included in the Simple backend
+    # module so that it will patch translate method in order
+    # to interpolate additional inflection tokens present in translations.
     # Usually you don't have to know what's here to use it.
     module Inflector
 
@@ -29,7 +34,6 @@ module I18n
       # @api public
       # @note It calls {I18n::Backend::Simple#reload! I18n::Backend::Simple#reload!}
       # @return [Boolean] the result of calling ancestor's method
-      # @see I18n::Inflector.reload! Short name: I18n::Inflector.reload!
       def reload!
         @inflector = nil
         super
@@ -88,85 +92,6 @@ module I18n
           end
         end
         r
-      end
-
-      # Checks the state of the switch that enables extended error reporting.
-      # 
-      # @api public
-      # @note This is a helper method, you can use {#inflector_raises accessor} instead.
-      # @return [Boolean] the value of the global switch or the passed variable
-      # @see I18n::Inflector.raises? Short name: I18n::Inflector.raises?
-      # @see #inflector_raises=
-      # @overload inflector_raises?
-      #   Checks the state of the switch that enables extended error reporting.
-      #   @return [Boolean] the value of the global switch
-      # @overload inflector_raises?(value)
-      #   Returns the given value.
-      #   @param [Boolean] value the value to be returned
-      #   @return [Boolean] +true+ if the passed +value+ is not +false+
-      def inflector_raises?(option=nil)
-        option.nil? ? @inflector_raises : option!=false
-      end
-
-      # Checks the state of the switch that enables usage of aliases in patterns.
-      # 
-      # @api public
-      # @note This is a helper method, you can use {#inflector_aliased_patterns accessor} instead.
-      # @return [Boolean] the value of the global switch or the passed variable
-      # @see I18n::Inflector.aliased_patterns? Short name: I18n::Inflector.aliased_patterns?
-      # @see #inflector_aliased_patterns=
-      # @overload inflector_aliased_patterns?
-      #   Checks the state of the switch that enables usage of aliases in patterns.
-      #   @return [Boolean] the value of the global switch
-      # @overload inflector_aliased_patterns?(value)
-      #   Returns the given value.
-      #   @param [Boolean] value the value to be returned
-      #   @return [Boolean] +true+ if the passed +value+ is not +false+
-      def inflector_aliased_patterns?(option=nil)
-        option.nil? ? @inflector_aliased_patterns : option!=false      
-      end
-
-      # Checks the state of the switch that that enables falling back
-      # to the default token of a kind when the inflection option
-      # is unknown or empty.
-      # 
-      # @api public
-      # @note This is a helper method, you can use {#inflector_unknown_defaults accessor} instead.
-      # @return [Boolean] the value of the global switch or the passed variable
-      # @see I18n::Inflector.unknown_defaults? Short name: I18n::Inflector.unknown_defaults?
-      # @see #inflector_unknown_defaults=
-      # @overload inflector_unknown_defaults?
-      #   Checks the state of the switch that that enables falling back
-      #   to the default token for a kind when the inflection option
-      #   is unknown or empty.
-      #   @return [Boolean] the value of the global switch
-      # @overload inflector_unknown_defaults?(value)
-      #   Returns the given value.
-      #   @param [Boolean] value the value to be returned
-      #   @return [Boolean] +true+ if the passed +value+ is not +false+
-      def inflector_unknown_defaults?(option=nil)
-        option.nil? ? @inflector_unknown_defaults : option!=false
-      end
-
-      # Checks the state of the switch that that enables falling back
-      # to the default token when the inflection option is not found in a pattern.
-      # 
-      # @api public
-      # @note This is a helper method, you can use {#inflector_excluded_defaults accessor} instead.
-      # @return [Boolean] the value of the global switch or the passed variable
-      # @see I18n::Inflector.excluded_defaults? Short name: I18n::Inflector.excluded_defaults?
-      # @see #inflector_excluded_defaults=
-      # @overload inflector_excluded_defaults?
-      #   Checks the state of the switch that enables falling back
-      #   to the default token for a kind when token name from
-      #   the inflection option is not found in a pattern.
-      #   @return [Boolean] the value of the global switch
-      # @overload inflector_excluded_defaults?(value)
-      #   Returns the given value
-      #   @param [Boolean] value the value to be returned
-      #   @return [Boolean] +true+ if the passed +value+ is not +false+
-      def inflector_excluded_defaults?(option=nil)
-        option.nil? ? @inflector_excluded_defaults : option!=false
       end
 
       protected
@@ -236,7 +161,7 @@ module I18n
       def shorten_inflection_alias(token, kind, locale, subtree=nil, count=0)
         count += 1
         return nil if count > 64
-  
+
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
 
@@ -317,7 +242,7 @@ module I18n
               idb.set_default_token(kind, description)
               next
             end
- 
+
             idb.add_token(token, kind, description)
           end
         end

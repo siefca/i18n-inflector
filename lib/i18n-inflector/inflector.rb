@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains I18n::Inflector module,
 # which extends I18n by adding the ability
@@ -12,6 +12,11 @@
 module I18n
 
   class <<self
+    # This is proxy method that returns an inflector
+    # object used by the current I18n backend.
+    # 
+    # @return [I18n::Inflector::Core] inflector the inflector
+    #   used by the current backend
     def inflector
       I18n.backend.inflector
     end
@@ -44,13 +49,39 @@ module I18n
     INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
                               RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
 
+    # Instances of this class are inflectors that are attached
+    # to I18n backends. This class contains common operations
+    # that programmer can perform on inflector. It keeps the
+    # database of {I18n::Inflector::InflectionData} instances
+    # and has methods to use them in an easy way.
     class Core
 
       include I18n::Inflector::Util
 
       # Options controlling the engine.
+      # 
+      # @api public
+      # @return [I18n::Inflector::InflectionOptions] the set of options
+      #   controlling inflection engine
+      # @see I18n::Inflector::InflectionOptions#raises
+      # @see I18n::Inflector::InflectionOptions#unknown_defaults
+      # @see I18n::Inflector::InflectionOptions#excluded_defaults
+      # @see I18n::Inflector::InflectionOptions#aliased_patterns
+      # @example Usage of +options+:
+      #   # globally set raises flag
+      #   I18n.inflector.options.raises = true
+      #   
+      #   # globally set raises flag (the same meaning as the example above)
+      #   I18n.backend.inflector.options.raises = true
+      #   
+      #   # set raises flag just for this translation
+      #   I18n.translate('welcome', :inflector_raises => true)
       attr_reader :options
 
+      # Initilizes inflector by creating internal databases for storing
+      # inflection hashes and options.
+      # 
+      # @api public
       def initialize
         @idb = {}
         @options = I18n::Inflector::InflectionOptions.new
@@ -59,6 +90,7 @@ module I18n
       # Adds database for the specified locale.
       # 
       # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @param [Symbol] locale the locale for which the infleciton database is created
       # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
       #   for the given +locale+
@@ -69,6 +101,13 @@ module I18n
 
       # Attaches {I18n::Inflector::InflectionData} instance to the
       # current collection.
+      #
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note It doesn't create copy of inflection data, it registers the given object.
+      # @param [I18n::Inflector::InflectionData] idb inflection data to add
+      # @return [I18n::Inflector::InflectionData] the given +idb+ or +nil+ if something
+      #   went wrong (e.g. +nil+ was given as an argument)
       def add_database(idb)
         return nil if idb.nil?
         locale = prep_locale(idb.locale)
@@ -81,6 +120,7 @@ module I18n
       # @api public
       # @note It detaches the database from {I18n::Inflector::Core} instance.
       #   Other objects referring to it directly may still use it.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
       # @return [void]
       def delete_database(locale)
@@ -96,12 +136,12 @@ module I18n
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload default_token(kind)
       #   This method reads default token for the given +kind+ and current locale.
-      #   @param [Symbol] kind the kind of tokens
+      #   @param [Symbol,String] kind the kind of tokens
       #   @return [Symbol,nil] the default token for the given kind or +nil+ if
       #     there is no default token
       # @overload default_token(kind, locale)
       #   This method reads default token for the given +kind+ and the given +locale+.
-      #   @param [Symbol] kind the kind of tokens
+      #   @param [Symbol,String] kind the kind of tokens
       #   @param [Symbol] locale the locale to use
       #   @return [Symbol,nil] the default token for the given kind or +nil+ if
       #     there is no default token
@@ -128,7 +168,7 @@ module I18n
       # @overload has_alias?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is an alias.
       #   @param [Symbol,String] token name of the checked token
-      #   @param [Symbol] kind the kind used to narrow the check
+      #   @param [Symbol,String] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
       def has_alias?(*args)
@@ -161,7 +201,7 @@ module I18n
       # @overload has_true_token?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is a true token.
       #   @param [Symbol,String] token name of the checked token
-      #   @param [Symbol] kind the kind used to narrow the check
+      #   @param [Symbol,String] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
       #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
       def has_true_token?(*args)
@@ -194,7 +234,7 @@ module I18n
        # @overload has_token?(token, kind, locale)
        #   Uses the given +locale+ and +kind+ to check if the given +token+ exists.
        #   @param [Symbol,String] token name of the checked token
-       #   @param [Symbol] kind the kind used to narrow the check
+       #   @param [Symbol,String] kind the kind used to narrow the check
        #   @param [Symbol] locale the locale to use
        #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
        def has_token?(*args)
@@ -268,12 +308,12 @@ module I18n
       #     for all kinds and current locale.
       # @overload tokens(kind)
       #   Gets available inflection tokens and their descriptions for some +kind+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases, for current locale.
       # @overload tokens(kind, locale)
       #   Gets available inflection tokens and their descriptions for some +kind+ and +locale+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases, for current locale
@@ -297,13 +337,13 @@ module I18n
       #     values are Symbols
       # @overload tokens_raw(kind)
       #   Gets available inflection tokens and their values for the given +kind+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+. In case of
       #     aliases the returned values are Symbols
       # @overload tokens_raw(kind, locale)
       #   Gets available inflection tokens and their values for the given +kind+ and +locale+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+ and +locale+.
@@ -327,12 +367,12 @@ module I18n
       #     and their descriptions as values
       # @overload tokens_true(kind)
       #   Gets true inflection tokens and their values for the given +kind+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+
       # @overload tokens_true(kind, locale)
       #   Gets true inflection tokens and their values for the given +kind+ and +value+.
-      #   @param [Symbol] kind the kind of inflection tokens to be returned
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+ and +locale+
@@ -353,12 +393,12 @@ module I18n
       #   @return [Hash] the Hash containing available inflection aliases
       # @overload aliases(kind)
       #   Gets inflection aliases and their pointers for the given +kind+.
-      #   @param [Symbol] kind the kind of aliases to get
+      #   @param [Symbol,String] kind the kind of aliases to get
       #   @return [Hash] the Hash containing available inflection
       #     aliases for the given +kind+ and current locale
       # @overload aliases(kind, locale)
       #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
-      #   @param [Symbol] kind the kind of aliases to get
+      #   @param [Symbol,String] kind the kind of aliases to get
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the Hash containing available inflection
       #     aliases for the given +kind+ and +locale+
@@ -395,7 +435,7 @@ module I18n
       #   @return [Boolean] +true+ if the given +kind+ exists for the current
       #     locale, +false+ otherwise
       # @overload has_kind?(kind, locale)
-      #   @param [Symbol] kind the identifier of a kind
+      #   @param [Symbol,String] kind the identifier of a kind
       #   @param [Symbol] locale the locale identifier
       #   @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
       def has_kind?(kind, locale=nil)
@@ -458,7 +498,7 @@ module I18n
         return nil if token.to_s.empty?
         data_safe(locale).get_description(token.to_sym)
       end
-      
+
       # Interpolates inflection values in a given +string+
       # using kinds given in +options+ and a matching tokens.
       # 
@@ -467,11 +507,13 @@ module I18n
       # @param [String,Symbol] locale the locale identifier 
       # @param [Hash] options the options
       # @option options [Boolean] :inflector_excluded_defaults (false) local switch
-      #   that overrides global setting (see: {#inflector_excluded_defaults})
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#excluded_defaults})
       # @option options [Boolean] :inflector_unknown_defaults (true) local switch
-      #   that overrides global setting (see: {#inflector_unknown_defaults})
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#unknown_defaults})
       # @option options [Boolean] :inflector_raises (false) local switch
-      #   that overrides global setting (see: {#inflector_raises})
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#raises})
+      # @option options [Boolean] :inflector_aliased_patterns (false) local switch
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
         used_kinds        = options.except(*I18n::Inflector::INFLECTOR_RESERVED_KEYS)
@@ -533,7 +575,7 @@ module I18n
                 end
                 negatives[t.to_sym] = true
               end
-              
+
               t = t.to_sym
 
               # get kind for that token

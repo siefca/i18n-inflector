@@ -2,11 +2,12 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:LGPL-LICENSE GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains utility methods,
 # that are used by I18n::Inflector and I18n::Backend::Inflector.
 
+# @abstract This namespace is shared with I18n subsystem.
 module I18n
   module Inflector
 
