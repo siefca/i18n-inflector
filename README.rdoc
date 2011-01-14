@@ -23,18 +23,19 @@ language requires it.
 
 Example translation data:
 
-en:
-  i18n:
-    inflections:
-      gender:
-        f:        "female"
-        m:        "male"
-        n:        "neuter"
-        male:     @m
-        female:   @f
-        default:  neuter
-
-  welcome:  "Dear {f:Lady|m:Sir|n:You|All}"
+  en:
+    i18n:
+      inflections:
+        gender:
+          f:        "female"
+          m:        "male"
+          n:        "neuter"
+          male:     @m
+          female:   @f
+          default:  neuter          
+        
+      
+    welcome:  "Dear {f:Lady|m:Sir|n:You|All}"
 
 == Why?
 
