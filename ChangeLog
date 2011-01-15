@@ -1,3 +1,15 @@
+commit dc6ff4d63c7df14681c42ee9799c495aed8140de
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 15 14:35:00 2011 +0100
+
+    Doco fixes
+
+commit 6afd66c2780f792c13e9e61491cbcc55d684b882
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 15 01:20:17 2011 +0100
+
+    Fix for duplicated dependency in Rakefile, typos fixed in README
+
 commit e7a6eb41eab2f76881169eeabb03e9540adeeb0e
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jan 14 17:33:44 2011 +0100

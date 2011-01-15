@@ -96,6 +96,7 @@ Detailed example:
           f:        "female"
           m:        "male"
           n:        "neuter"
+          o:        "other"
           default:  n
    
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
@@ -104,14 +105,22 @@ Detailed example:
    I18n.t('welcome')
    # => "Dear You"
    
-   I18n.t('welcome', :gender => :male)
+   I18n.t('welcome', :gender => :m)
    # => "Dear Sir"
    
    I18n.t('welcome', :gender => :unknown)
+   # => "Dear You"
+   
+   I18n.inflector.options.unknown_defaults = false
+   I18n.t('welcome', :gender => :unknown)
    # => "Dear All"
    
-   I18n.t('welcome', :gender => nil)
+   I18n.t('welcome', :gender => :o)
    # => "Dear All"
+
+   I18n.inflector.options.excluded_defaults = true
+   I18n.t('welcome', :gender => :o)
+   # => "Dear You"
 
 == Tests
 
