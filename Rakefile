@@ -46,8 +46,11 @@ Hoe.spec 'i18n-inflector' do
   extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
                          ['yard',             '>= 0.6.4'] <<
                          ['bundler',          '>= 1.0.7'] <<
-                         ['hoe-bundler',      '>= 1.0.0'] <<
-                         ['hoe-yard',         '>= 0.1.2']
+                         ['hoe-bundler',      '>= 1.0.0']
+
+  unless extra_dev_deps.flatten.include?('hoe-yard')
+    extra_dev_deps << ['hoe-yard', '>= 0.1.2']
+  end
 end
 
 task 'Manifest.txt' do

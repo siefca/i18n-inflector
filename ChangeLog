@@ -1,3 +1,33 @@
+commit e7a6eb41eab2f76881169eeabb03e9540adeeb0e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 17:33:44 2011 +0100
+
+    Version 2.0.0 ready to be released
+
+commit 9d87da0b8781be172ed7216aafc57e3bde096504
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 17:29:19 2011 +0100
+
+    Added more tests and cleaned up conditional expressions in InflectionData
+
+commit 295f2e3c98a23b1109e8e8355c008e9d59ecd010
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 16:26:20 2011 +0100
+
+    Version 2.0.0 tested in Rails 3 environment
+
+commit 62785a25f593460d91294cd87fdde254acb5f2e3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 15:06:14 2011 +0100
+
+    Speed improvements.
+
+commit 1b3ac06a779288f8f9584dd0fc4f50e9f1728a34
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 14 12:54:40 2011 +0100
+
+    Updated version information in README
+
 commit d76bd2a91323c8f612a7328191b69014353a3802
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Jan 14 12:52:13 2011 +0100

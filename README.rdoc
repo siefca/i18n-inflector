@@ -10,16 +10,21 @@
 
 == Description
 
-This backend module for Ruby's I18n overwrites the Simple backend
-translate method so that it will interpolate additional inflection
-tokens present in translations. These tokens may appear in *patterns*
-which are contained within <tt>@{</tt> and <tt>}</tt>
-symbols.
+This library contains a backend module for I18n that adds some extra
+functionality to standard backend. It overwrites the translate method
+so that it will interpolate additional inflection tokens present in
+translations. These tokens may appear in *patterns* which are contained
+within <tt>@{</tt> and <tt>}</tt> symbols. Configuration is stored
+also in translation data, in a scope +i18n.inflections+.
 
 You can choose different kinds (gender, title, person, time, author, etc.)
 of tokens to group them in a meaningful, semantical sets. That means you can
 apply Inflector to do simple inflection by a gender or a person, when some
 language requires it.
+
+It adds the +inflector+ object to the default backend so you can use many
+methods for accessing loaded inflection data at runtime, or set up global
+switches that are controlling the engine.
 
 Example translation data:
 
@@ -40,7 +45,7 @@ Example translation data:
 == Why?
 
 It's intended to be used in a web projects or other projects where
-tranlations are performed by many people, yet there is a need to
+translations are performed by many people, yet there is a need to
 substitute fragments of text depending on user's gender, person or
 other data.
 
@@ -124,7 +129,7 @@ See {I18n::Backend::Inflector} module documentation for detailed information abo
 
 == See also
 
-See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails] if you need
+See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails/file/README.rdoc] if you need
 the Rails plug-in that integrates this module with ActionController.
 
 == Credits
