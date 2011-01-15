@@ -15,7 +15,8 @@ functionality to standard backend. It overwrites the translate method
 so that it will interpolate additional inflection tokens present in
 translations. These tokens may appear in *patterns* which are contained
 within <tt>@{</tt> and <tt>}</tt> symbols. Configuration is stored
-also in translation data, in a scope +i18n.inflections+.
+also in translation data, in a scope <tt><locale>.i18n.inflections</tt>,
+where <tt>locale</tt> is a locale subtree.
 
 You can choose different kinds (gender, title, person, time, author, etc.)
 of tokens to group them in a meaningful, semantical sets. That means you can
@@ -50,7 +51,7 @@ substitute fragments of text depending on user's gender, person or
 other data.
 
 To achieve similar functionality lambdas can be used but including
-proc objects in translations may be considered as the unsafe idea.
+proc objects in translations may be considered as unsafe.
 
 If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
