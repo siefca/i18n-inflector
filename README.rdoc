@@ -8,26 +8,52 @@
 * https://github.com/siefca/i18n-inflector/tree
 * mailto:pw@gnu.org
 
-== Description
-
-This backend module for Ruby's I18n overwrites the Simple backend
-translate method so that it will interpolate additional inflection
-tokens present in translations. These tokens may appear in *patterns*
-which are contained within <tt>@{</tt> and <tt>}</tt>
-symbols.
+This library contains a backend module for I18n that adds some extra
+functionality to standard backend. It overwrites the translate method
+so that it will interpolate additional inflection tokens present in
+translations. These tokens may appear in *patterns* which are contained
+within <tt>@{</tt> and <tt>}</tt> symbols. Configuration is stored
+also in translation data, in a scope <tt><locale>.i18n.inflections</tt>,
+where <tt>locale</tt> is a locale subtree.
 
 You can choose different kinds (gender, title, person, time, author, etc.)
 of tokens to group them in a meaningful, semantical sets. That means you can
 apply Inflector to do simple inflection by a gender or a person, when some
 language requires it.
 
-To achieve similar functionality lambdas can be used but there might be
-some areas of appliance that including proc objects in translations
-is prohibited.
+It adds the +inflector+ object to the default backend so you can use many
+methods for accessing loaded inflection data at runtime, or set up global
+switches that are controlling the engine.
+
+Example translation data:
+
+  en:
+    i18n:
+      inflections:
+        gender:
+          f:        "female"
+          m:        "male"
+          n:        "neuter"
+          male:     @m
+          female:   @f
+          default:  neuter          
+        
+      
+    welcome:  "Dear {f:Lady|m:Sir|n:You|All}"
+
+== Why?
+
+It's intended to be used in a web projects or other projects where
+translations are performed by many people, yet there is a need to
+substitute fragments of text depending on user's gender, person or
+other data.
+
+To achieve similar functionality lambdas can be used but including
+proc objects in translations may be considered as unsafe.
 
 If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
-then you can make use of this module.
+then you should use this module.
 
 == Requirements
 
@@ -70,14 +96,14 @@ Detailed example:
    I18n.t('welcome')
    # => "Dear You"
    
-   I18n.t('welcome', :gender => :male)
+   I18n.t('welcome', :gender => :m)
    # => "Dear Sir"
    
    I18n.t('welcome', :gender => :unknown)
-   # => "Dear All"
+   # => "Dear You"
    
    I18n.t('welcome', :gender => nil)
-   # => "Dear All"
+   # => "Dear You"
 
 == Tests
 
@@ -96,6 +122,11 @@ See {I18n::Backend::Inflector} module documentation for detailed information.
 
 See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails] if you need
 the Rails plug-in that integrates this module with ActionController.
+
+== Credits
+
+{Heise Media Polska}[http://www.heise-online.pl/] supports Free Software and has
+contributed to this library by paying for me to eat when I've been coding.
 
 == License
 
