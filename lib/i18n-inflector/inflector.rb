@@ -531,7 +531,7 @@ module I18n
       def interpolate(string, locale, options = {})
         used_kinds        = options.except(*I18n::Inflector::INFLECTOR_RESERVED_KEYS)
         sw, op            = @options, options
-        raises            = (s=op.delete :inflector_raises).nil?            ? sw.raises            : s 
+        raises            = (s=op.delete :inflector_raises).nil?            ? sw.raises            : s
         aliased_patterns  = (s=op.delete :inflector_aliased_patterns).nil?  ? sw.aliased_patterns  : s
         unknown_defaults  = (s=op.delete :inflector_unknown_defaults).nil?  ? sw.unknown_defaults  : s
         excluded_defaults = (s=op.delete :inflector_excluded_defaults).nil? ? sw.excluded_defaults : s

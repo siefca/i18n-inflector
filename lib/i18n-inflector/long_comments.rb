@@ -287,8 +287,21 @@ module I18n
   # Normally it possible to use only true tokens in patterns, not aliases.
   # However, if you feel lucky and you're not affraid of messy patterns
   # you can use the switch {I18n::Inflector::InflectionOptions#aliased_patterns}
-  # or corresponding +:inflector_aliased_patterns+ option passed to translation
+  # or corresponding <tt>:inflector_aliased_patterns</tt> option passed to translation
   # method.
+  # 
+  # It may seem very easy and attractive to use aliased patterns, especially
+  # in the environments where token comes from a user. In such cases aliases
+  # may be used as database that translates common words to inflection tokens
+  # that have meanings. For example user may enter a gender in some text
+  # field and it will be used as inflection token. To map different names
+  # (e.g. male, boy, sir, female, girl, lady) to exact inflection tokens
+  # the aliases would be used. Note hovewer, that you can make use of
+  # <tt>I18n.inflector.true_token</tt> method (see {I18n::Inflector::Core#true_token}
+  # that will resolve any alias and then use that data to feed some inflection option
+  # (e.g. <tt>:gender</tt>). In such scenario you don't have to rely on aliases
+  # in patterns and you will gain some speed since resolving will occur just once,
+  # not each time translated text is interpolated.
   # 
   # === Escaping a pattern
   # If there is a need to translate something that matches an inflection
