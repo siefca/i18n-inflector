@@ -23,6 +23,17 @@ module I18n
   end
 
   module Inflector
+
+    # @private
+    def get_reserved_keys
+      return I18n::RESERVED_KEYS                  if defined?(I18n::RESERVED_KEYS)
+      return I18n::Backend::Base::RESERVED_KEYS   if defined?(I18n::Backend::Base::RESERVED_KEYS)
+      return I18n::Backend::Simple::RESERVED_KEYS if defined?(I18n::Backend::Simple::RESERVED_KEYS)
+      return RESERVED_KEYS if defined?(RESERVED_KEYS)
+      []
+    end
+    module_function :get_reserved_keys
+
     # Contains <tt>@{</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
     FAST_MATCHER  = '@{'
@@ -46,8 +57,7 @@ module I18n
     ESCAPES       = { '@' => true, '\\' => true }
 
     # Reserved keys
-    INFLECTOR_RESERVED_KEYS = defined?(RESERVED_KEYS) ?
-                              RESERVED_KEYS : I18n::Backend::Base::RESERVED_KEYS
+    INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
 
     # Instances of this class, the inflectors, are attached
     # to I18n backends. This class contains common operations
@@ -700,7 +710,7 @@ module I18n
         @idb[prep_locale(locale)] || I18n::Inflector::InflecitonData.new
       end
 
-    end
+    end # class Core
 
-  end
-end
+  end # module Inflector
+end # module I18n
