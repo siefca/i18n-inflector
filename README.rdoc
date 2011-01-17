@@ -41,7 +41,7 @@ Example translation data:
           default:  neuter          
         
       
-    welcome:  "Dear {f:Lady|m:Sir|n:You|All}"
+    welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
 
 == Why?
 
@@ -139,7 +139,7 @@ See {I18n::Backend::Inflector} module documentation for detailed information abo
 
 == See also
 
-See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails/file/README.rdoc] if you need
+See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails/] if you need
 the Rails plug-in that integrates this module with ActionController.
 
 == Credits
