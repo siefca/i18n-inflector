@@ -16,6 +16,14 @@ require 'hoe'
 
 task :default => [:test]
 
+# Tests for I18n in version 4
+task :testv4 do
+  gemprev = ENV['BUNDLE_GEMFILE']
+  ENV['BUNDLE_GEMFILE'] = 'ci/i18nv4-Gemfile'
+  Rake::Task[:test].invoke
+  ENV['BUNDLE_GEMFILE'] = gemprev
+end
+
 desc "install by setup.rb"
 task :install do
   sh "sudo ruby setup.rb install"

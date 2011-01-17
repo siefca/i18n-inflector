@@ -4,6 +4,6 @@
 
 == Distant future
 
-* named patterns: @gender{m:xx|f:xxx|n:xzc} - such pattern may allow multiple tokens but it breaks the logic unless some marker will be given in configuration like !gender: that would inform engine that exact kind must be present in a pattern
+* named patterns: @gender{m:xx|f:xxx|n:xzc} - such pattern may allow multiple tokens but it breaks the logic unless some marker will be given in configuration like +gender: that would inform engine that exact kind must be present in a pattern
 
 * use tilde symbols (~) to allow multiple negative matches. the values will be joined as they are interpolated (with other negative matches or a positive; it just means that the processing won't stop on some particular token) – is this good idea anyway?
