@@ -1,3 +1,33 @@
+commit 481ffa6a961bc4713c75fefd7e2dd48b3fa8668b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 17 23:06:09 2011 +0100
+
+    Added rake test for i18n in version 4
+
+commit 498b2b78908a2b1173360034bafa265cac67002f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 17 15:25:52 2011 +0100
+
+    RESERVED_KEYS fetching improved
+
+commit 4dbdc4b1fb569f7239157aa19b8db8a0ec964d64
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 17 15:03:19 2011 +0100
+
+    Documentation updated
+
+commit bb0670ef630cab63736145b3554739be6630f307
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 17 15:02:50 2011 +0100
+
+    Fixes in README
+
+commit e8ada4542f3ec98a669a39443c7e556a61894e44
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 15 14:46:09 2011 +0100
+
+    README examples fixed
+
 commit dc6ff4d63c7df14681c42ee9799c495aed8140de
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Jan 15 14:35:00 2011 +0100
