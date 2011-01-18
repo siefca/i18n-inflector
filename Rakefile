@@ -14,12 +14,17 @@ require 'i18n-inflector/version'
 
 require 'hoe'
 
-task :default => [:test]
+task :default do
+  Rake::Task[:test].invoke
+  Rake::Task[:test].reenable
+  Rake::Task[:testv4].invoke
+end
 
 # Tests for I18n in version 4
 task :testv4 do
   gemprev = ENV['BUNDLE_GEMFILE']
   ENV['BUNDLE_GEMFILE'] = 'ci/i18nv4-Gemfile'
+  `bundle install`
   Rake::Task[:test].invoke
   ENV['BUNDLE_GEMFILE'] = gemprev
 end
@@ -43,7 +48,7 @@ Hoe.spec 'i18n-inflector' do
   self.description     =  I18n::Inflector::DESCRIPTION
   self.url             =  I18n::Inflector::URL
 
-  self.test_globs       = %w(test/**/*_test.rb)
+  self.test_globs      = %w(test/**/*_test.rb)
 
   self.remote_rdoc_dir = ''
   self.rsync_args      << '--chmod=a+rX'
