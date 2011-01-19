@@ -57,7 +57,7 @@ module I18n
       @original_kind, @kind, @token = original_kind, kind, token
       and_cannot = kind.nil? ? "" : "and cannot be used with kind #{kind.inspect}"
       super "inflection token #{token.inspect} was already assigned " +
-            "to kind #{original_kind}" + and_cannot
+            "to kind #{original_kind} " + and_cannot
     end
   end
 
@@ -69,10 +69,10 @@ module I18n
     def initialize(locale, token, kind, pointer)
       @locale, @token, @kind, @pointer = locale, token, kind, pointer
       what = token == :default ? "default token" : "alias"
-      lang = locale.nil? ? "" : "for language #{locale.inspect} "
-      kinn = kind.nil? ?   "" : "of kind #{kind.inspect} "
+      lang = locale.nil? ? "" : " for language #{locale.inspect} "
+      kinn = kind.nil? ?   "" : " of kind #{kind.inspect} "
       super "the #{what} #{token.inspect}" + kinn + lang +
-            "points to an unknown token #{pointer.inspect}"
+            " points to an unknown token #{pointer.inspect}"
     end
   end
 
