@@ -34,18 +34,21 @@ module I18n
     end
     module_function :get_reserved_keys
 
-    # Contains <tt>@{</tt> string that is used to quickly fallback
+    # Contains <tt>@</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
-    FAST_MATCHER  = '@{'
+    FAST_MATCHER  = '@'
 
     # Contains a regular expression that catches patterns.
-    PATTERN       = /(.?)@\{([^\}]+)\}/
+    PATTERN       = /(.?)@([^\{]*)\{([^\}]+)\}/
 
     # Contains a regular expression that catches tokens.
     TOKENS        = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
 
     # Contains a symbol that indicates an alias.
     ALIAS_MARKER  = '@'
+
+    # Contains a symbol that indicates a named pattern.
+    NAMED_MARKER  = '+'
 
     # Conatins a symbol used to separate multiple tokens.
     OPERATOR_MULTI = ','
@@ -550,17 +553,29 @@ module I18n
 
         string.gsub(I18n::Inflector::PATTERN) do
           pattern_fix     = $1
-          pattern_content = $2
+          strict_kind     = $2
+          pattern_content = $3
           ext_pattern     = $&
           parsed_kind     = nil
           default_token   = nil
           ext_value       = nil
           ext_freetext    = ''
           found           = false
+          has_strict      = false
           parsed_default_v= nil
 
           # leave escaped pattern as is
           next ext_pattern[1..-1] if I18n::Inflector::ESCAPES.has_key?(pattern_fix)
+
+          # set parsed kind if strict kind is given (named pattern is present)
+          strict_kind = nil if strict_kind.to_s.empty?
+
+          unless strict_kind.nil?
+
+            strict_kind = strict_kind.to_sym
+            parsed_kind = strict_kind
+            has_strict  = true
+          end
 
           # process pattern content's
           pattern_content.scan(I18n::Inflector::TOKENS) do
@@ -597,15 +612,15 @@ module I18n
                   next
                 end
                 t = t.to_sym
-                t = idb.get_true_token(t) if aliased_patterns
+                t = idb.get_true_token(t, strict_kind, has_strict) if aliased_patterns
                 negatives[t] = true
               end
 
               t = t.to_sym
-              t = idb.get_true_token(t) if aliased_patterns
+              t = idb.get_true_token(t, strict_kind, has_strict) if aliased_patterns
 
               # get kind for that token
-              kind  = idb.get_kind(t)
+              kind  = idb.get_kind(t, strict_kind)
               if kind.nil?
                 raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
@@ -614,7 +629,7 @@ module I18n
               # set processed kind after matching first token in a pattern
               if parsed_kind.nil?
                 parsed_kind   = kind
-                default_token = idb.get_default_token(parsed_kind)
+                default_token = idb.get_default_token(parsed_kind, has_strict)
               elsif parsed_kind != kind
                 # different kinds in one pattern are prohibited
                 raise I18n::MisplacedInflectionToken.new(ext_pattern, t, parsed_kind) if raises
@@ -639,7 +654,7 @@ module I18n
               option = unknown_defaults ? default_token : nil
             else
               # validate option and if it's unknown try in aliases
-              option = idb.get_true_token(option.to_sym)
+              option = idb.get_true_token(option.to_sym, strict_kind, has_strict)
 
               # if still nothing then fall back to default value
               # for a kind in unknown_defaults switch is on

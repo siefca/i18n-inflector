@@ -88,8 +88,8 @@ module I18n
           unless subdata.nil?
             subdata = (subdata[:inflections] || subdata['inflections'])
             unless subdata.nil?
-              inflection_data = load_inflection_tokens(locale, r[:i18n][:inflections])
-              @inflector.add_database(inflection_data)
+              inflections = load_inflection_tokens(locale, r[:i18n][:inflections])
+              @inflector.add_database(inflections)
             end
           end
         end
@@ -209,7 +209,8 @@ module I18n
       #   Loads inflection tokens for the given locale using data given in an argument
       #   @param [Symbol] locale the locale to use and work for
       #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
-      #   @return [Hash,nil] the internal Hash containing inflections or +nil+ if the given subtree was wrong or empty
+      #   @return [I18n::Inflector::InflectionData,nil] the inflection data
+      #     or +nil+ if the given subtree was wrong or empty
       def load_inflection_tokens(locale, subtree=nil)
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
@@ -217,11 +218,23 @@ module I18n
         idb = I18n::Inflector::InflectionData.new(locale)
 
         inflections_tree.each_pair do |kind, tokens|
+          strict_kind = nil
+          is_strict = false
+
+          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
+            strict_kind = kind.to_s[1..-1]
+            next if strict_kind.empty?
+            is_strict = true
+            kind = strict_kind = strict_kind.to_sym
+            idb.add_strict_kind(kind)
+          end
+
           tokens.each_pair do |token, description|
 
             # test for duplicate
-            if idb.has_token?(token)
-              raise I18n::DuplicatedInflectionToken.new(idb.get_kind(token), kind, token)
+            haskind = is_strict ? kind : nil  # do not test kind at all for a non-strict kinds
+            if idb.has_token?(token, haskind, is_strict)
+              raise I18n::DuplicatedInflectionToken.new(idb.get_kind(token, strict_kind), kind, token)
             end
 
             # validate token's name
@@ -236,23 +249,31 @@ module I18n
 
             # handle default token for a kind
             if token == :default
-              if idb.has_default_token?(kind) # should never happend unless someone is messing with @translations
+              if idb.has_default_token?(kind, is_strict) # should never happend unless someone is messing with @translations
                 raise I18n::DuplicatedInflectionToken.new(kind, nil, token)
               end
-              idb.set_default_token(kind, description)
+              idb.set_default_token(kind, description, is_strict)
               next
             end
 
-            idb.add_token(token, kind, description)
+            idb.add_token(token, kind, description, is_strict)
           end
         end
 
         # handle aliases
         inflections_tree.each_pair do |kind, tokens|
+          strict_kind = nil
+
+          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
+            strict_kind = kind.to_s[1..-1]
+            next if strict_kind.empty?
+            strict_kind = strict_kind.to_sym
+          end
+
           tokens.each_pair do |token, description|
             next if description[0..0] != I18n::Inflector::ALIAS_MARKER
             real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
-            idb.add_alias(token, real_token) unless real_token.nil?
+            idb.add_alias(token, real_token, strict_kind) unless real_token.nil?
           end
         end
 

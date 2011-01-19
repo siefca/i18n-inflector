@@ -4,8 +4,8 @@
 # Copyright:: (c) 2011 by Paweł Wilk
 # License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
-# This file contains utility methods,
-# that are used by I18n::Inflector and I18n::Backend::Inflector.
+# This file contains class that is used to keep
+# inflection data.
 
 # @abstract This namespace is shared with I18n subsystem.
 module I18n
@@ -15,13 +15,27 @@ module I18n
     # and basic operations for performing on them.
     class InflectionData
 
+      class <<self
+
+        def dummy_hash
+          @dummy_hash ||= Hash.new
+        end
+
+        def dummy_token
+          @dummy_token ||= {:kind=>nil,:target=>nil,:description=>nil}
+        end
+
+      end
+
       # Initializes internal structures.
       def initialize(locale=nil)
-        dummy_token = {:kind=>nil,:target=>nil,:description=>nil}
-        @kinds      = Hash.new(false)
-        @tokens     = Hash.new(dummy_token)
-        @defaults   = {}
-        @locale     = locale
+        @kinds            = Hash.new(self.class.dummy_hash)
+        @tokens           = Hash.new(self.class.dummy_hash)
+        @defaults         = Hash.new(self.class.dummy_hash)
+        @tokens[nil]      = Hash.new(self.class.dummy_token)
+        @kinds[nil]       = Hash.new(false)
+        @defaults[nil]    = Hash.new
+        @locale           = locale
       end
 
       # Locale that this database works on.
@@ -33,19 +47,26 @@ module I18n
       # @param [Symbol] target the target token for the given +alias+
       # @return [Boolean] +true+ if everything went ok, +false+ otherwise
       #  (in case of bad or +nil+ names or non-existent targets)
-      def add_alias(name, target)
-        target  = target.to_s
-        name    = name.to_s
-        return false if (name.empty? || target.empty?)
+      def add_alias(name, target, strict_kind=nil)
+        return false if (name.to_s.empty? || target.to_s.empty?)
         name    = name.to_sym
         target  = target.to_sym
-        kind    = get_kind(target)
+        strict_kind = strict_kind.to_sym unless strict_kind.nil?
+        kind    = get_kind(target, strict_kind)
         return false if kind.nil?
-        @tokens[name] = {}
-        @tokens[name][:kind]         = kind
-        @tokens[name][:target]       = target
-        @tokens[name][:description]  = @tokens[target][:description]
+        add_strict_kind(strict_kind)
+        token                   = @tokens[strict_kind][name] = {}
+        token[:kind]            = kind
+        token[:target]          = target
+        token[:description]     = @tokens[strict_kind][target][:description]
         true
+      end
+
+      # Adds strict kind
+      def add_strict_kind(name)
+        return false if name.to_s.empty?
+        name = name.to_sym
+        @tokens[name] = Hash.new(self.class.dummy_token) unless @tokens.has_key?(name)
       end
 
       # Adds a token (overwriting existing token).
@@ -54,12 +75,15 @@ module I18n
       # @param [Symbol] kind the kind of a token
       # @param [String] description the description of a token
       # @return [void]
-      def add_token(token, kind, description)
+      def add_token(token, kind, description, strict=false)
         token = token.to_sym
-        @tokens[token] = {}
-        @tokens[token][:kind]         = kind.to_sym
-        @tokens[token][:description]  = description.to_s
-        @kinds[kind] = true
+        kind  = kind.to_sym
+        strict_kind = strict ? kind : nil
+        add_strict_kind(strict_kind)
+        token                 = @tokens[strict_kind][token] = {}
+        token[:kind]          = kind
+        token[:description]   = description.to_s
+        @kinds[strict_kind][kind] = true
       end
 
       # Sets the default token for a kind.
@@ -68,8 +92,10 @@ module I18n
       #   token should be assigned
       # @param [Symbol] target the token to set
       # @return [void]
-      def set_default_token(kind, target)
-        @defaults[kind.to_sym] = target.to_sym
+      def set_default_token(kind, target, strict=false)
+        strict_kind = strict ? kind.to_sym : nil
+        @defaults[strict_kind] = {} unless @defaults.has_key?(strict_kind)
+        @defaults[strict_kind][kind.to_sym] = target.to_sym
       end
 
       # Tests if the token is a true token.
@@ -86,8 +112,9 @@ module I18n
       #   @return [Boolean] +true+ if the given +token+ is
       #     a token and not an alias, and is a kind of
       #     the given kind, +false+ otherwise 
-      def has_true_token?(token, kind=nil)
-        o = @tokens[token]
+      def has_true_token?(token, kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        o = @tokens[strict_kind][token]
         k = o[:kind]
         return false if (k.nil? || !o[:target].nil?)
         kind.nil? ? true : k == kind
@@ -107,8 +134,9 @@ module I18n
       #   @return [Boolean] +true+ if the given +token+ 
       #     (which may be an alias) exists and if kind of
       #     the given kind
-      def has_token?(token, kind=nil)
-        k = @tokens[token][:kind]
+      def has_token?(token, kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        k = @tokens[strict_kind][token][:kind]
         kind.nil? ? !k.nil? : k == kind
       end
 
@@ -116,8 +144,8 @@ module I18n
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Boolean] +true+ if the given +kind+ exists
-      def has_kind?(kind)
-        @kinds.has_key?(kind)
+      def has_kind?(kind, strict=false)
+        strict ? @kinds.has_key?(strict_kind) : @kinds[nil].has_key?(kind)
       end
 
       # Tests if a kind has a default token assigned.
@@ -125,8 +153,9 @@ module I18n
       # @param [Symbol] kind the identifier of a kind
       # @return [Boolean] +true+ if there is a default
       #   token of the given kind
-      def has_default_token?(kind)
-        @defaults.has_key?(kind)
+      def has_default_token?(kind, strict=false)
+        strict_kind = strict ? kind : nil
+        @defaults[strict_kind].has_key?(kind)
       end
 
       # Tests if a given alias is really an alias.
@@ -142,8 +171,9 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Boolean] +true+ if the given alias is really an alias
       #     being a kind of the given kind, +false+ otherwise
-      def has_alias?(alias_name, kind=nil)
-        o = @tokens[alias_name]
+      def has_alias?(alias_name, kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        o = @tokens[strict_kind][alias_name]
         return false if o[:target].nil?
         kind.nil? ? true : o[:kind] == kind
       end
@@ -161,9 +191,10 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the true tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)
-      def get_true_tokens(kind=nil)
-        tokens = @tokens.reject{|k,v| !v[:target].nil?}
-        tokens = tokens.reject{|k,v| v[:kind]!=kind} unless kind.nil?
+      def get_true_tokens(kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        tokens = @tokens[strict_kind].reject{|k,v| !v[:target].nil?}
+        tokens = tokens.reject{|k,v| v[:kind]!=kind} unless (strict || kind.nil?)
         tokens.merge(tokens){|k,v| v[:description]}
       end
 
@@ -180,9 +211,10 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the aliases of the given kind in a
       #     form of Hash (<tt>alias => target</tt>)
-      def get_aliases(kind=nil)
-        aliases = @tokens.reject{|k,v| v[:target].nil?}
-        aliases = aliases.reject{|k,v| v[:kind]!=kind} unless kind.nil?
+      def get_aliases(kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        aliases = @tokens[strict_kind].reject{|k,v| v[:target].nil?}
+        aliases = aliases.reject{|k,v| v[:kind]!=kind} unless (strict || kind.nil?)
         aliases.merge(aliases){|k,v| v[:target]}
       end
 
@@ -202,8 +234,8 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description|target</tt>)
-      def get_raw_tokens(kind=nil)
-        get_true_tokens(kind).merge(get_aliases(kind))
+      def get_raw_tokens(kind=nil, strict=false)
+        get_true_tokens(kind, strict).merge(get_aliases(kind, strict))
       end
 
       # Reads the all the tokens (including aliases).
@@ -221,9 +253,10 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)
-      def get_tokens(kind=nil)
-        tokens = @tokens
-        tokens = tokens.reject{|k,v| v[:kind]!=kind} unless kind.nil?
+      def get_tokens(kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        tokens = @tokens[strict_kind]
+        tokens = tokens.reject{|k,v| v[:kind]!=kind} unless (strict || kind.nil?)
         tokens.merge(tokens){|k,v| v[:description]}
       end
 
@@ -232,8 +265,8 @@ module I18n
       # @param [Symbol] alias_name the identifier of an alias
       # @return [Symbol,nil] the token that the given alias points to
       #   or +nil+ if it isn't really an alias
-      def get_target_for_alias(alias_name)
-        @tokens[alias_name][:target]
+      def get_target_for_alias(alias_name, strict_kind=nil)
+        @tokens[strict_kind][alias_name][:target]
       end
 
       # Gets a kind of the given token or alias.
@@ -241,8 +274,8 @@ module I18n
       # @param [Symbol] token identifier of a token
       # @return [Symbol,nil] the kind of the given +token+
       #   or +nil+ if the token is unknown
-      def get_kind(token)
-        @tokens[token][:kind]
+      def get_kind(token, strict_kind=nil)
+        @tokens[strict_kind][token][:kind]
       end
 
       # Gets a true token for the given identifier.
@@ -263,20 +296,21 @@ module I18n
       #   @return [Symbol,nil] the true token for the given +token+
       #     or +nil+ if the token is unknown or is not kind of the
       #     given kind
-      def get_true_token(token, kind=nil)
-        o = @tokens[token]
+      def get_true_token(token, kind=nil, strict=false)
+        strict_kind = strict ? kind : nil
+        o = @tokens[strict_kind][token]
         k = o[:kind]
         return nil if k.nil?
         r = (o[:target] || token)
-        return r if kind.nil?
+        return r if (kind.nil? || strict)
         k == kind ? r : nil
       end
 
       # Gets all known kinds.
       # 
       # @return [Array<Symbol>] an array containing all the known kinds
-      def get_kinds
-        @kinds.keys
+      def get_kinds(strict=false)
+        strict ? @kinds.keys - [nil] : @kinds[nil].keys
       end
 
       # Reads the default token of a kind.
@@ -285,8 +319,9 @@ module I18n
       # @param [Symbol] kind the identifier of a kind
       # @return [Symbol,nil] the default token of the given +kind+
       #   or +nil+ if there is no default token set
-      def get_default_token(kind)
-        @defaults[kind]
+      def get_default_token(kind, strict=false)
+        strict_kind = strict ? kind : nil
+        @defaults[strict_kind][kind]
       end
 
       # Gets a description of a token or alias.
@@ -295,8 +330,8 @@ module I18n
       # @param [Symbol] token the identifier of a token
       # @return [String,nil] the string containing description of the given
       #   token (which may be an alias) or +nil+ if the token is unknown
-      def get_description(token)
-        @tokens[token][:description]
+      def get_description(token, strict_kind=nil)
+        @tokens[strict_kind][token][:description]
       end
 
       # This method validates default tokens assigned
@@ -307,10 +342,12 @@ module I18n
       #   two dimensional array containing kind and target
       #   in case of error while geting a token
       def validate_default_tokens
-        @defaults.each_pair do |kind, pointer|
-          ttok = get_true_token(pointer)
-          return [kind, pointer] if ttok.nil?
-          set_default_token(kind, ttok) 
+        @defaults.each do |strict_kind, obj|
+          obj.each_pair do |kind, pointer|
+            ttok = get_true_token(pointer, strict_kind)
+            return [kind, pointer] if ttok.nil?
+            set_default_token(kind, ttok, strict_kind) 
+          end
         end
         return nil
       end
@@ -319,8 +356,8 @@ module I18n
       # 
       # @return [Boolean] +true+ if the inflection data
       #   have no elements
-      def empty?
-        @tokens.empty?
+      def empty?  # fixme: strict kinds inspection
+        @tokens.empty? || (@tokens.count == 1 && @tokens[nil].empty?)
       end
 
     end # InflectionData

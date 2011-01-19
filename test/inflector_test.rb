@@ -242,6 +242,16 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Sir!', I18n.t('hi', :gender => :masculine, :locale => :xx)
   end
 
+  test "backend inflector translate: recognizes named patterns and strict kinds" do
+    store_translations(:xx, :i18n => { :inflections => { :"+gender" => { :s => 'sir', :o => 'other', :n => 'n', :default => 'n' }}})
+    store_translations(:xx, 'hi' => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
+    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s,       :locale => :xx)
+    assert_equal 'Dear Other!', I18n.t('hi', :gender => :o,       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi',                      :locale => :xx)
+    assert_equal 'Dear All!',   I18n.t('hi', :gender => "",       :locale => :xx)
+    assert_equal 'Dear All!',   I18n.t('hi', :gender => :unknown, :locale => :xx)
+  end
+
   test "inflector inflected_locales: lists languages that support inflection" do
     assert_equal [:xx], I18n.inflector.inflected_locales
     assert_equal [:xx], I18n.inflector.inflected_locales(:gender)
@@ -323,7 +333,9 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal h,   I18n.inflector.tokens(:gender, :xx)
     I18n.locale = :xx
     assert_equal h,   I18n.inflector.tokens(:gender)
+    #p I18n.inflector.instance_variable_get(:@idb)[:xx].instance_variable_get(:@tokens)
     assert_equal ha,  I18n.inflector.tokens
+    
   end
 
   test "inflector true_tokens: lists true tokens" do
