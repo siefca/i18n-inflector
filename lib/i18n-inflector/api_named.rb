@@ -269,7 +269,7 @@ module I18n
         return {} if kind.to_s.empty?
         data_safe(locale).get_aliases(kind.to_sym)
       end
-      
+
       # Gets the description of the given inflection token.
       # 
       # @api public

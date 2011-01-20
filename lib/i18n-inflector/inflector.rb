@@ -79,7 +79,7 @@ module I18n
     class Core < API
 
       attr_reader :named
-      
+
       # Options controlling the engine.
       # 
       # @api public
