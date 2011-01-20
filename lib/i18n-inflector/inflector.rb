@@ -98,13 +98,16 @@ module I18n
       #   I18n.translate('welcome', :inflector_raises => true)
       attr_reader :options
 
+      #attr_reader :strict
+
       # Initilizes inflector by creating internal databases for storing
       # inflection hashes and options.
       # 
       # @api public
       def initialize
         @idb = {}
-        @options = I18n::Inflector::InflectionOptions.new
+        @options  = I18n::Inflector::InflectionOptions.new
+        #@strict   = I18n::Inflector::Core::Strict.new
       end
 
       # Adds database for the specified locale.
@@ -112,11 +115,11 @@ module I18n
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @param [Symbol] locale the locale for which the infleciton database is created
-      # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
+      # @return [I18n::Inflector::InflectionStore] the new object for keeping inflection data
       #   for the given +locale+
       def new_database(locale)
         locale = prep_locale(locale)
-        @idb[locale] = I18n::Inflector::InflectionData.new(locale)
+        @idb[locale] = I18n::Inflector::InflectionStore.new(locale)
       end
 
       # Attaches {I18n::Inflector::InflectionData} instance to the
@@ -561,20 +564,21 @@ module I18n
           ext_value       = nil
           ext_freetext    = ''
           found           = false
-          has_strict      = false
+          subdb           = idb
           parsed_default_v= nil
 
           # leave escaped pattern as is
           next ext_pattern[1..-1] if I18n::Inflector::ESCAPES.has_key?(pattern_fix)
 
           # set parsed kind if strict kind is given (named pattern is present)
-          strict_kind = nil if strict_kind.to_s.empty?
+
+          strict_kind = nil if (!strict_kind.nil? && strict_kind.empty?)
 
           unless strict_kind.nil?
-
-            strict_kind = strict_kind.to_sym
-            parsed_kind = strict_kind
-            has_strict  = true
+            strict_kind   = strict_kind.to_sym
+            parsed_kind   = strict_kind
+            subdb         = idb.strict
+            default_token = subdb.get_default_token(parsed_kind)
           end
 
           # process pattern content's
@@ -612,15 +616,15 @@ module I18n
                   next
                 end
                 t = t.to_sym
-                t = idb.get_true_token(t, strict_kind, has_strict) if aliased_patterns
+                t = subdb.get_true_token(t, strict_kind) if aliased_patterns
                 negatives[t] = true
               end
 
               t = t.to_sym
-              t = idb.get_true_token(t, strict_kind, has_strict) if aliased_patterns
+              t = subdb.get_true_token(t, strict_kind) if aliased_patterns
 
               # get kind for that token
-              kind  = idb.get_kind(t, strict_kind)
+              kind  = subdb.get_kind(t, strict_kind)
               if kind.nil?
                 raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
                 next
@@ -629,7 +633,7 @@ module I18n
               # set processed kind after matching first token in a pattern
               if parsed_kind.nil?
                 parsed_kind   = kind
-                default_token = idb.get_default_token(parsed_kind, has_strict)
+                default_token = subdb.get_default_token(parsed_kind)
               elsif parsed_kind != kind
                 # different kinds in one pattern are prohibited
                 raise I18n::MisplacedInflectionToken.new(ext_pattern, t, parsed_kind) if raises
@@ -654,7 +658,7 @@ module I18n
               option = unknown_defaults ? default_token : nil
             else
               # validate option and if it's unknown try in aliases
-              option = idb.get_true_token(option.to_sym, strict_kind, has_strict)
+              option = subdb.get_true_token(option.to_sym, strict_kind)
 
               # if still nothing then fall back to default value
               # for a kind in unknown_defaults switch is on
@@ -703,7 +707,7 @@ module I18n
             # in a pattern
             kind    = nil
             token   = options[parsed_kind]
-            kind    = idb.get_kind(token)
+            kind    = subdb.get_kind(token)
             result  = parsed_default_v unless kind.nil?
           end
 
@@ -722,7 +726,7 @@ module I18n
 
       # @private
       def data_safe(locale=nil)
-        @idb[prep_locale(locale)] || I18n::Inflector::InflecitonData.new
+        @idb[prep_locale(locale)] || I18n::Inflector::InflecitonStore.new
       end
 
     end # class Core

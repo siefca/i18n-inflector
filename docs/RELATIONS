@@ -2,7 +2,11 @@
 
 * Module {I18n::Inflector} containing everything
 * Class {I18n::Inflector::Core} used to create inflector object attached to I18n backend
-* Class {I18n::Inflector::InflectionData} used by {I18n::Inflector::Core} instances to store
+* Class {I18n::Inflector::InflectionData} used by {I18n::Inflector::InflectionStore} instances to store
+  inflection data for regular kinds and tokens
+* Class {I18n::Inflector::InflectionData::Strict} used by {I18n::Inflector::InflectionStore} instances to store
+  inflection data for strict kinds and assigned tokens for handling named patterns
+* Class {I18n::Inflector::InflectionStore} used by {I18n::Inflector::Core} instances to store
   inflection data and manipulate them, also is used by {I18n::Backend::Inflector} instances when loading
   translations to create new database within {I18n::Inflector::Core} instance attachend to backend
 * Class {I18n::Inflector::InflectionOptions} is used inside of {I18n::Inflector::Core} for keeping
@@ -18,8 +22,11 @@
   mainly it controls a behavior of interpolation method
 * {I18n::Inflector::Core} has an instance variable defined that contains database of translation data
 * Each entry in the internal database of {I18n::Inflector::Core} is indexed by locale and is kind of 
-  {I18n::Inflector::InflectionData}
+  {I18n::Inflector::InflectionStore}
+* Class {I18n::Inflector::InflectionStore} is a child class of {I18n::Inflector::InflectionData}
+* Class {I18n::Inflector::InflectionStore} contains reference to an instance of {I18n::Inflector::InflectionData::Strict}
+  in the instance variable +strict+
 * When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
-  takes the loaded data, processes the +i18n.inflections+ part for each locale and creates configuration
-  that is keeped as an instance of {I18n::Inflector::InflectionData}. That data is registered within the
+  takes the loaded data, processes the <tt>i18n.inflections</tt> part for each locale and creates configuration
+  that is keeped as an instance of {I18n::Inflector::InflectionStore}. That data is registered within the
   inflecor object attached to backend that loaded the translations.

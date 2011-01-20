@@ -69,10 +69,10 @@ module I18n
     def initialize(locale, token, kind, pointer)
       @locale, @token, @kind, @pointer = locale, token, kind, pointer
       what = token == :default ? "default token" : "alias"
-      lang = locale.nil? ? "" : " for language #{locale.inspect} "
-      kinn = kind.nil? ?   "" : " of kind #{kind.inspect} "
-      super "the #{what} #{token.inspect}" + kinn + lang +
-            " points to an unknown token #{pointer.inspect}"
+      lang = locale.nil? ? "" : "for language #{locale.inspect} "
+      kinn = kind.nil? ?   "" : "of kind #{kind.inspect} "
+      super "the #{what} #{token.inspect} " + kinn + lang +
+            "points to an unknown token #{pointer.inspect}"
     end
   end
 

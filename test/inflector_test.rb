@@ -205,10 +205,10 @@ class I18nInflectorTest < Test::Unit::TestCase
 
   test "backend inflector translate: works with negative tokens" do
     store_translations(:xx, 'hi' => 'Dear @{!m:Lady|m:Sir|n:You|All}!')
-    assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :n, :locale => :xx)
-    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :m, :locale => :xx)
-    assert_equal 'Dear Lady!',  I18n.t('hi', :locale => :xx)
-    assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :unknown, :locale => :xx)
+    assert_equal 'Dear Lady!',    I18n.t('hi', :gender => :n, :locale => :xx)
+    assert_equal 'Dear Sir!',     I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Dear Lady!',    I18n.t('hi', :locale => :xx)
+    assert_equal 'Dear Lady!',    I18n.t('hi', :gender => :unknown, :locale => :xx)
     store_translations(:xx, 'hi' => 'Hello @{!m:Ladies|n:You}')
     assert_equal 'Hello Ladies',  I18n.t('hi', :gender => :n, :locale => :xx)
     assert_equal 'Hello Ladies',  I18n.t('hi', :gender => :f, :locale => :xx)
@@ -244,12 +244,12 @@ class I18nInflectorTest < Test::Unit::TestCase
 
   test "backend inflector translate: recognizes named patterns and strict kinds" do
     store_translations(:xx, :i18n => { :inflections => { :"+gender" => { :s => 'sir', :o => 'other', :n => 'n', :default => 'n' }}})
-    store_translations(:xx, 'hi' => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
+    store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
     assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s,       :locale => :xx)
     assert_equal 'Dear Other!', I18n.t('hi', :gender => :o,       :locale => :xx)
     assert_equal 'Dear You!',   I18n.t('hi',                      :locale => :xx)
-    assert_equal 'Dear All!',   I18n.t('hi', :gender => "",       :locale => :xx)
-    assert_equal 'Dear All!',   I18n.t('hi', :gender => :unknown, :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => "",       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => :unknown, :locale => :xx)
   end
 
   test "inflector inflected_locales: lists languages that support inflection" do
