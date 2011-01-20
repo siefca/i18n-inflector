@@ -1,13 +1,4 @@
 == Near future
 
-Inflector jako pochodna InflectionStore?
-
-* update documentation for InflectionDataStrict and InflecitonStore
-* add duplication tests for named patterns, and other tests
-* add some negative tests (e.g. empty kind, kinds as nils or empty striongs, tokens as empty strings...)
-
-== Distant future
-
-* use tilde symbols (~) to allow multiple negative matches. the values will be joined as they are interpolated (with other negative matches or a positive; it just means that the processing won't stop on some particular token) – is this good idea anyway?
-
+* update documentation for InflectionDataStrict and InflecitonStore and other new classes
 

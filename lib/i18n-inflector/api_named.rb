@@ -12,20 +12,17 @@ module I18n
 
   module Inflector
 
-    # Instances of this class, the inflectors, are attached
-    # to I18n backends. This class contains common operations
-    # that programmer can perform on inflections regarding named
-    # patterns. It keeps the database of {I18n::Inflector::InflectionStore}
-    # instances indexed by locale and has methods to access them in an easy way.
-    # Instances of this class are intended to share internal database
-    # with other object that is kind of the base class ({I18n::Inflector::API}).
+    # This class contains common operations
+    # that can be performed on inflection data referring to named
+    # patterns. It uses the database containing instances of {I18n::Inflector::InflectionStore}
+    # indexed by locale and has methods to access them in an easy way.
     # 
     # ==== Usage
     # You can access the instance of this class attached to
     # default I18n backend by entering:
-    #   I18n.backend.inflector
+    #   I18n.backend.inflector.named
     # or in a short form:
-    #   I18n.inflector
+    #   I18n.inflector.named
     class API::Named < API
 
       # Checks if the given +token+ is an alias.
