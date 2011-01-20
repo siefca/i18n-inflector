@@ -10,7 +10,8 @@ require 'i18n-inflector/inflection_data_strict'
 require 'i18n-inflector/inflection_store'
 require 'i18n-inflector/options'
 require 'i18n-inflector/backend'
+require 'i18n-inflector/api'
+require 'i18n-inflector/api_named'
 require 'i18n-inflector/inflector'
 
 I18n::Backend::Simple.send(:include, I18n::Backend::Inflector)
-

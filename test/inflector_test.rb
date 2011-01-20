@@ -21,10 +21,21 @@ class I18nInflectorTest < Test::Unit::TestCase
                                               :default    => 'neutral' },
                                             :person => {
                                               :i   => 'I',
-                                              :you => 'You'}
+                                              :you => 'You'},
+                                            :"+gender" => {
+                                                :m => 'male',
+                                                :f => 'female',
+                                                :n => 'neuter',
+                                                :s => 'strange',
+                                                :masculine  => '@m',
+                                                :feminine   => '@f',
+                                                :neuter     => '@n',
+                                                :neutral    => '@neuter',
+                                                :default    => 'neutral' }
                                         }   })
 
-    store_translations(:xx, 'welcome' => 'Dear @{f:Lady|m:Sir|n:You|All}!')
+    store_translations(:xx, 'welcome'       => 'Dear @{f:Lady|m:Sir|n:You|All}!')
+    store_translations(:xx, 'named_welcome' => 'Dear @gender{f:Lady|m:Sir|n:You|All}!')
   end
 
   test "backend inflector has methods to test its switches" do
@@ -257,6 +268,11 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal [:xx], I18n.inflector.inflected_locales(:gender)
   end
 
+  test "inflector.named inflected_locales: lists languages that support inflection" do
+    assert_equal [:xx], I18n.inflector.named.inflected_locales
+    assert_equal [:xx], I18n.inflector.named.inflected_locales(:gender)
+  end
+
   test "inflector locale_supported?: checks if a language supports inflection" do
     assert_equal true,  I18n.inflector.locale_supported?(:xx)
     assert_equal false, I18n.inflector.locale_supported?(:pl)
@@ -271,6 +287,21 @@ class I18nInflectorTest < Test::Unit::TestCase
     I18n.locale = ""
     assert_equal false, I18n.inflector.locale_supported?
   end
+  
+  test "inflector.named locale_supported?: checks if a language supports inflection" do
+    assert_equal true,  I18n.inflector.named.locale_supported?(:xx)
+    assert_equal false, I18n.inflector.named.locale_supported?(:pl)
+    assert_equal false, I18n.inflector.named.locale_supported?(nil)
+    assert_equal false, I18n.inflector.named.locale_supported?("")
+    I18n.locale = :xx
+    assert_equal true,  I18n.inflector.named.locale_supported?
+    I18n.locale = :pl
+    assert_equal false, I18n.inflector.named.locale_supported?
+    I18n.locale = nil
+    assert_equal false, I18n.inflector.named.locale_supported?
+    I18n.locale = ""
+    assert_equal false, I18n.inflector.named.locale_supported?
+  end
 
   test "inflector has_token?: checks if a token exists" do
     assert_equal true, I18n.inflector.has_token?(:neuter, :gender, :xx)
@@ -282,7 +313,17 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal true, I18n.inflector.has_token?(:you)  
     assert_equal false,I18n.inflector.has_token?(:faafaffafafa)
   end
-
+  
+  test "inflector.named has_token?: checks if a token exists" do
+    assert_equal true,  I18n.inflector.named.has_token?(:neuter, :gender, :xx)
+    assert_equal true,  I18n.inflector.named.has_token?(:f, :gender, :xx)
+    assert_equal false, I18n.inflector.named.has_token?(:you, :gender)
+    I18n.locale = :xx
+    assert_equal true,  I18n.inflector.named.has_token?(:f, :gender)
+    assert_equal false, I18n.inflector.named.has_token?(:you, :gender)  
+    assert_equal false, I18n.inflector.named.has_token?(:faafaffafafa)
+  end
+  
   test "inflector kind: checks what is the inflection kind of the given token" do
     assert_equal :gender, I18n.inflector.kind(:neuter, :xx)
     assert_equal :gender, I18n.inflector.kind(:f, :xx)
@@ -292,6 +333,16 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal :gender, I18n.inflector.kind(:f)
     assert_equal :person, I18n.inflector.kind(:you)  
     assert_equal nil, I18n.inflector.kind(:faafaffafafa)
+  end
+
+  test "inflector.named kind: checks what is the inflection kind of the given token" do
+    assert_equal :gender, I18n.inflector.named.kind(:neuter, :gender, :xx)
+    assert_equal :gender, I18n.inflector.named.kind(:f, :gender, :xx)
+    I18n.locale = :xx
+    assert_equal :gender, I18n.inflector.named.kind(:neuter, :gender)
+    assert_equal :gender, I18n.inflector.named.kind(:f, :gender)
+    assert_equal nil, I18n.inflector.named.kind(:f, :nontrue)  
+    assert_equal nil, I18n.inflector.named.kind(:faafaffafafa)
   end
 
   test "inflector true_token: gets true token for a given token name" do
@@ -305,6 +356,18 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal nil, I18n.inflector.true_token(:f, :nokind, :xx)
     assert_equal nil, I18n.inflector.true_token(:faafaffafafa)
   end
+  
+  test "inflector.named true_token: gets true token for a given token name" do
+    assert_equal :n,  I18n.inflector.named.true_token(:neuter, :gender, :xx)
+    assert_equal :f,  I18n.inflector.named.true_token(:f, :gender, :xx)
+    I18n.locale = :xx
+    assert_equal :n,  I18n.inflector.named.true_token(:neuter, :gender)
+    assert_equal :f,  I18n.inflector.named.true_token(:f, :gender)
+    assert_equal :f,  I18n.inflector.named.true_token(:f, :gender, :xx)
+    assert_equal nil, I18n.inflector.named.true_token(:f, :person, :xx)
+    assert_equal nil, I18n.inflector.named.true_token(:f, nil, :xx)
+    assert_equal nil, I18n.inflector.named.true_token(:faafaffafafa)
+  end
 
   test "inflector has_true_token?: tests if true token exists for a given token name" do
     assert_equal false, I18n.inflector.has_true_token?(:neuter, :xx)
@@ -317,12 +380,31 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal false, I18n.inflector.has_true_token?(:f, :nokind, :xx)
     assert_equal false, I18n.inflector.has_true_token?(:faafaffafafa)
   end
+  
+  test "inflector.named has_true_token?: tests if true token exists for a given token name" do
+    assert_equal false, I18n.inflector.named.has_true_token?(:neuter, :gender, :xx)
+    assert_equal true,  I18n.inflector.named.has_true_token?(:f, :gender, :xx)
+    I18n.locale = :xx
+    assert_equal false, I18n.inflector.named.has_true_token?(:neuter, :gender)
+    assert_equal true,  I18n.inflector.named.has_true_token?(:f, :gender)
+    assert_equal true,  I18n.inflector.named.has_true_token?(:f, :gender, :xx)
+    assert_equal false, I18n.inflector.named.has_true_token?(:f, :person, :xx)
+    assert_equal false, I18n.inflector.named.has_true_token?(:f, nil, :xx)
+    assert_equal false, I18n.inflector.named.has_true_token?(:faafaffafafa)
+  end
 
   test "inflector kinds: lists inflection kinds" do
     assert_not_nil I18n.inflector.kinds(:xx)
     assert_equal [:gender,:person], I18n.inflector.kinds(:xx).sort{|k,v| k.to_s<=>v.to_s}
     I18n.locale = :xx
     assert_equal [:gender,:person], I18n.inflector.kinds.sort{|k,v| k.to_s<=>v.to_s}
+  end
+  
+  test "inflector.named kinds: lists inflection kinds" do
+    assert_not_nil I18n.inflector.named.kinds(:xx)
+    assert_equal [:gender], I18n.inflector.named.kinds(:xx)
+    I18n.locale = :xx
+    assert_equal [:gender], I18n.inflector.named.kinds
   end
 
   test "inflector tokens: lists all inflection tokens including aliases" do
@@ -333,9 +415,17 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal h,   I18n.inflector.tokens(:gender, :xx)
     I18n.locale = :xx
     assert_equal h,   I18n.inflector.tokens(:gender)
-    #p I18n.inflector.instance_variable_get(:@idb)[:xx].instance_variable_get(:@tokens)
     assert_equal ha,  I18n.inflector.tokens
-    
+  end
+
+  test "inflector.named tokens: lists all inflection tokens including aliases" do
+    h = {:m=>"male",:f=>"female",:n=>"neuter",:s=>"strange",
+         :masculine=>"male",:feminine=>"female",:neuter=>"neuter",
+         :neutral=>"neuter"}
+    assert_equal h,   I18n.inflector.named.tokens(:gender, :xx)
+    I18n.locale = :xx
+    assert_equal h,   I18n.inflector.named.tokens(:gender)
+    assert_equal Hash.new, I18n.inflector.named.tokens
   end
 
   test "inflector true_tokens: lists true tokens" do
@@ -345,6 +435,14 @@ class I18nInflectorTest < Test::Unit::TestCase
     I18n.locale = :xx
     assert_equal h,   I18n.inflector.true_tokens(:gender)
     assert_equal ha,  I18n.inflector.true_tokens
+  end
+
+  test "inflector.named true_tokens: lists true tokens" do
+    h  = {:m=>"male",:f=>"female",:n=>"neuter",:s=>"strange"}
+    assert_equal h,   I18n.inflector.named.true_tokens(:gender, :xx)
+    I18n.locale = :xx
+    assert_equal h,   I18n.inflector.named.true_tokens(:gender)
+    assert_equal Hash.new, I18n.inflector.named.true_tokens
   end
 
   test "inflector raw_tokens: lists tokens in a so called raw format" do
@@ -357,11 +455,27 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal h,   I18n.inflector.raw_tokens(:gender)
     assert_equal ha,  I18n.inflector.raw_tokens    
   end
+  
+  test "inflector.named raw_tokens: lists tokens in a so called raw format" do
+    h = {:m=>"male",:f=>"female",:n=>"neuter",:s=>"strange",
+         :masculine=>:m,:feminine=>:f,:neuter=>:n,
+         :neutral=>:n}
+    assert_equal h,   I18n.inflector.named.raw_tokens(:gender, :xx)
+    I18n.locale = :xx
+    assert_equal h,   I18n.inflector.named.raw_tokens(:gender)
+    assert_equal Hash.new, I18n.inflector.named.raw_tokens    
+  end
 
   test "inflector default_token: returns a default token for a kind" do
     assert_equal :n, I18n.inflector.default_token(:gender, :xx)
     I18n.locale = :xx
     assert_equal :n, I18n.inflector.default_token(:gender)
+  end
+  
+  test "inflector.named default_token: returns a default token for a kind" do
+    assert_equal :n, I18n.inflector.named.default_token(:gender, :xx)
+    I18n.locale = :xx
+    assert_equal :n, I18n.inflector.named.default_token(:gender)
   end
 
   test "inflector aliases: lists aliases" do
@@ -372,12 +486,28 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal a, I18n.inflector.aliases
   end
 
+  test "inflector.named aliases: lists aliases" do
+    a = {:masculine=>:m, :feminine=>:f, :neuter=>:n, :neutral=>:n}
+    assert_equal a, I18n.inflector.named.aliases(:gender, :xx)
+    I18n.locale = :xx
+    assert_equal a, I18n.inflector.named.aliases(:gender)
+    assert_equal Hash.new, I18n.inflector.named.aliases
+  end
+
   test "inflector token_description: returns token's description" do
     assert_equal "male",    I18n.inflector.token_description(:m, :xx)
     I18n.locale = :xx
     assert_equal "male",    I18n.inflector.token_description(:m)
     assert_equal nil,       I18n.inflector.token_description(:nonexistent, :xx)
     assert_equal "neuter",  I18n.inflector.token_description(:neutral, :xx)
+  end
+
+  test "inflector.named token_description: returns token's description" do
+    assert_equal "male",    I18n.inflector.named.token_description(:m, :gender, :xx)
+    I18n.locale = :xx
+    assert_equal "male",    I18n.inflector.named.token_description(:m, :gender)
+    assert_equal nil,       I18n.inflector.named.token_description(:nonexistent, :gender, :xx)
+    assert_equal "neuter",  I18n.inflector.named.token_description(:neutral, :gender, :xx)
   end
 
   test "inflector has_alias?: tests whether a token is an alias" do
@@ -388,6 +518,14 @@ class I18nInflectorTest < Test::Unit::TestCase
       assert_equal false, I18n.inflector.has_alias?(:neutral, :nokind, :xx)
       I18n.locale = :xx
       assert_equal true,  I18n.inflector.has_alias?(:neutral)
+  end
+  
+  test "inflector.named has_alias?: tests whether a token is an alias" do
+      assert_equal true,  I18n.inflector.named.has_alias?(:neutral, :gender, :xx)
+      assert_equal false, I18n.inflector.named.has_alias?(:you, :person, :xx)
+      assert_equal false, I18n.inflector.named.has_alias?(:you, :gender, :xx)
+      I18n.locale = :xx
+      assert_equal true,  I18n.inflector.named.has_alias?(:neutral, :gender)
   end
 
 end
