@@ -64,18 +64,16 @@ module I18n
 
     # Instance of this class, the inflector, is attached
     # to I18n backend. This class contains common operations
-    # that can be performed on inflections. It inherits from
-    # {I18n::Inflector::API} to operate on regular kinds
-    # (containing tokens which names imply what kinds they are)
-    # and also uses {I18n::Inflector::API::Named} instance to access
-    # inflection data used in so called named patterns (tokens that
-    # are assigned to ). It makes sure that these object share the same
-    # inflections database ({I18n::Inflector::InflectionStore}).
-    # Actually the first object is self object since it
+    # that can be performed on inflections. It can operate
+    # on both unnamed an named patterns.
     # 
-    # and has methods to access them in an easy way.
+    # It uses the database containing instances of
+    # {I18n::Inflector::InflectionStore} indexed
+    # by locale names.
+    # 
     # It is also used by backend methods
-    # to interpolate single strings.
+    # to interpolate strings and load databases.
+    # 
     # ==== Usage
     # You can access the instance of this class attached to
     # default I18n backend by entering:
@@ -84,10 +82,14 @@ module I18n
     #   I18n.inflector
     # In case of named patterns:
     #   I18n.inflector.named
-    class Core < API
+    # 
+    # @see I18n::Inflector::NamedAPI The class
+    #   for accessing inflection data of named
+    #   patterns (strict kinds).
+    class Core < NamedAPI
 
       # This reader allows to reach a reference to
-      # object that is kind of {I18n::Inflector::API::Named}
+      # object that is kind of {I18n::Inflector::NamedAPI}
       # and handles inflections for named patterns (strict kinds).
       attr_reader :named
 
@@ -116,12 +118,297 @@ module I18n
       # 
       # @api public
       def initialize
-        super
         @idb      = {}
         @options  = I18n::Inflector::InflectionOptions.new
-        @named    = I18n::Inflector::API::Named.new(@idb, @options)
+        @named    = I18n::Inflector::NamedAPI.new(@idb, @options)
       end
 
+      # Checks if the given +token+ is an alias.
+      # 
+      # @api public
+      # @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
+      # @raise [ArgumentError] if the count of arguments is invalid
+      # @overload has_alias?(token)
+      #   Uses current locale to check if the given +token+ is an alias.
+      #   @param [Symbol,String] token name of the checked token
+      #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
+      # @overload has_alias?(token, locale)
+      #   Uses the given +locale+ to check if the given +token+ is an alias.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol] locale the locale to use
+      #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
+      # @overload has_alias?(token, kind, locale)
+      #   Uses the given +locale+ and +kind+ to check if the given +token+ is an alias.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol,String] kind the kind used to narrow the check
+      #   @param [Symbol] locale the locale to use
+      #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
+      def has_alias?(*args)
+        token, kind, locale = tkl_args(args)
+        return false if token.to_s.empty?
+        return false if (!kind.nil? && kind.to_s.empty?)
+        token = token.to_sym
+        kind  = kind.to_sym unless kind.nil?
+        data_safe(locale).has_alias?(token, kind)
+      end
+      alias_method :token_has_alias?, :has_alias?
+
+      # Checks if the given +token+ is a true token (not alias).
+      # 
+      # @api public
+      # @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
+      # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
+      # @raise [ArgumentError] if the count of arguments is invalid
+      # @overload has_true_token?(token)
+      #   Uses current locale to check if the given +token+ is a true token.
+      #   @param [Symbol,String] token name of the checked token
+      #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
+      # @overload has_true_token?(token, locale)
+      #   Uses the given +locale+ to check if the given +token+ is a true token.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol] locale the locale to use
+      #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
+      # @overload has_true_token?(token, kind, locale)
+      #   Uses the given +locale+ and +kind+ to check if the given +token+ is a true token.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol,String] kind the kind used to narrow the check
+      #   @param [Symbol] locale the locale to use
+      #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
+      def has_true_token?(*args)
+        token, kind, locale = tkl_args(args)
+        return false if token.to_s.empty?
+        return false if (!kind.nil? && kind.to_s.empty?)
+        token = token.to_sym
+        kind  = kind.to_sym unless kind.nil?
+        data_safe(locale).has_true_token?(token, kind)
+      end
+      alias_method :token_has_true?, :has_true_token?
+
+       # Checks if the given +token+ exists. It may be an alias or a true token.
+       # 
+       # @api public
+       # @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
+       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
+       # @raise [ArgumentError] if the count of arguments is invalid
+       # @overload has_token?(token)
+       #   Uses current locale to check if the given +token+ is a token.
+       #   @param [Symbol,String] token name of the checked token
+       #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
+       # @overload has_token?(token, locale)
+       #   Uses the given +locale+ to check if the given +token+ exists.
+       #   @param [Symbol,String] token name of the checked token
+       #   @param [Symbol] locale the locale to use
+       #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
+       # @overload has_token?(token, kind, locale)
+       #   Uses the given +locale+ and +kind+ to check if the given +token+ exists.
+       #   @param [Symbol,String] token name of the checked token
+       #   @param [Symbol,String] kind the kind used to narrow the check
+       #   @param [Symbol] locale the locale to use
+       #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
+       def has_token?(*args)
+         token, kind, locale = tkl_args(args)
+         return false if token.to_s.empty?
+         return false if (!kind.nil? && kind.to_s.empty?)
+         token = token.to_sym
+         kind  = kind.to_sym unless kind.nil?
+         data_safe(locale).has_token?(token, kind)
+       end
+       alias_method :token_exists?, :has_token?
+
+      # Gets true token for the given +token+ (which may be an alias).
+      # 
+      # @api public
+      # @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #   the token is a real token or +nil+ otherwise
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @overload true_token(token)
+      #   Uses current locale to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      # @overload true_token(token, locale)
+      #   Uses the given +locale+ to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      # @overload true_token(token, kind, locale)
+      #   Uses the given +locale+ and +kind+ to get a real token for the given +token+.
+      #   @param [Symbol,String] token name of the checked token
+      #   @param [Symbol,String] kind the kind used to narrow the check
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
+      #     the token is a real token or +nil+ otherwise
+      def true_token(*args)
+        token, kind, locale = tkl_args(args)
+        return nil if token.to_s.empty?
+        return nil if (!kind.nil? && kind.to_s.empty?)
+        token = token.to_sym
+        kind  = kind.to_sym unless kind.nil?
+        data_safe(locale).get_true_token(token, kind)
+      end
+      alias_method :resolve_alias, :true_token
+
+      # Gets a kind for the given +token+ (which may be an alias).
+      # 
+      # @api public
+      # @return [Symbol,nil] the kind of the given +token+ or +nil+
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @overload kind(token)
+      #   Uses current locale to get a kind of the given +token+ (which may be an alias).
+      #   @param [Symbol,String] token name of the token or alias
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     for the current locale
+      # @overload kind(token, locale)
+      #   Uses the given +locale+ to get a kind of the given +token+ (which may be an alias).
+      #   @param [Symbol,String] token name of the token or alias
+      #   @param [Symbol] locale the locale to use
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     for the given +locale+
+      def kind(token, locale=nil)
+        return nil if token.to_s.empty?
+        data_safe(locale).get_kind(token.to_sym)
+      end
+
+      # Gets available inflection tokens and their descriptions.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [Hash] the hash containing available inflection tokens and descriptions
+      # @note You cannot deduce where aliases are pointing to, since the information
+      #   about a target is replaced by the description. To get targets use the
+      #   {#inflection_raw_tokens} method. To simply list aliases and their targets use
+      #   the {#inflection_aliases} method.
+      # @overload tokens
+      #   Gets available inflection tokens and their descriptions.
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values, including aliases,
+      #     for all kinds and current locale.
+      # @overload tokens(kind)
+      #   Gets available inflection tokens and their descriptions for some +kind+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values, including aliases, for current locale.
+      # @overload tokens(kind, locale)
+      #   Gets available inflection tokens and their descriptions for some +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values, including aliases, for current locale
+      def tokens(kind=nil, locale=nil)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind = kind.to_sym unless kind.nil?
+        data_safe(locale).get_tokens(kind)
+      end
+
+      # Gets available inflection tokens and their values.
+      # 
+      # @api public
+      # @return [Hash] the hash containing available inflection tokens and descriptions (or alias pointers)
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note You may deduce whether the returned values are aliases or true tokens
+      #   by testing if a value is a type of Symbol or String.
+      # @overload tokens_raw
+      #   Gets available inflection tokens and their values.
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values. In case of aliases the returned
+      #     values are Symbols
+      # @overload tokens_raw(kind)
+      #   Gets available inflection tokens and their values for the given +kind+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values for the given +kind+. In case of
+      #     aliases the returned values are Symbols
+      # @overload tokens_raw(kind, locale)
+      #   Gets available inflection tokens and their values for the given +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values for the given +kind+ and +locale+.
+      #     In case of aliases the returned values are Symbols
+      def tokens_raw(kind=nil, locale=nil)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind = kind.to_sym unless kind.nil?
+        data_safe(locale).get_raw_tokens(kind)
+      end
+      alias_method :raw_tokens, :tokens_raw
+
+      # Gets true inflection tokens and their values.
+      # 
+      # @api public
+      # @return [Hash] the hash containing available inflection tokens and descriptions
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note It returns only true tokens, not aliases.
+      # @overload tokens_true
+      #   Gets true inflection tokens and their values.
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values
+      # @overload tokens_true(kind)
+      #   Gets true inflection tokens and their values for the given +kind+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values for the given +kind+
+      # @overload tokens_true(kind, locale)
+      #   Gets true inflection tokens and their values for the given +kind+ and +value+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [Hash] the hash containing available inflection tokens as keys
+      #     and their descriptions as values for the given +kind+ and +locale+
+      def tokens_true(kind=nil, locale=nil)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind = kind.to_sym unless kind.nil?
+        data_safe(locale).get_true_tokens(kind)
+      end
+      alias_method :true_tokens, :tokens_true
+
+      # Gets inflection aliases and their pointers.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [Hash] the Hash containing available inflection aliases (<tt>alias => target</tt>)
+      # @overload aliases
+      #   Gets inflection aliases and their pointers.
+      #   @return [Hash] the Hash containing available inflection aliases
+      # @overload aliases(kind)
+      #   Gets inflection aliases and their pointers for the given +kind+.
+      #   @param [Symbol,String] kind the kind of aliases to get
+      #   @return [Hash] the Hash containing available inflection
+      #     aliases for the given +kind+ and current locale
+      # @overload aliases(kind, locale)
+      #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of aliases to get
+      #   @param [Symbol] locale the locale to use
+      #   @return [Hash] the Hash containing available inflection
+      #     aliases for the given +kind+ and +locale+
+      def aliases(kind=nil, locale=nil)
+        return {} if (!kind.nil? && kind.to_s.empty?)
+        kind = kind.to_sym unless kind.nil?
+        data_safe(locale).get_aliases(kind)
+      end
+
+      # Gets the description of the given inflection token.
+      # 
+      # @api public
+      # @note If the given +token+ is really an alias it
+      #   returns the description of the true token that
+      #   it points to.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [String,nil] the descriptive string or +nil+
+      # @overload token_description(token)
+      #   Uses current locale to get description of the given token.
+      #   @return [String,nil] the descriptive string or +nil+ if something
+      #     went wrong (e.g. token was not found)
+      # @overload token_description(token, locale)
+      #   Uses the given +locale+ to get description of the given inflection token.
+      #   @param [Symbol] locale the locale to use
+      #   @return [String,nil] the descriptive string or +nil+ if something
+      #     went wrong (e.g. token was not found)
+      def token_description(token, locale=nil)
+        return nil if token.to_s.empty?
+        data_safe(locale).get_description(token.to_sym)
+      end
+      
       # Adds database for the specified locale.
       # 
       # @api public
@@ -351,6 +638,50 @@ module I18n
 
         end # single pattern processing
 
+      end
+
+      protected
+
+      # @private
+      def data(locale=nil)
+        @idb[prep_locale(locale)]
+      end
+
+      # @private
+      def data_safe(locale=nil)
+        @idb[prep_locale(locale)] || I18n::Inflector::InflecitonData.new(locale)
+      end
+
+      # This method is the internal helper that prepares arguments
+      # containing +token+, +kind+ and +locale+.
+      # 
+      # @note This method leaves +kind+ as is when it's +nil+ or empty. It sets
+      #   +token+ to +nil+ when it's empty.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @raise [ArgumentError] if the count of arguments is invalid
+      # @return [Array<Symbol,Symbol,Symbol>] the array containing
+      #   cleaned and validated +token+, +kind+ and +locale+
+      # @overload tkl_args(token, kind, locale)
+      #   Prepares arguments containing +token+, +kind+ and +locale+.
+      #   @param [String,Hash] token the token
+      #   @param [String,Hash] kind the inflection kind
+      #   @param [String,Hash] locale the locale identifier
+      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
+      #     cleaned and validated +token+, +kind+ and +locale+
+      # @overload tkl_args(token, locale)
+      #   Prepares arguments containing +token+ and +locale+.
+      #   @param [String,Hash] token the token
+      #   @param [String,Hash] locale the locale identifier
+      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
+      #     cleaned and validated +token+, +kind+ and +locale+
+      def tkl_args(args)
+        token, kind, locale = case args.count
+        when 1 then [args[0], nil, nil]
+        when 2 then [args[0], nil, args[1]]
+        when 3 then args
+        else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
+        end
+        [token,kind,locale]
       end
 
     end # class Core

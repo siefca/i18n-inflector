@@ -30,38 +30,6 @@ module I18n
         locale.to_sym
       end
 
-      # This method is the internal helper that prepares arguments
-      # containing +token+, +kind+ and +locale+.
-      # 
-      # @note This method leaves +kind+ as is when it's +nil+ or empty. It sets
-      #   +token+ to +nil+ when it's empty.
-      # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @raise [ArgumentError] if the count of arguments is invalid
-      # @return [Array<Symbol,Symbol,Symbol>] the array containing
-      #   cleaned and validated +token+, +kind+ and +locale+
-      # @overload tkl_args(token, kind, locale)
-      #   Prepares arguments containing +token+, +kind+ and +locale+.
-      #   @param [String,Hash] token the token
-      #   @param [String,Hash] kind the inflection kind
-      #   @param [String,Hash] locale the locale identifier
-      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
-      #     cleaned and validated +token+, +kind+ and +locale+
-      # @overload tkl_args(token, locale)
-      #   Prepares arguments containing +token+ and +locale+.
-      #   @param [String,Hash] token the token
-      #   @param [String,Hash] locale the locale identifier
-      #   @return [Array<Symbol,Symbol,Symbol>] the array containing
-      #     cleaned and validated +token+, +kind+ and +locale+
-      def tkl_args(args)
-        token, kind, locale = case args.count
-        when 1 then [args[0], nil, nil]
-        when 2 then [args[0], nil, args[1]]
-        when 3 then args
-        else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
-        end
-        [token,kind,locale]
-      end
-
     end
   end
 end
