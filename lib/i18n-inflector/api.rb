@@ -13,27 +13,32 @@ module I18n
   module Inflector
 
     # This class contains common operations
-    # that can be performed on inflections. It uses the
-    # database containing instances of {I18n::Inflector::InflectionStore}
-    # indexed by locale and has methods to access them in an easy way.
+    # that can be performed on inflection data
+    # that contains regular kinds, tokens, aliases
+    # and defaults.
     # 
-    # ==== Usage
-    # You can access the instance of this class attached to
-    # default I18n backend by entering:
-    #   I18n.backend.inflector
-    # or in a short form:
-    #   I18n.inflector
+    # It uses the database containing instances of
+    # {I18n::Inflector::InflectionStore} indexed
+    # by locale names.
+    # 
+    # @see I18n::Inflector::API::Named The class
+    #   for accessing inflection data of named
+    #   patterns (strict kinds).
     class API
 
       include I18n::Inflector::Util
 
-      # Initilizes inflector by creating internal databases for storing
-      # inflection hashes and options.
+      # Initilizes inflector by connecting to internal databases
+      # used for storing inflection data and options.
       # 
       # @api public
+      # @note If any given option is +nil+ then the object will be created.
+      #   If it's given, then it will be used, not its copy.
+      # @param [I18n::Inflector::InflectionStore,nil] idb the inflections database
+      # @param [I18n::Inflector::InflectionOptions,nil] options the inflection options
       def initialize(idb=nil, options=nil)
-        @idb      = idb.nil? ? I18n::Inflector::InflectionStore.new : idb
-        @options  = options.nil? ? I18n::Inflector::InflectionOptions.new : options
+        @idb      = idb.nil?      ? I18n::Inflector::InflectionStore.new    : idb
+        @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new  : options
       end
 
       # Reads default token for the given +kind+.

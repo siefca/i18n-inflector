@@ -62,12 +62,20 @@ module I18n
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
 
-    # Instances of this class, the inflectors, are attached
-    # to I18n backends. This class contains common operations
-    # that programmer can perform on inflections. It keeps the
-    # database of {I18n::Inflector::InflectionStore} instances
-    # and has methods to access them in an easy way.
+    # Instance of this class, the inflector, is attached
+    # to I18n backend. This class contains common operations
+    # that can be performed on inflections. It inherits from
+    # {I18n::Inflector::API} to operate on regular kinds
+    # (containing tokens which names imply what kinds they are)
+    # and also uses {I18n::Inflector::API::Named} instance to access
+    # inflection data used in so called named patterns (tokens that
+    # are assigned to ). It makes sure that these object share the same
+    # inflections database ({I18n::Inflector::InflectionStore}).
+    # Actually the first object is self object since it
     # 
+    # and has methods to access them in an easy way.
+    # It is also used by backend methods
+    # to interpolate single strings.
     # ==== Usage
     # You can access the instance of this class attached to
     # default I18n backend by entering:
@@ -78,6 +86,9 @@ module I18n
     #   I18n.inflector.named
     class Core < API
 
+      # This reader allows to reach a reference to
+      # object that is kind of {I18n::Inflector::API::Named}
+      # and handles inflections for named patterns (strict kinds).
       attr_reader :named
 
       # Options controlling the engine.

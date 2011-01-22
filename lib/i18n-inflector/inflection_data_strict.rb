@@ -18,18 +18,19 @@ module I18n
       class <<self
 
         def dummy_tokens
-          @dummy_tokens = Hash.new(Hash.new(@dummy_token).freeze)
-        end
+          @dummy_tokens ||= Hash.new(@dummy_token).freeze
+        end # contant is better
 
       end
 
       # Initializes internal structures.
       def initialize(locale=nil)
-        @dummy_token= self.class.dummy_token
-        @dummy_hash = self.class.dummy_hash
-        @tokens     = self.class.dummy_tokens
-        @defaults   = Hash.new
-        @locale     = locale
+        @dummy_token  = self.class.dummy_token
+        @dummy_tokens = self.class.dummy_tokens
+        @dummy_hash   = self.class.dummy_hash
+        @tokens       = Hash.new(@dummy_tokens)
+        @defaults     = Hash.new
+        @locale       = locale
       end
 
       # Adds an alias (overwriting existing alias).
