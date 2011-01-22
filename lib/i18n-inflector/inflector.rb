@@ -48,7 +48,7 @@ module I18n
     ALIAS_MARKER  = '@'
 
     # Contains a symbol that indicates a named pattern.
-    NAMED_MARKER  = '+'
+    NAMED_MARKER  = '@'
 
     # Conatins a symbol used to separate multiple tokens.
     OPERATOR_MULTI = ','

@@ -15,10 +15,6 @@ module I18n
     # and basic operations for performing on them.
     class InflectionData < InflectionData_Strict
 
-      # Instance of {I18n::InflectionData_Strict} which keeps methods
-      # and data for operating on strict kind and tokens assigned to them.
-      attr_reader :strict
-
       # Initializes internal structures.
       # 
       # @param [Symbol,nil] locale the locale identifier for the object to be labeled with
@@ -27,23 +23,35 @@ module I18n
         @tokens     = Hash.new(DUMMY_TOKEN)
         @defaults   = Hash.new
         @locale     = locale
-        @strict     = I18n::Inflector::InflectionData_Strict.new(locale)
       end
 
-      # Adds an alias (overwriting existing alias).
+      # Adds an alias (overwriting an existing alias).
       # 
-      # @param [Symbol] name the name of an alias
-      # @param [Symbol] target the target token for the given +alias+
       # @return [Boolean] +true+ if everything went ok, +false+ otherwise
-      #  (in case of bad or +nil+ names or non-existent targets)
-      def add_alias(name, target)
+      #     (in case of bad or +nil+ names or non-existent targets)
+      # @overload add_alias(name, target)
+      #   Adds an alias (overwriting an existing alias).
+      #   @param [Symbol] name the name of an alias
+      #   @param [Symbol] target the target token for the given +alias+
+      #   @return [Boolean] +true+ if everything went ok, +false+ otherwise
+      #     (in case of bad or +nil+ names or non-existent targets)
+      # @overload add_alias(name, target, kind)
+      #   Adds an alias (overwriting an existing alias) when the given
+      #   +kind+ matches the kind of the given target.
+      #   @param [Symbol] name the name of an alias
+      #   @param [Symbol] target the target token for the given +alias+
+      #   @param [Symbol] kind the optional kind of a taget
+      #   @return [Boolean] +true+ if everything went ok, +false+ otherwise
+      #     (in case of bad or +nil+ names or non-existent targets)
+      def add_alias(name, target, kind=nil)
         target  = target.to_s
         name    = name.to_s
         return false if (name.empty? || target.empty?)
+        kind    = nil if kind.to_s.empty?
         name    = name.to_sym
         target  = target.to_sym
-        kind    = get_kind(target)
-        return false if kind.nil?
+        t_kind  = get_kind(target)
+        return false if (t_kind.nil? || (!kind.nil? && t_kind != kind))
         @tokens[name] = {}
         @tokens[name][:kind]        = kind
         @tokens[name][:target]      = target
@@ -307,7 +315,8 @@ module I18n
           return [kind, pointer] if ttok.nil?
           set_default_token(kind, ttok) 
         end
-        return nil
+        nil
+        #@strict.validate_default_tokens
       end
 
       # Test if the inflection data have no elements.

@@ -41,11 +41,53 @@ module I18n
       # @api public
       # @note If any given option is +nil+ then the object will be created.
       #   If it's given, then it will be used, not its copy.
-      # @param [I18n::Inflector::InflectionData,nil] idb the inflections database
+      # @param [Hash,nil] idb the inflections databases indexed by locale
       # @param [I18n::Inflector::InflectionOptions,nil] options the inflection options
       def initialize(idb=nil, options=nil)
-        @idb      = idb.nil?      ? I18n::Inflector::InflectionData.new     : idb
-        @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new  : options
+        @idb      = idb.nil?      ? {} : idb
+        @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new : options
+      end
+
+      # Creates a database for the specified locale.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @param [Symbol] locale the locale for which the infleciton database is created
+      # @return [I18n::Inflector::InflectionData_Strict] the new object for keeping inflection data
+      #   for the given +locale+
+      def new_database(locale)
+        locale = prep_locale(locale)
+        @idb[locale] = I18n::Inflector::InflectionData_Strict.new(locale)
+      end
+
+      # Attaches {I18n::Inflector::InflectionData} instance to the
+      # current collection.
+      #
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note It doesn't create copy of inflection data, it registers the given object.
+      # @param [I18n::Inflector::InflectionData_Strict] idb inflection data to add
+      # @return [I18n::Inflector::InflectionData_Strict] the given +idb+ or +nil+ if something
+      #   went wrong (e.g. +nil+ was given as an argument)
+      def add_database(db)
+        return nil if db.nil?
+        locale = prep_locale(db.locale)
+        delete_database(locale)
+        @idb[locale] = db
+      end
+
+      # Deletes a database for the specified locale.
+      # 
+      # @api public
+      # @note It detaches the database from {I18n::Inflector::API} instance.
+      #   Other objects referring to it directly may still use it.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
+      # @return [void]
+      def delete_database(locale)
+        locale = prep_locale(locale)
+        return nil if @idb[locale].nil?
+        @idb[locale] = nil
       end
 
       # Checks if the given locale was configured to support inflection.
@@ -63,8 +105,8 @@ module I18n
       def inflected_locale?(locale=nil)
         not @idb[prep_locale(locale)].nil? rescue false
       end
-      alias_method :locale?, :inflected_locale?
-      alias_method :locale_supported?, :inflected_locale?
+      alias_method :locale?,            :inflected_locale?
+      alias_method :locale_supported?,  :inflected_locale?
 
       # Gets locales which have configured inflection support.
       # 
@@ -79,8 +121,8 @@ module I18n
         kind = kind.to_sym
         inflected_locales.reject{|l| @idb[l].nil? || !@idb[l].has_kind?(kind)}
       end
-      alias_method :locales, :inflected_locales
-      alias_method :supported_locales, :inflected_locales
+      alias_method :locales,            :inflected_locales
+      alias_method :supported_locales,  :inflected_locales
 
       # Gets known inflection kinds.
       # 
@@ -407,14 +449,12 @@ module I18n
 
       # @private
       def data(locale=nil)
-        o = @idb[prep_locale(locale)]
-        o.nil? ? nil : o.strict
+        @idb[prep_locale(locale)]
       end
 
       # @private
       def data_safe(locale=nil)
-        o = @idb[prep_locale(locale)]
-        o.nil? ? I18n::Inflector::InflectionData_Strict.new(locale) : o.strict
+        @idb[prep_locale(locale)] || I18n::Inflector::InflectionData_Strict.new(locale)
       end
 
       # This method is the internal helper that prepares arguments

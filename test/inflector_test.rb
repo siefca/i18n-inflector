@@ -22,7 +22,7 @@ class I18nInflectorTest < Test::Unit::TestCase
                                             :person => {
                                               :i   => 'I',
                                               :you => 'You'},
-                                            :"+gender" => {
+                                            :@gender => {
                                                 :m => 'male',
                                                 :f => 'female',
                                                 :n => 'neuter',
@@ -254,7 +254,7 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector translate: recognizes named patterns and strict kinds" do
-    store_translations(:xx, :i18n => { :inflections => { :"+gender" => { :s => 'sir', :o => 'other', :n => 'n', :default => 'n' }}})
+    store_translations(:xx, :i18n => { :inflections => { :@gender => { :s => 'sir', :o => 'other', :s => 'a', :n => 'n', :default => 'n' }}})
     store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
     assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s,       :locale => :xx)
     assert_equal 'Dear Other!', I18n.t('hi', :gender => :o,       :locale => :xx)

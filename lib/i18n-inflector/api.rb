@@ -37,13 +37,6 @@ module I18n
     # @api public
     class API < API_Named
 
-      # This reader allows to reach a reference to
-      # object that is kind of {I18n::Inflector::API_Named}
-      # and handles inflections for named patterns (strict kinds).
-      # 
-      # @api public
-      attr_reader :named
-
       # Options controlling the engine.
       # 
       # @api public
@@ -64,14 +57,92 @@ module I18n
       #   I18n.translate('welcome', :inflector_raises => true)
       attr_reader :options
 
-      # Initilizes inflector by creating internal databases for storing
-      # inflection hashes and options.
+      # This reader allows to reach a reference to the
+      # object that is a kind of {I18n::Inflector::API_Named}
+      # and handles inflections for named patterns (strict kinds).
+      # 
+      # @api public
+      def named
+        @named ||= I18n::Inflector::API_Named.new(@idb_strict, @options)
+      end
+
+      # Initilizes inflector by connecting to internal databases
+      # used for storing inflection data and options.
       # 
       # @api public
       def initialize
-        @idb      = {}
-        @options  = I18n::Inflector::InflectionOptions.new
-        @named    = I18n::Inflector::API_Named.new(@idb, @options)
+        super(nil, nil)
+        @idb_strict = {}
+      end
+
+      # Creates a database for the specified locale.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @param [Symbol] locale the locale for which the infleciton database is created
+      # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
+      #   for the given +locale+
+      def new_database(locale)
+        locale = prep_locale(locale)
+        @idb[locale] = I18n::Inflector::InflectionData.new(locale)
+      end
+
+      # Creates internal databases for the specified locale.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @param [Symbol] locale the locale for which the infleciton database is created
+      # @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the array of objects for keeping inflection data
+      #   for the given +locale+
+      def new_databases(locale)
+        normal = new_databases(locale)
+        strict = named.new_database(locale)
+        [normal, strict]
+      end
+
+      # Attaches {I18n::Inflector::InflectionData} and
+      # optionally {I18n::Inflector::InflectionData_Strit} instance
+      # to the inflector.
+      #
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note It doesn't create copy of inflection data, it registers the given object(s).
+      # @overload add_database(db)
+      #   @param [I18n::Inflector::InflectionData] db inflection data to add
+      #   @return [I18n::Inflector::InflectionData] the given object or +nil+
+      #     if something went wrong (e.g. +nil+ was given as an argument)
+      # @overload add_database(db, db_strict)
+      #   @note An array is returned and databases are
+      #     used only if both databases are successfully attached. References to
+      #     both databases will be set to +nil+ if there would be a problem with attaching
+      #     any of them.
+      #   @param [I18n::Inflector::InflectionData] db inflection data to add
+      #   @param [I18n::Inflector::InflectionData_Strict] db_strict strict inflection data to add
+      #   @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the
+      #     array of the given objects or +nil+ if something went wrong (e.g. +nil+ was given as a first argument)
+      def add_database(db, db_strict=nil)
+        r = super(db)
+        return r if (r.nil? || db_strict.nil?)
+        r_strict = named.add_database(db_strict)
+        if r_strict.nil?
+          delete_database(db.locale)
+          return nil
+        end
+        [r, r_strict]
+      end
+      alias_method :add_databases, :add_database
+
+      # Deletes the internal databases for the specified locale.
+      # 
+      # @api public
+      # @note It detaches the databases from {I18n::Inflector::API} instance.
+      #   Other objects referring to them may still use it.
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
+      # @return [void]
+      def delete_databases(locale)
+        delete_database(locale)
+        named.delete_database(locale)
       end
 
       # Checks if the given +token+ is an alias.
@@ -359,48 +430,6 @@ module I18n
         return nil if token.to_s.empty?
         data_safe(locale).get_description(token.to_sym)
       end
-      
-      # Adds database for the specified locale.
-      # 
-      # @api public
-      # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is created
-      # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
-      #   for the given +locale+
-      def new_database(locale)
-        locale = prep_locale(locale)
-        @idb[locale] = I18n::Inflector::InflectionData.new(locale)
-      end
-
-      # Attaches {I18n::Inflector::InflectionData} instance to the
-      # current collection.
-      #
-      # @api public
-      # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @note It doesn't create copy of inflection data, it registers the given object.
-      # @param [I18n::Inflector::InflectionData] idb inflection data to add
-      # @return [I18n::Inflector::InflectionData] the given +idb+ or +nil+ if something
-      #   went wrong (e.g. +nil+ was given as an argument)
-      def add_database(idb)
-        return nil if idb.nil?
-        locale = prep_locale(idb.locale)
-        delete_database(locale)
-        @idb[locale] = idb
-      end
-
-      # Deletes a database for the specified locale.
-      # 
-      # @api public
-      # @note It detaches the database from {I18n::Inflector::API} instance.
-      #   Other objects referring to it directly may still use it.
-      # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
-      # @return [void]
-      def delete_database(locale)
-        locale = prep_locale(locale)
-        return nil if @idb[locale].nil?
-        @idb[locale] = nil
-      end
 
       # Interpolates inflection values in a given +string+
       # using kinds given in +options+ and a matching tokens.
@@ -427,6 +456,7 @@ module I18n
         excluded_defaults = (s=op.delete :inflector_excluded_defaults).nil? ? sw.excluded_defaults : s
 
         idb               = @idb[locale]
+        idb_strict        = @idb_strict[locale]
 
         string.gsub(I18n::Inflector::PATTERN) do
           pattern_fix     = $1
@@ -444,14 +474,13 @@ module I18n
           # leave escaped pattern as is
           next ext_pattern[1..-1] if I18n::Inflector::ESCAPES.has_key?(pattern_fix)
 
-          # set parsed kind if strict kind is given (named pattern is present)
-
+          # set parsed kind if strict kind is given (named pattern is parsed)
           strict_kind = nil if (!strict_kind.nil? && strict_kind.empty?)
 
           unless strict_kind.nil?
             strict_kind   = strict_kind.to_sym
             parsed_kind   = strict_kind
-            subdb         = idb.strict
+            subdb         = idb_strict
             default_token = subdb.get_default_token(parsed_kind)
           end
 

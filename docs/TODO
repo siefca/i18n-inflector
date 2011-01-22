@@ -1,3 +1,4 @@
+* add some magic to API calls when kind has strict marker in front of it
 * update documentation for InflectionDataStrict[done] and InflecitonData[done]
 * update documentation for API[done] and API_Named[done]
 * write some examples in section Accesing Information
