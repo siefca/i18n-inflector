@@ -35,7 +35,8 @@ module I18n
 
       # Initializes internal structures.
       # 
-      # @param [Symbol,nil] locale the locale identifier for the object to be labeled with
+      # @param [Symbol,nil] locale the locale identifier for
+      #   the object to be labeled with
       def initialize(locale=nil)
         @tokens       = Hash.new(DUMMY_TOKENS)
         @defaults     = Hash.new
@@ -47,7 +48,7 @@ module I18n
       # @param [Symbol] name the name of an alias
       # @param [Symbol] target the target token for the given +alias+
       # @return [Boolean] +true+ if everything went ok, +false+ otherwise
-      #  (in case of bad or +nil+ names or non-existent targets)
+      #  (in case of bad names or non-existent targets)
       def add_alias(name, target, kind)
         return false if (name.to_s.empty? || target.to_s.empty? || kind.to_s.empty?)
         name    = name.to_sym
