@@ -297,7 +297,7 @@ module I18n
   # field and it will be used as inflection token. To map different names
   # (e.g. male, boy, sir, female, girl, lady) to exact inflection tokens
   # the aliases would be used. Note hovewer, that you can make use of
-  # <tt>I18n.inflector.true_token</tt> method (see {I18n::Inflector::Core#true_token}
+  # <tt>I18n.inflector.true_token</tt> method (see {I18n::Inflector::API#true_token}
   # that will resolve any alias and then use that data to feed some inflection option
   # (e.g. <tt>:gender</tt>). In such scenario you don't have to rely on aliases
   # in patterns and you will gain some speed since resolving will occur just once,

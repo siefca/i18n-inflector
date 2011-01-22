@@ -42,7 +42,7 @@ module I18n
       # Translates given key taking care of inflections.
       # 
       # @api public
-      # @see I18n::Inflector::Core#interpolate
+      # @see I18n::Inflector::API#interpolate
       # @see I18n::Inflector::InflectionOptions
       # @param [Symbol] locale locale
       # @param [Symbol,String] key translation key
@@ -52,7 +52,7 @@ module I18n
       #   particular option should be the same as the name of a kind of tokens from a pattern.
       #   All +options+ along with a +string+ and +locale+ are passed to
       #   {I18n::Backend::Simple#translate I18n::Backend::Simple#translate}
-      #   and the result is processed by {I18n::Inflector::Core#interpolate}
+      #   and the result is processed by {I18n::Inflector::API#interpolate}
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
         translated_string = super
@@ -103,7 +103,7 @@ module I18n
       # @return [void]
       def inflector_try_init
         return nil if (defined?(@inflector) && !@inflector.nil?)
-        @inflector  = I18n::Inflector::Core.new
+        @inflector  = I18n::Inflector::API.new
         nil
       end
 
