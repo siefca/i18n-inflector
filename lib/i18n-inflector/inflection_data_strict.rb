@@ -30,6 +30,9 @@ module I18n
       # chaining calls to internal data easier.
       DUMMY_HASH    = Hash.new.freeze
 
+      # Locale that this database works on.
+      attr_reader :locale
+
       # Initializes internal structures.
       # 
       # @param [Symbol,nil] locale the locale identifier for the object to be labeled with

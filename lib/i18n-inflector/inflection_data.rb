@@ -19,9 +19,6 @@ module I18n
       # and data for operating on strict kind and tokens assigned to them.
       attr_reader :strict
 
-      # Locale that this database works on.
-      attr_reader :locale
-
       # Initializes internal structures.
       # 
       # @param [Symbol,nil] locale the locale identifier for the object to be labeled with
