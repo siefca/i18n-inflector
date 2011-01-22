@@ -16,7 +16,7 @@ module I18n
     # on both unnamed an named patterns (regular and strict kinds).
     # 
     # It uses the database containing instances of
-    # {I18n::Inflector::InflectionStore} indexed
+    # {I18n::Inflector::InflectionData} indexed
     # by locale names.
     # 
     # It is also used by backend methods
@@ -365,21 +365,21 @@ module I18n
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @param [Symbol] locale the locale for which the infleciton database is created
-      # @return [I18n::Inflector::InflectionStore] the new object for keeping inflection data
+      # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
       #   for the given +locale+
       def new_database(locale)
         locale = prep_locale(locale)
-        @idb[locale] = I18n::Inflector::InflectionStore.new(locale)
+        @idb[locale] = I18n::Inflector::InflectionData.new(locale)
       end
 
-      # Attaches {I18n::Inflector::InflectionStore} instance to the
+      # Attaches {I18n::Inflector::InflectionData} instance to the
       # current collection.
       #
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note It doesn't create copy of inflection data, it registers the given object.
-      # @param [I18n::Inflector::InflectionStore] idb inflection data to add
-      # @return [I18n::Inflector::InflectionStore] the given +idb+ or +nil+ if something
+      # @param [I18n::Inflector::InflectionData] idb inflection data to add
+      # @return [I18n::Inflector::InflectionData] the given +idb+ or +nil+ if something
       #   went wrong (e.g. +nil+ was given as an argument)
       def add_database(idb)
         return nil if idb.nil?

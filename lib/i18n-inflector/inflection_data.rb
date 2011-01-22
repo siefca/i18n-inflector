@@ -13,36 +13,25 @@ module I18n
 
     # This class contains structures for keeping parsed translation data
     # and basic operations for performing on them.
-    class InflectionData
+    class InflectionData < InflectionData_Strict
 
-      class <<self
-
-        # @private
-        def dummy_hash
-          @dummy_hash ||= Hash.new.freeze
-        end
-
-        # @private
-        def dummy_token
-          @dummy_token ||= {:kind=>nil,
-                            :target=>nil,
-                            :description=>nil}.freeze
-        end
-
-      end
-
-      # Initializes internal structures.
-      def initialize(locale=nil)
-        @dummy_token= self.class.dummy_token
-        @dummy_hash = self.class.dummy_hash
-        @kinds      = Hash.new(false)
-        @tokens     = Hash.new(@dummy_token)
-        @defaults   = Hash.new
-        @locale     = locale
-      end
+      # Instance of {I18n::InflectionData_Strict} which keeps methods
+      # and data for operating on strict kind and tokens assigned to them.
+      attr_reader :strict
 
       # Locale that this database works on.
       attr_reader :locale
+
+      # Initializes internal structures.
+      # 
+      # @param [Symbol,nil] locale the locale identifier for the object to be labeled with
+      def initialize(locale=nil)
+        @kinds      = Hash.new(false)
+        @tokens     = Hash.new(DUMMY_TOKEN)
+        @defaults   = Hash.new
+        @locale     = locale
+        @strict     = I18n::Inflector::InflectionData_Strict.new(locale)
+      end
 
       # Adds an alias (overwriting existing alias).
       # 
@@ -59,9 +48,9 @@ module I18n
         kind    = get_kind(target)
         return false if kind.nil?
         @tokens[name] = {}
-        @tokens[name][:kind]         = kind
-        @tokens[name][:target]       = target
-        @tokens[name][:description]  = @tokens[target][:description]
+        @tokens[name][:kind]        = kind
+        @tokens[name][:target]      = target
+        @tokens[name][:description] = @tokens[target][:description]
         true
       end
 
@@ -77,16 +66,6 @@ module I18n
         @tokens[token][:kind]         = kind.to_sym
         @tokens[token][:description]  = description.to_s
         @kinds[kind] = true
-      end
-
-      # Sets the default token for a kind.
-      # 
-      # @param [Symbol] kind the kind to which the default
-      #   token should be assigned
-      # @param [Symbol] target the token to set
-      # @return [void]
-      def set_default_token(kind, target)
-        @defaults[kind.to_sym] = target.to_sym
       end
 
       # Tests if the token is a true token.

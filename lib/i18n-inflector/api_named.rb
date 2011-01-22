@@ -18,7 +18,7 @@ module I18n
     # patterns).
     # 
     # It uses the database containing instances
-    # of {I18n::Inflector::InflectionStore} indexed by locale
+    # of {I18n::Inflector::InflectionData} indexed by locale
     # and has methods to access them in an easy way. It can
     # operate on shared database and options passed while
     # creating an instance. 
@@ -34,8 +34,6 @@ module I18n
     # @see I18n::Inflector::API The API class that does similar
     #   operations but on unnamed patterns.
     class API_Named
-      
-      include I18n::Inflector::Util
 
       # Initilizes inflector by connecting to internal databases
       # used for storing inflection data and options.
@@ -43,10 +41,10 @@ module I18n
       # @api public
       # @note If any given option is +nil+ then the object will be created.
       #   If it's given, then it will be used, not its copy.
-      # @param [I18n::Inflector::InflectionStore,nil] idb the inflections database
+      # @param [I18n::Inflector::InflectionData,nil] idb the inflections database
       # @param [I18n::Inflector::InflectionOptions,nil] options the inflection options
       def initialize(idb=nil, options=nil)
-        @idb      = idb.nil?      ? I18n::Inflector::InflectionStore.new    : idb
+        @idb      = idb.nil?      ? I18n::Inflector::InflectionData.new     : idb
         @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new  : options
       end
 
@@ -416,7 +414,7 @@ module I18n
       # @private
       def data_safe(locale=nil)
         o = @idb[prep_locale(locale)]
-        o.nil? ? I18n::Inflector::InflectionData::Strict.new(locale) : o.strict
+        o.nil? ? I18n::Inflector::InflectionData_Strict.new(locale) : o.strict
       end
 
       # This method is the internal helper that prepares arguments
@@ -451,6 +449,21 @@ module I18n
         token = token.to_s.empty? ? nil : token.to_sym
         kind  = kind.to_s.empty?  ? nil : kind.to_sym
         [token,kind,locale]
+      end
+
+      # Processes +locale+ name and validates
+      # if it's correct (not empty and not +nil+).
+      # 
+      # @note If the +locale+ is not correct, it
+      #   tries to use locale from {I18n.locale} and validates it
+      #   as well.
+      # @param [Symbol,String] locale the locale identifier
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [Symbol] the given locale or the global locale
+      def prep_locale(locale=nil)
+        locale ||= I18n.locale
+        raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
+        locale.to_sym
       end
 
     end # class API_Named

@@ -286,14 +286,14 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "inflector new_database creates a database with inflections" do
-    assert_kind_of I18n::Inflector::InflectionStore, I18n.inflector.new_database(:yy)
+    assert_kind_of I18n::Inflector::InflectionData, I18n.inflector.new_database(:yy)
     assert_equal true,  I18n.inflector.inflected_locale?(:yy)
     assert_equal false, I18n.inflector.inflected_locale?(:yyyyy)
   end
 
   test "inflector add_database adds existing database with inflections" do
-    db = I18n::Inflector::InflectionStore.new(:zz)
-    assert_kind_of I18n::Inflector::InflectionStore, I18n.inflector.add_database(db)
+    db = I18n::Inflector::InflectionData.new(:zz)
+    assert_kind_of I18n::Inflector::InflectionData, I18n.inflector.add_database(db)
     assert_equal true,  I18n.inflector.inflected_locale?(:zz)
     assert_equal false, I18n.inflector.inflected_locale?(:zzzzzz)
   end

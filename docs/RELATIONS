@@ -4,7 +4,7 @@
 * Class {I18n::Inflector::API} used to create inflector object attached to I18n backend
 * Class {I18n::Inflector::InflectionData} used by {I18n::Inflector::InflectionStore} instances to store
   inflection data for regular kinds and tokens
-* Class {I18n::Inflector::InflectionData::Strict} used by {I18n::Inflector::InflectionStore} instances to store
+* Class {I18n::Inflector::InflectionData_Strict} used by {I18n::Inflector::InflectionStore} instances to store
   inflection data for strict kinds and assigned tokens for handling named patterns
 * Class {I18n::Inflector::InflectionStore} used by {I18n::Inflector::API} instances to store
   inflection data and manipulate them, also is used by {I18n::Backend::Inflector} instances when loading
@@ -24,7 +24,7 @@
 * Each entry in the internal database of {I18n::Inflector::Core} is indexed by locale and is kind of 
   {I18n::Inflector::InflectionStore}
 * Class {I18n::Inflector::InflectionStore} is a child class of {I18n::Inflector::InflectionData}
-* Class {I18n::Inflector::InflectionStore} contains reference to an instance of {I18n::Inflector::InflectionData::Strict}
+* Class {I18n::Inflector::InflectionStore} contains reference to an instance of {I18n::Inflector::InflectionData_Strict}
   in the instance variable +strict+
 * When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
   takes the loaded data, processes the <tt>i18n.inflections</tt> part for each locale and creates configuration

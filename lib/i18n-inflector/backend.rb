@@ -209,13 +209,13 @@ module I18n
       #   Loads inflection tokens for the given locale using data given in an argument
       #   @param [Symbol] locale the locale to use and work for
       #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
-      #   @return [I18n::Inflector::InflectionStore,nil] the inflection data
+      #   @return [I18n::Inflector::InflectionData,nil] the inflection data
       #     or +nil+ if the given subtree was wrong or empty
       def load_inflection_tokens(locale, subtree=nil)
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
 
-        idb = I18n::Inflector::InflectionStore.new(locale)
+        idb = I18n::Inflector::InflectionData.new(locale)
 
         inflections_tree.each_pair do |kind, tokens|
           subkind = nil
