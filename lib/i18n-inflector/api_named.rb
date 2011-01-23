@@ -25,14 +25,14 @@ module I18n
     # 
     # ==== Usage
     # You can access the instance of this class attached to
-    # default I18n backend by entering:
+    # default I18n backend by calling:
     #   I18n.backend.inflector.named
     # or in a short form:
     #   I18n.inflector.named
     # 
     # @api public
     # @see I18n::Inflector::API The API class that does similar
-    #   operations but on unnamed patterns.
+    #   operations but on regular (unnamed) patterns.
     class API_Named
 
       # Initilizes inflector by connecting to internal databases
@@ -52,9 +52,9 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is created
-      # @return [I18n::Inflector::InflectionData_Strict] the new object for keeping inflection data
-      #   for the given +locale+
+      # @param [Symbol] locale the locale for which the inflecitons database is created
+      # @return [I18n::Inflector::InflectionData_Strict] the new object for keeping
+      #   inflection data for the given +locale+
       def new_database(locale)
         locale = prep_locale(locale)
         @idb[locale] = I18n::Inflector::InflectionData_Strict.new(locale)
@@ -65,7 +65,7 @@ module I18n
       #
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @note It doesn't create copy of inflection data, it registers the given object.
+      # @note It doesn't create copy of inflection database, it registers the given object.
       # @param [I18n::Inflector::InflectionData_Strict] idb inflection data to add
       # @return [I18n::Inflector::InflectionData_Strict] the given +idb+ or +nil+ if something
       #   went wrong (e.g. +nil+ was given as an argument)
@@ -82,7 +82,7 @@ module I18n
       # @note It detaches the database from {I18n::Inflector::API} instance.
       #   Other objects referring to it directly may still use it.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
+      # @param [Symbol] locale the locale for which the inflecitons database is to be deleted.
       # @return [void]
       def delete_database(locale)
         locale = prep_locale(locale)

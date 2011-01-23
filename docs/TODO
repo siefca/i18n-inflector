@@ -6,5 +6,7 @@
 
 == Near future
 
-
+* add a switch that causes inflection arguments to be gathered before using original
+  version of translate and then injected when interpolating happens (default value
+  for that switch should be true if there is I18n version 4 installed)
 

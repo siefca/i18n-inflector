@@ -264,8 +264,8 @@ module I18n
       #   @param [Symbol] token the identifier of a token
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Symbol,nil] the true token for the given +token+
-      #     or +nil+ if the token is unknown or is not kind of the
-      #     given kind
+      #     or +nil+ if the token is unknown or is not a kind of the
+      #     given +kind+
       def get_true_token(token, kind=nil)
         o = @tokens[token]
         k = o[:kind]
@@ -300,23 +300,6 @@ module I18n
       #   token (which may be an alias) or +nil+ if the token is unknown
       def get_description(token)
         @tokens[token][:description]
-      end
-
-      # This method validates default tokens assigned
-      # for kinds and replaces targets with true tokens
-      # if they are aliases.
-      # 
-      # @return [nil,Array<Symbol>] +nil+ if everything went fine,
-      #   two dimensional array containing kind and target
-      #   in case of error while geting a token
-      def validate_default_tokens
-        @defaults.each_pair do |kind, pointer|
-          ttok = get_true_token(pointer)
-          return [kind, pointer] if ttok.nil?
-          set_default_token(kind, ttok) 
-        end
-        nil
-        #@strict.validate_default_tokens
       end
 
       # Test if the inflection data have no elements.

@@ -15,16 +15,16 @@ module I18n
     # that can be performed on inflections. It can operate
     # on both unnamed an named patterns (regular and strict kinds).
     # 
-    # It uses the database containing instances of
-    # {I18n::Inflector::InflectionData} indexed
-    # by locale names.
+    # It uses the databases containing instances of
+    # ({I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict})
+    # keeped in the Hashes that are indexed by locale names.
     # 
     # It is also used by backend methods
     # to interpolate strings and load databases.
     # 
     # ==== Usage
     # You can access the instance of this class attached to
-    # default I18n backend by entering:
+    # default I18n backend by calling:
     #   I18n.backend.inflector
     # or in a short form:
     #   I18n.inflector
@@ -32,7 +32,7 @@ module I18n
     #   I18n.inflector.named
     # 
     # @see I18n::Inflector::API_Named The API_Named class
-    #   for accessing inflection data of named
+    #   for accessing inflection data for named
     #   patterns (strict kinds).
     # @api public
     class API < API_Named
@@ -66,7 +66,7 @@ module I18n
         @named ||= I18n::Inflector::API_Named.new(@idb_strict, @options)
       end
 
-      # Initilizes inflector by connecting to internal databases
+      # Initilizes the inflector by creating internal databases
       # used for storing inflection data and options.
       # 
       # @api public
@@ -79,7 +79,7 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is created
+      # @param [Symbol] locale the locale for which the inflecitons database is to be created
       # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
       #   for the given +locale+
       def new_database(locale)
@@ -91,9 +91,9 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is created
-      # @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the array of objects for keeping inflection data
-      #   for the given +locale+
+      # @param [Symbol] locale the locale for which the inflecitons databases are to be created
+      # @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the
+      #   array of objects for keeping inflection data for the given +locale+
       def new_databases(locale)
         normal = new_databases(locale)
         strict = named.new_database(locale)
@@ -119,7 +119,8 @@ module I18n
       #   @param [I18n::Inflector::InflectionData] db inflection data to add
       #   @param [I18n::Inflector::InflectionData_Strict] db_strict strict inflection data to add
       #   @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the
-      #     array of the given objects or +nil+ if something went wrong (e.g. +nil+ was given as a first argument)
+      #     array of the given objects or +nil+ if something went wrong (e.g. +nil+ was
+      #     given as a first argument)
       def add_database(db, db_strict=nil)
         r = super(db)
         return r if (r.nil? || db_strict.nil?)
@@ -138,7 +139,7 @@ module I18n
       # @note It detaches the databases from {I18n::Inflector::API} instance.
       #   Other objects referring to them may still use it.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the infleciton database is to be deleted.
+      # @param [Symbol] locale the locale for which the inflecitons database is to be deleted.
       # @return [void]
       def delete_databases(locale)
         delete_database(locale)

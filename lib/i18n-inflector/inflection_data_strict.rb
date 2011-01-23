@@ -212,7 +212,7 @@ module I18n
       # @param [Symbol] kind the identifier of a kind
       # @return [Symbol,nil] the true token for the given +token+
       #   or +nil+ if the token is unknown or is not a kind of the
-      #   given kind
+      #   given +kind+
       def get_true_token(token, kind)
         o = @tokens[kind]
         return nil unless o.has_key?(token)
@@ -246,22 +246,6 @@ module I18n
       #   token (which may be an alias) or +nil+ if the token is unknown
       def get_description(token, kind)
         @tokens[kind][token][:description]
-      end
-
-      # This method validates default tokens assigned
-      # for kinds and replaces targets with true tokens
-      # if they are aliases.
-      # 
-      # @return [nil,Array<Symbol>] +nil+ if everything went fine,
-      #   two dimensional array containing kind and target
-      #   in case of an error while geting a token
-      def validate_default_tokens
-        @defaults.each do |kind, pointer|
-          ttok = get_true_token(pointer, kind)
-          return [kind, pointer] if ttok.nil?
-          set_default_token(kind, ttok) 
-        end
-        return nil
       end
 
     end # InflectionData_Strict

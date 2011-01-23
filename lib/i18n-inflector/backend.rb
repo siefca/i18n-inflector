@@ -174,7 +174,6 @@ module I18n
           if kind_subtree.has_key?(token)
             return token
           else
-            # that should never happend but who knows
             raise I18n::BadInflectionToken.new(locale, token, kind)
           end
         else
@@ -219,22 +218,14 @@ module I18n
 
         idb         = I18n::Inflector::InflectionData.new(locale)
         idb_strict  = I18n::Inflector::InflectionData_Strict.new(locale)
-        
+
         return nil if (idb.nil? || idb_strict.nil?)
 
-        inflections_tree.each_pair do |kind, tokens|
-          strict_kind = nil
-          subdb       = idb
+        inflections = prepared_inflections(inflections_tree, idb, idb_strict)
 
-          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
-            kind = kind.to_s[1..-1]
-            next if kind.empty?
-            kind        = kind.to_sym
-            subdb       = idb_strict
-            strict_kind = kind
-          end
-
+        inflections.each do |kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
+
             # test for duplicate
             if subdb.has_token?(token, strict_kind)
               raise I18n::DuplicatedInflectionToken.new(subdb.get_kind(token, strict_kind), kind, token)
@@ -250,48 +241,64 @@ module I18n
               next
             end
 
-            # handle default token for a kind
-            if token == :default
-              if subdb.has_default_token?(kind)
-                raise I18n::DuplicatedInflectionToken.new(kind, nil, token)
-              end
-              subdb.set_default_token(kind, description)
-              next
-            end
+            # skip default token for later processing
+            next if token == :default
 
             subdb.add_token(token, kind, description)
           end
         end
 
         # handle aliases
-        inflections_tree.each_pair do |kind, tokens|
-          subdb = idb
-
-          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
-            kind = kind.to_s[1..-1]
-            next if kind.empty?
-            kind = kind.to_sym
-            subdb = idb_strict
-          end
-
+        inflections.each do |kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
+            next if token == :default
             next if description[0..0] != I18n::Inflector::ALIAS_MARKER
             real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
-            unless real_token.nil?
-              subdb.add_alias(token, real_token, kind)
-            end
+            subdb.add_alias(token, real_token, kind) unless real_token.nil?
           end
         end
 
-        # process and validate defaults
-        valid = idb.validate_default_tokens
-        raise I18n::BadInflectionAlias.new(locale, :default, valid[0], valid[1]) unless valid.nil?
-        valid = idb_strict.validate_default_tokens
-        raise I18n::BadInflectionAlias.new(locale, :default, valid[0], valid[1]) unless valid.nil?
+        # handle default tokens
+        inflections.each do |kind, strict_kind, subdb, tokens|
+          next unless tokens.has_key?(:default)
+          if subdb.has_default_token?(kind)
+            raise I18n::DuplicatedInflectionToken.new(kind, nil, :default)
+          end
+          orig_target = tokens[:default]
+          target = orig_target.to_s
+          target = target[1..-1] if target[0..0] == I18n::Inflector::ALIAS_MARKER
+          if target.empty?
+            raise I18n::BadInflectionToken.new(locale, token, kind, orig_target)
+          end
+          target = subdb.get_true_token(target.to_sym, kind)
+          if target.nil?
+            raise I18n::BadInflectionAlias.new(locale, :default, kind, orig_target)
+          end
+          subdb.set_default_token(kind, target)
+        end
 
         [idb, idb_strict]
       end
 
-    end
-  end
-end
+      # @private
+      def prepared_inflections(inflections, idb, idb_strict)
+        ret = []
+        inflections.each_pair do |kind,tokens|
+          next if (tokens.nil? || tokens.empty?)
+          subdb = idb
+          strict_kind = nil
+          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
+            kind        = kind.to_s[1..-1]
+            next if kind.empty?
+            kind        = kind.to_sym
+            subdb       = idb_strict
+            strict_kind = kind
+          end
+          ret.push [kind, strict_kind, subdb, tokens]
+        end
+        ret
+      end
+
+    end # module Inflector
+  end # module Backend
+end # module I18n
