@@ -21,7 +21,7 @@ module I18n
     # to interpolate additional inflection tokens present in translations.
     # Usually you don't have to know what's here to use it.
     module Inflector
-
+      
       # This accessor allows to reach API methods of the
       # inflector object associated with this class.
       def inflector
@@ -221,7 +221,7 @@ module I18n
 
         return nil if (idb.nil? || idb_strict.nil?)
 
-        inflections = prepared_inflections(inflections_tree, idb, idb_strict)
+        inflections = prepare_inflections(inflections_tree, idb, idb_strict)
 
         inflections.each do |kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
@@ -281,9 +281,9 @@ module I18n
       end
 
       # @private
-      def prepared_inflections(inflections, idb, idb_strict)
-        ret = []
-        inflections.each_pair do |kind,tokens|
+      def prepare_inflections(inflections, idb, idb_strict)
+        I18n::Inflector::LazyEnums.new(inflections).l_map do |obj|
+          kind, tokens = obj
           next if (tokens.nil? || tokens.empty?)
           subdb = idb
           strict_kind = nil
@@ -294,9 +294,8 @@ module I18n
             subdb       = idb_strict
             strict_kind = kind
           end
-          ret.push [kind, strict_kind, subdb, tokens]
+          [kind, strict_kind, subdb, tokens]
         end
-        ret
       end
 
     end # module Inflector
