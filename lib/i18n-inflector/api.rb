@@ -706,7 +706,7 @@ module I18n
 
       # @private
       def data_safe(locale=nil)
-        @idb[prep_locale(locale)] || I18n::Inflector::InflecitonData.new(locale)
+        @idb[prep_locale(locale)] || I18n::Inflector::InflectionData.new(locale)
       end
 
       # This method is the internal helper that prepares arguments
@@ -734,7 +734,7 @@ module I18n
       def tkl_args(args)
         token, kind, locale = case args.count
         when 1 then [args[0], nil, nil]
-        when 2 then [args[0], nil, args[1]]
+        when 2 then args[1].to_s[0..0] == I18n::Inflector::NAMED_MARKER ? [args[0], args[1], nil] : [args[0], nil, args[1]]
         when 3 then args
         else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
         end
