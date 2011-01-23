@@ -52,7 +52,7 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the inflecitons database is created
+      # @param [Symbol] locale the locale for which the inflections database is created
       # @return [I18n::Inflector::InflectionData_Strict] the new object for keeping
       #   inflection data for the given +locale+
       def new_database(locale)
@@ -82,7 +82,7 @@ module I18n
       # @note It detaches the database from {I18n::Inflector::API} instance.
       #   Other objects referring to it directly may still use it.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the inflecitons database is to be deleted.
+      # @param [Symbol] locale the locale for which the inflections database is to be deleted.
       # @return [void]
       def delete_database(locale)
         locale = prep_locale(locale)

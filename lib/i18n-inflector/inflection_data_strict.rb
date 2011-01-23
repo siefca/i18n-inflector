@@ -135,7 +135,7 @@ module I18n
         not @tokens[kind][alias_name][:target].nil?
       end
 
-      # Reads the all the true tokens (not aliases).
+      # Reads all the true tokens (not aliases).
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Hash] the true tokens of the given kind in a
@@ -145,7 +145,7 @@ module I18n
         tokens.merge(tokens){|k,v| v[:description]}
       end
 
-      # Reads the all the aliases.
+      # Reads all the aliases.
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Hash] the aliases of the given kind in a
@@ -155,7 +155,7 @@ module I18n
         aliases.merge(aliases){|k,v| v[:target]}
       end
 
-      # Reads the all the tokens in a way that it is possible to
+      # Reads all the tokens in a way that it is possible to
       # distinguish true tokens from aliases.
       # 
       # @note True tokens have descriptions (String) and aliases
@@ -167,7 +167,7 @@ module I18n
         get_true_tokens(kind).merge(get_aliases(kind))
       end
 
-      # Reads the all the tokens (including aliases).
+      # Reads all the tokens (including aliases).
       # 
       # @note Use {#get_raw_tokens} if you want to distinguish
       #   true tokens from aliases.

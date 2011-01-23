@@ -149,16 +149,16 @@ module I18n
         kind.nil? ? true : o[:kind] == kind
       end
 
-      # Reads the all the true tokens (not aliases).
+      # Reads all the true tokens (not aliases).
       # 
       # @return [Hash] the true tokens in a
       #     form of Hash (<tt>token => description</tt>)
       # @overload get_true_tokens(kind)
-      #   Reads the all the true tokens (not aliases).
+      #   Reads all the true tokens (not aliases).
       #   @return [Hash] the true tokens in a
       #     form of Hash (<tt>token => description</tt>)
       # @overload get_true_tokens(kind)
-      #   Reads the all the true tokens (not aliases).
+      #   Reads all the true tokens (not aliases).
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the true tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)
@@ -168,16 +168,16 @@ module I18n
         tokens.merge(tokens){|k,v| v[:description]}
       end
 
-      # Reads the all the aliases.
+      # Reads all the aliases.
       # 
       # @return [Hash] the aliases in a
       #     form of Hash (<tt>alias => target</tt>)
       # @overload get_aliases(kind)
-      #   Reads the all the aliases.
+      #   Reads all the aliases.
       #   @return [Hash] the aliases in a
       #     form of Hash (<tt>alias => target</tt>)
       # @overload get_aliases(kind)
-      #   Reads the all the aliases.
+      #   Reads all the aliases.
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the aliases of the given kind in a
       #     form of Hash (<tt>alias => target</tt>)
@@ -187,7 +187,7 @@ module I18n
         aliases.merge(aliases){|k,v| v[:target]}
       end
 
-      # Reads the all the tokens in a way that it is possible to
+      # Reads all the tokens in a way that it is possible to
       # distinguish true tokens from aliases.
       # 
       # @note True tokens have descriptions (String) and aliases
@@ -195,11 +195,11 @@ module I18n
       # @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
       # @overload get_raw_tokens
-      #   Reads the all the tokens.
+      #   Reads all the tokens.
       #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
       # @overload get_raw_tokens(kind)
-      #   Reads the all the tokens.
+      #   Reads all the tokens.
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description|target</tt>)
@@ -207,18 +207,18 @@ module I18n
         get_true_tokens(kind).merge(get_aliases(kind))
       end
 
-      # Reads the all the tokens (including aliases).
+      # Reads all the tokens (including aliases).
       # 
       # @note Use {get_raw_tokens} if you want to distinguish
       #   true tokens from aliases.
       # @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description</tt>)
       # @overload get_raw_tokens(kind)
-      #   Reads the all the tokens (including aliases).
+      #   Reads all the tokens (including aliases).
       #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description</tt>)
       # @overload get_raw_tokens(kind)
-      #   Reads the all the tokens (including aliases).
+      #   Reads all the tokens (including aliases).
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)

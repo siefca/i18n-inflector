@@ -79,7 +79,7 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the inflecitons database is to be created
+      # @param [Symbol] locale the locale for which the inflections database is to be created
       # @return [I18n::Inflector::InflectionData] the new object for keeping inflection data
       #   for the given +locale+
       def new_database(locale)
@@ -91,7 +91,7 @@ module I18n
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the inflecitons databases are to be created
+      # @param [Symbol] locale the locale for which the inflections databases are to be created
       # @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>] the
       #   array of objects for keeping inflection data for the given +locale+
       def new_databases(locale)
@@ -139,11 +139,39 @@ module I18n
       # @note It detaches the databases from {I18n::Inflector::API} instance.
       #   Other objects referring to them may still use it.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @param [Symbol] locale the locale for which the inflecitons database is to be deleted.
+      # @param [Symbol] locale the locale for which the inflections database is to be deleted.
       # @return [void]
       def delete_databases(locale)
         delete_database(locale)
         named.delete_database(locale)
+      end
+
+      # Checks if the given locale was configured to support inflection.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [Boolean] +true+ if a locale supports inflection
+      # @overload inflected_locale?(locale)
+      #   Checks if the given locale was configured to support inflection.
+      #   @param [Symbol] locale the locale to test
+      #   @return [Boolean] +true+ if the given locale supports inflection
+      # @overload inflected_locale?
+      #   Checks if the current locale was configured to support inflection.
+      #   @return [Boolean] +true+ if the current locale supports inflection
+      def inflected_locale?(locale=nil)
+        super || @named.inflected_locale?(locale)
+      end
+      alias_method :locale?,            :inflected_locale?
+      alias_method :locale_supported?,  :inflected_locale?
+
+      # Gets locales which have configured inflection support.
+      # 
+      # @api public
+      # @return [Array<Symbol>] the array containing locales that support inflection
+      # @note If +kind+ is given it returns only these locales
+      #   that support inflection by this kind.
+      def inflected_locales(kind=nil)
+        (super + @named.inflected_locales).sort.uniq
       end
 
       # Checks if the given +token+ is an alias.
