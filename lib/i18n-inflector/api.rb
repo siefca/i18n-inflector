@@ -170,9 +170,15 @@ module I18n
       def has_alias?(*args)
         token, kind, locale = tkl_args(args)
         return false if token.to_s.empty?
-        return false if (!kind.nil? && kind.to_s.empty?)
+        unless kind.nil?
+          kind = kind.to_s
+          reutrn false if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.has_alias?(token, kind[1..-1], locale)
+          end
+          kind  = kind.to_sym
+        end
         token = token.to_sym
-        kind  = kind.to_sym unless kind.nil?
         data_safe(locale).has_alias?(token, kind)
       end
       alias_method :token_has_alias?, :has_alias?
@@ -201,9 +207,15 @@ module I18n
       def has_true_token?(*args)
         token, kind, locale = tkl_args(args)
         return false if token.to_s.empty?
-        return false if (!kind.nil? && kind.to_s.empty?)
+        unless kind.nil?
+          kind = kind.to_s
+          return false if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.has_true_token?(token, kind[1..-1], locale)
+          end
+          kind  = kind.to_sym
+        end
         token = token.to_sym
-        kind  = kind.to_sym unless kind.nil?
         data_safe(locale).has_true_token?(token, kind)
       end
       alias_method :token_has_true?, :has_true_token?
@@ -232,9 +244,15 @@ module I18n
        def has_token?(*args)
          token, kind, locale = tkl_args(args)
          return false if token.to_s.empty?
-         return false if (!kind.nil? && kind.to_s.empty?)
+         unless kind.nil?
+           kind = kind.to_s
+           return false if kind.empty?
+           if kind[0..0] == I18n::Inflector::NAMED_MARKER
+             return named.has_token?(token, kind[1..-1], locale)
+           end
+           kind = kind.to_sym
+         end
          token = token.to_sym
-         kind  = kind.to_sym unless kind.nil?
          data_safe(locale).has_token?(token, kind)
        end
        alias_method :token_exists?, :has_token?
@@ -266,9 +284,15 @@ module I18n
       def true_token(*args)
         token, kind, locale = tkl_args(args)
         return nil if token.to_s.empty?
-        return nil if (!kind.nil? && kind.to_s.empty?)
+        unless kind.nil?
+          kind = kind.to_s
+          return nil if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.true_token(token, kind[1..-1], locale)
+          end
+          kind = kind.to_sym
+        end
         token = token.to_sym
-        kind  = kind.to_sym unless kind.nil?
         data_safe(locale).get_true_token(token, kind)
       end
       alias_method :resolve_alias, :true_token
@@ -320,8 +344,14 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases, for current locale
       def tokens(kind=nil, locale=nil)
-        return {} if (!kind.nil? && kind.to_s.empty?)
-        kind = kind.to_sym unless kind.nil?
+        unless kind.nil?
+          kind = kind.to_s
+          return {} if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.tokens(kind[1..-1], locale)
+          end
+          kind = kind.to_sym
+        end
         data_safe(locale).get_tokens(kind)
       end
 
@@ -351,8 +381,14 @@ module I18n
       #     and their descriptions as values for the given +kind+ and +locale+.
       #     In case of aliases the returned values are Symbols
       def tokens_raw(kind=nil, locale=nil)
-        return {} if (!kind.nil? && kind.to_s.empty?)
-        kind = kind.to_sym unless kind.nil?
+        unless kind.nil?
+          kind = kind.to_s
+          return {} if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.tokens_raw(kind[1..-1], locale)
+          end
+          kind = kind.to_sym
+        end
         data_safe(locale).get_raw_tokens(kind)
       end
       alias_method :raw_tokens, :tokens_raw
@@ -379,8 +415,14 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+ and +locale+
       def tokens_true(kind=nil, locale=nil)
-        return {} if (!kind.nil? && kind.to_s.empty?)
-        kind = kind.to_sym unless kind.nil?
+        unless kind.nil?
+          kind = kind.to_s
+          return {} if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.tokens_true(kind[1..-1], locale)
+          end
+          kind = kind.to_sym
+        end
         data_safe(locale).get_true_tokens(kind)
       end
       alias_method :true_tokens, :tokens_true
@@ -405,8 +447,14 @@ module I18n
       #   @return [Hash] the Hash containing available inflection
       #     aliases for the given +kind+ and +locale+
       def aliases(kind=nil, locale=nil)
-        return {} if (!kind.nil? && kind.to_s.empty?)
-        kind = kind.to_sym unless kind.nil?
+        unless kind.nil?
+          kind = kind.to_s
+          return nil if kind.empty?
+          if kind[0..0] == I18n::Inflector::NAMED_MARKER
+            return named.tokens_raw(kind[1..-1], locale)
+          end
+          kind = kind.to_sym
+        end
         data_safe(locale).get_aliases(kind)
       end
 
