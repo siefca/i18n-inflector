@@ -169,7 +169,8 @@ module I18n
       # @api public
       # @return [Array<Symbol>] the array containing locales that support inflection
       # @note If +kind+ is given it returns only these locales
-      #   that support inflection by this kind.
+      #   that support inflection by this kind. It also calls the same method from
+      #   attached database containing strict kinds.
       def inflected_locales(kind=nil)
         (super + @named.inflected_locales).sort.uniq
       end

@@ -6,23 +6,22 @@
 # 
 # This file contains lazy enumerators.
 
-# @private
-#class Enumerator
-#  # @private
-#  def to_hash
-#    Hash[self.to_a]
-#  end unless method_defined? :to_h
-#end
-
 module I18n
   module Inflector
 
+    # This class implements simple enumerators for arrays
+    # and hashes that allow to do lazy operations on them.
     class LazyEnumerator < Enumerator
 
+      # Creates a Hash kind of object by collecting all
+      # data from enumerated collection.
+      # @return [Hash] the resulting hash
       def to_h
         Hash[self.to_a]
       end
 
+      # Array mapping enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def a_map(&block)
         LazyEnumerator.new do |yielder|
           self.each do |value|
@@ -31,6 +30,8 @@ module I18n
         end
       end
 
+      # Hash mapping enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def h_map(&block)
         LazyEnumerator.new do |yielder|
           self.each do |k,v|
@@ -39,6 +40,8 @@ module I18n
         end
       end
 
+      # Hash selecting enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def h_select(&block)
         LazyEnumerator.new do |yielder|
           self.each do |k,v|
@@ -47,6 +50,8 @@ module I18n
         end
       end
     
+      # Hash rejecting enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def h_reject(&block)
         LazyEnumerator.new do |yielder|
           self.each do |k,v|
