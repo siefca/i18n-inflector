@@ -1,3 +1,9 @@
+commit 691d74f506c78566f2d5d04d55f0381a0a2209a6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 11:31:31 2011 +0100
+
+    Added backport methods for lazy enumerators to work with Ruby 1.8 and some tests
+
 commit 65c6c73e263f6e8e655921fcea78e6237d3a438f
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Jan 24 03:07:26 2011 +0100
