@@ -4,7 +4,7 @@
 # Copyright:: (c) 2011 by Paweł Wilk
 # License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
-# This file contains I18n::Inflector::API_Named class,
+# This file contains I18n::Inflector::API_Strict class,
 # which handles public API for managing inflection data
 # for named patterns (strict kinds).
 
@@ -18,7 +18,7 @@ module I18n
     # patterns).
     # 
     # It uses the database containing instances
-    # of {I18n::Inflector::InflectionData} indexed by locale
+    # of {I18n::Inflector::InflectionData_Strict} indexed by locale
     # and has methods to access them in an easy way. It can
     # operate on shared database and options passed while
     # creating an instance. 
@@ -33,7 +33,7 @@ module I18n
     # @api public
     # @see I18n::Inflector::API The API class that does similar
     #   operations but on regular (unnamed) patterns.
-    class API_Named
+    class API_Strict
 
       # Initilizes inflector by connecting to internal databases
       # used for storing inflection data and options.
@@ -60,7 +60,7 @@ module I18n
         @idb[locale] = I18n::Inflector::InflectionData_Strict.new(locale)
       end
 
-      # Attaches {I18n::Inflector::InflectionData} instance to the
+      # Attaches {I18n::Inflector::InflectionData_Strict} instance to the
       # current collection.
       #
       # @api public
@@ -506,7 +506,7 @@ module I18n
         locale.to_sym
       end
 
-    end # class API_Named
+    end # class API_Strict
 
   end # module Inflector
 end # module I18n
