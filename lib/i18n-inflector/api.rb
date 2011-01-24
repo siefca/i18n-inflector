@@ -175,6 +175,26 @@ module I18n
         (super + @named.inflected_locales).sort.uniq
       end
 
+      # Tests if a regular (or strict) kind exists.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
+      # @overload has_kind?(kind)
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [Boolean] +true+ if the given +kind+ exists for the current
+      #     locale, +false+ otherwise
+      # @overload has_kind?(kind, locale)
+      #   @param [Symbol,String] kind the identifier of a kind
+      #   @param [Symbol] locale the locale identifier
+      #   @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
+      def has_kind?(kind, locale=nil)
+        if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
+          return named.has_kind?(kind.to_s[1..-1], locale)
+        end
+        super
+      end
+
       # Checks if the given +token+ is an alias.
       # 
       # @api public

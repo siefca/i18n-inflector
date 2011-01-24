@@ -9,3 +9,9 @@ software as long as you comply with either the terms of the LGPL
 (see the file {file:LGPL}),
 or Ruby's license (see the file {file:COPYING}).
 
+The code from the file backport.rb is originally licensed under other
+license terms (also free software). See its contents to view
+the original copyright notice. The code from that file
+is sublicensed here under the terms of the two licenses
+mentioned above (LGPL and Ruby's License), since
+the original license terms allow it.

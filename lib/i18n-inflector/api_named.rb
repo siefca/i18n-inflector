@@ -141,7 +141,7 @@ module I18n
       end
       alias_method :inflection_kinds, :kinds
 
-      # Tests if a kind exists.
+      # Tests if a strict kind exists.
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name

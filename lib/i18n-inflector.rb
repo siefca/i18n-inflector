@@ -4,6 +4,7 @@ require 'i18n'
 
 require 'i18n-inflector/version'
 require 'i18n-inflector/errors'
+require 'i18n-inflector/backport'
 require 'i18n-inflector/lazy_enum'
 require 'i18n-inflector/inflection_data_strict'
 require 'i18n-inflector/inflection_data'

@@ -49,7 +49,7 @@ module I18n
           end
         end
       end
-    
+
       # Hash rejecting enumerator
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def h_reject(&block)

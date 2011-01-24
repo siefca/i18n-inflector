@@ -21,7 +21,7 @@ module I18n
     # to interpolate additional inflection tokens present in translations.
     # Usually you don't have to know what's here to use it.
     module Inflector
-      
+
       # This accessor allows to reach API methods of the
       # inflector object associated with this class.
       def inflector
