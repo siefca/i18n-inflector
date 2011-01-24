@@ -164,10 +164,11 @@ module I18n
       #   @return [Hash] the true tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)
       def get_true_tokens(kind=nil)
-        @lazy_tokens.
-        h_select  { |token,data| (kind.nil? || data[:kind] == kind) && data[:target].nil? }.
-        h_map     { |token,data| data[:description]                                       }.
-        to_h
+        t = @lazy_tokens
+        t = t.h_select  { |token,data| data[:kind] == kind  } unless kind.nil?
+        t.h_select      { |token,data| data[:target].nil?   }.
+          h_map         { |token,data| data[:description]   }.
+          to_h
       end
 
       # Reads all the aliases.
@@ -184,10 +185,11 @@ module I18n
       #   @return [Hash] the aliases of the given kind in a
       #     form of Hash (<tt>alias => target</tt>)
       def get_aliases(kind=nil)
-        @lazy_tokens.
-        h_select  { |token,data| (kind.nil? || data[:kind] == kind) && !data[:target].nil?  }.
-        h_map     { |token,data| data[:target]                                              }.
-        to_h
+        t = @lazy_tokens
+        t = t.h_select  { |token,data| data[:kind] == kind  } unless kind.nil?
+        t.h_reject      { |token,data| data[:target].nil?   }.
+          h_map         { |token,data| data[:target]        }.
+          to_h
       end
 
       # Reads all the tokens in a way that it is possible to
@@ -207,10 +209,10 @@ module I18n
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description|target</tt>)
       def get_raw_tokens(kind=nil)
-        @lazy_tokens.
-        h_select  { |token,data| kind.nil? || data[:kind] == kind     }.
-        h_map     { |token,data| data[:target] || data[:description]  }.
-        to_h
+        t = @lazy_tokens
+        t = t.h_select  { |token,data| data[:kind] == kind } unless kind.nil?
+        t.h_map         { |token,data| data[:target] || data[:description]  }.
+          to_h
       end
 
       # Reads all the tokens (including aliases).
@@ -229,10 +231,10 @@ module I18n
       #   @return [Hash] the tokens of the given kind in a
       #     form of Hash (<tt>token => description</tt>)
       def get_tokens(kind=nil)
-        @lazy_tokens.
-        h_select  { |token,data| kind.nil? || data[:kind] == kind }.
-        h_map     { |token,data| data[:description]               }.
-        to_h
+        t = @lazy_tokens
+        t = t.h_select  { |token,data| data[:kind] == kind } unless kind.nil?
+        t.h_map         { |token,data| data[:description]  }.
+          to_h
       end
 
       # Gets a target token for the alias.
@@ -305,8 +307,8 @@ module I18n
       # @param [Symbol] token the identifier of a token
       # @return [String,nil] the string containing description of the given
       #   token (which may be an alias) or +nil+ if the token is unknown
-      def get_description(token)
-        @tokens[token][:description]
+      def get_description(token, kind=nil)
+        @tokens[token][:description] if (kind.nil? || @tokens[token][:kind] == kind)
       end
 
       # Test if the inflection data have no elements.

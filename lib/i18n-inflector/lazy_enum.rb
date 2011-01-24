@@ -9,7 +9,7 @@
 module I18n
   module Inflector
 
-    if RUBY_VERSION.gsub(/\D/,'').to_i < 190
+    if RUBY_VERSION.gsub(/\D/,'')[0..1].to_i < 19
       require 'enumerator' rescue nil
 
       class LazyEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
