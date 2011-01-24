@@ -9,9 +9,55 @@
 module I18n
   module Inflector
 
+    if RUBY_VERSION.gsub(/\D/,'').to_i < 190
+      require 'enumerator' rescue nil
+
+      class LazyEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
+
+        # This class allows to initialize the Enumerator with a block
+        class Yielder
+          def initialize(&block)
+            @main_block = block
+          end
+
+          def each(&block)
+            @final_block = block
+            @main_block.call(self)
+          end
+
+          if Proc.method_defined?(:yield)
+            def yield(*arg)
+              @final_block.yield(*arg)
+            end
+          else
+            def yield(*arg)
+              @final_block.call(*arg)
+            end
+          end
+        end
+
+        unless (self.new{} rescue false)
+          def initialize(*args, &block)
+            args.empty? ? super(Yielder.new(&block)) : super(*args, &nil) 
+          end
+        end
+
+        if method_defined?(:with_object) and not method_defined?(:each_with_object)
+          alias_method :with_object, :each_with_object
+        end
+
+      end # class LazyEnumerator for ruby18
+
+    else # if RUBY_VERSION >= 1.9.0
+
+      class LazyEnumerator < Enumerator
+      end
+
+    end
+
     # This class implements simple enumerators for arrays
     # and hashes that allow to do lazy operations on them.
-    class LazyEnumerator < Enumerator
+    class LazyEnumerator
 
       # Creates a Hash kind of object by collecting all
       # data from enumerated collection.
@@ -60,7 +106,7 @@ module I18n
         end
       end
 
-    end
+    end # class LazyEnumerator
 
   end
 end

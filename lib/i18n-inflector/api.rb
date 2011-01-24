@@ -172,7 +172,7 @@ module I18n
       #   that support inflection by this kind. It also calls the same method from
       #   attached database containing strict kinds.
       def inflected_locales(kind=nil)
-        (super + @named.inflected_locales).sort.uniq
+        (super + @named.inflected_locales).uniq
       end
 
       # Tests if a regular (or strict) kind exists.
