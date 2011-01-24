@@ -16,7 +16,7 @@ docs/TODO
 docs/rdoc.css
 lib/i18n-inflector.rb
 lib/i18n-inflector/api.rb
-lib/i18n-inflector/api_named.rb
+lib/i18n-inflector/api_strict.rb
 lib/i18n-inflector/backend.rb
 lib/i18n-inflector/errors.rb
 lib/i18n-inflector/inflection_data.rb
