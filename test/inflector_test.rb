@@ -422,6 +422,16 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal nil, I18n.inflector.true_token(:faafaffa)
   end
 
+  test "inflector true_token: gets true token for a given token name with the named marker" do
+    assert_equal :n,  I18n.inflector.true_token(:neuter,  :@gender,  :xx)
+    assert_equal :f,  I18n.inflector.true_token(:f,       :@gender,  :xx)
+    I18n.locale = :xx
+    assert_equal :n,  I18n.inflector.true_token(:neuter,  :@gender)
+    assert_equal :f,  I18n.inflector.true_token(:f,       :@gender)
+    assert_equal :f,  I18n.inflector.true_token(:f,       :@gender,  :xx)
+    assert_equal nil, I18n.inflector.true_token(:f,       :@person,  :xx)
+  end
+
   test "inflector.named true_token: gets true token for a given token name" do
     assert_equal :n,  I18n.inflector.named.true_token(:neuter,  :gender,  :xx)
     assert_equal :f,  I18n.inflector.named.true_token(:f,       :gender,  :xx)
@@ -435,6 +445,18 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "inflector has_true_token?: tests if true token exists for a given token name" do
+    assert_equal false, I18n.inflector.has_true_token?(:neuter, :xx)
+    assert_equal true,  I18n.inflector.has_true_token?(:f,      :xx)
+    I18n.locale = :xx
+    assert_equal false, I18n.inflector.has_true_token?(:neuter)
+    assert_equal true,  I18n.inflector.has_true_token?(:f)
+    assert_equal true,  I18n.inflector.has_true_token?(:f,      :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:f,      :person, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:f,      :nokind, :xx)
+    assert_equal false, I18n.inflector.has_true_token?(:faafaff)
+  end
+
+  test "inflector named markers: tests if named markers in kinds are working for API calls" do
     assert_equal false, I18n.inflector.has_true_token?(:neuter, :xx)
     assert_equal true,  I18n.inflector.has_true_token?(:f,      :xx)
     I18n.locale = :xx

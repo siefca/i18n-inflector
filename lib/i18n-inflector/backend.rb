@@ -282,7 +282,7 @@ module I18n
 
       # @private
       def prepare_inflections(inflections, idb, idb_strict)
-        I18n::Inflector::LazyEnums.new(inflections).l_map do |obj|
+        I18n::Inflector::LazyEnumerator.new(inflections).a_map do |obj|
           kind, tokens = obj
           next if (tokens.nil? || tokens.empty?)
           subdb = idb

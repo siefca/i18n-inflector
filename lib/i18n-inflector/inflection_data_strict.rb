@@ -26,6 +26,10 @@ module I18n
       # It makes chaining calls to internal data easier.
       DUMMY_TOKENS  = Hash.new(DUMMY_TOKEN).freeze
 
+      # This constant contains a dummy iterator for hash of hashes.
+      # It makes chaining calls to internal data easier.
+      DUMMY_T_LAZY  = LazyEnumerator.new(DUMMY_TOKENS).freeze
+
       # This constant contains a dummy hash. It makes
       # chaining calls to internal data easier.
       DUMMY_HASH    = Hash.new.freeze
@@ -39,6 +43,7 @@ module I18n
       #   the object to be labeled with
       def initialize(locale=nil)
         @tokens       = Hash.new(DUMMY_TOKENS)
+        @lazy_tokens  = Hash.new(DUMMY_T_LAZY)
         @defaults     = Hash.new
         @locale       = locale
       end
@@ -69,10 +74,14 @@ module I18n
       # @param [String] description the description of a token
       # @return [void]
       def add_token(token, kind, description)
-        token = token.to_sym
-        kind  = kind.to_sym
-        @tokens[kind] = Hash.new(DUMMY_TOKEN) unless @tokens.has_key?(kind)
-        token = @tokens[kind][token] = {}
+        token     = token.to_sym
+        kind      = kind.to_sym
+        kind_tree = @tokens[kind]
+        if kind_tree.equal?(DUMMY_TOKENS)
+          kind_tree = @tokens[kind] = Hash.new(DUMMY_TOKEN)
+          @lazy_tokens[kind] = LazyEnumerator.new(kind_tree)
+        end
+        token = kind_tree[token] = {}
         token[:description] = description.to_s
       end
 
@@ -141,8 +150,10 @@ module I18n
       # @return [Hash] the true tokens of the given kind in a
       #   form of Hash (<tt>token => description</tt>)
       def get_true_tokens(kind)
-        tokens = @tokens[kind].reject{|k,v| !v[:target].nil?}
-        tokens.merge(tokens){|k,v| v[:description]}
+        @lazy_tokens[kind].
+        h_reject { |token,data| !data[:target].nil? }.
+        h_map    { |token,data| data[:description]  }.
+        to_h
       end
 
       # Reads all the aliases.
@@ -151,8 +162,10 @@ module I18n
       # @return [Hash] the aliases of the given kind in a
       #   form of Hash (<tt>alias => target</tt>)
       def get_aliases(kind)
-        aliases = @tokens[kind].reject{|k,v| v[:target].nil?}
-        aliases.merge(aliases){|k,v| v[:target]}
+        @lazy_tokens[kind].
+        h_reject { |token,data| data[:target].nil?  }.
+        h_map    { |token,data| data[:target]       }.
+        to_h
       end
 
       # Reads all the tokens in a way that it is possible to
@@ -164,7 +177,9 @@ module I18n
       # @return [Hash] the tokens of the given kind in a
       #   form of Hash (<tt>token => description|target</tt>)
       def get_raw_tokens(kind)
-        get_true_tokens(kind).merge(get_aliases(kind))
+        @lazy_tokens[kind].
+        h_map { |token,data| data[:target] || data[:description] }.
+        to_h
       end
 
       # Reads all the tokens (including aliases).
@@ -175,8 +190,7 @@ module I18n
       # @return [Hash] the tokens of the given kind in a
       #   form of Hash (<tt>token => description</tt>)
       def get_tokens(kind)
-        tokens = @tokens[kind]
-        tokens.merge(tokens){|k,v| v[:description]}
+        @lazy_tokens[kind].h_map{ |token,data| data[:description] }.to_h
       end
 
       # Gets a target token for the alias.
