@@ -29,7 +29,7 @@ module I18n
     # or in a short form:
     #   I18n.inflector
     # In case of named patterns (strict kinds):
-    #   I18n.inflector.named
+    #   I18n.inflector.strict
     # 
     # @see I18n::Inflector::API_Strict The API_Strict class
     #   for accessing inflection data for named
@@ -64,7 +64,7 @@ module I18n
       # @api public
       # @return [I18n::Inflector::API_Strict] the object containing
       #   database and operations for named patterns (strict kinds)
-      def named
+      def strict
         @strict ||= I18n::Inflector::API_Strict.new(@idb_strict, @options)
       end
 

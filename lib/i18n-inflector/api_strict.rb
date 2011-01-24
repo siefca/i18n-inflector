@@ -26,9 +26,9 @@ module I18n
     # ==== Usage
     # You can access the instance of this class attached to
     # default I18n backend by calling:
-    #   I18n.backend.inflector.named
+    #   I18n.backend.inflector.strict
     # or in a short form:
-    #   I18n.inflector.named
+    #   I18n.inflector.strict
     # 
     # @api public
     # @see I18n::Inflector::API The API class that does similar
