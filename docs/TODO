@@ -1,7 +1,10 @@
-* update documentation for InflectionDataStrict[ ] and inflectionData[ ]
-* update documentation for API[ ] and API_Strict[ ]
-* write some examples in section Accesing Information
-* write some examples in section Named Patterns
+* update documentation for InflectionDataStrict[ ] and InflectionData[ ]
+* update documentation for API[done] and API_Strict[ ]
+* update RELATIONS
+* validate error messages for strict kinds (if kind is prefixed by @)
+
+
+* write some examples in section API Examples
 
 == Near future
 

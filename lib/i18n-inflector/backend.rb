@@ -223,20 +223,20 @@ module I18n
 
         inflections = prepare_inflections(inflections_tree, idb, idb_strict)
 
-        inflections.each do |kind, strict_kind, subdb, tokens|
+        inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
 
             # test for duplicate
             if subdb.has_token?(token, strict_kind)
-              raise I18n::DuplicatedInflectionToken.new(subdb.get_kind(token, strict_kind), kind, token)
+              raise I18n::DuplicatedInflectionToken.new(subdb.get_kind(token, strict_kind), orig_kind, token)
             end
 
             # validate token's name
-            raise I18n::BadInflectionToken.new(locale, token, kind) if token.to_s.empty?
+            raise I18n::BadInflectionToken.new(locale, token, orig_kind) if token.to_s.empty?
 
             # validate token's description
             if description.nil?
-              raise I18n::BadInflectionToken.new(locale, token, kind, description)
+              raise I18n::BadInflectionToken.new(locale, token, orig_kind, description)
             elsif description[0..0] == I18n::Inflector::ALIAS_MARKER
               next
             end
@@ -249,30 +249,30 @@ module I18n
         end
 
         # handle aliases
-        inflections.each do |kind, strict_kind, subdb, tokens|
+        inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
             next if token == :default
             next if description[0..0] != I18n::Inflector::ALIAS_MARKER
-            real_token = shorten_inflection_alias(token, kind, locale, inflections_tree)
+            real_token = shorten_inflection_alias(token, orig_kind, locale, inflections_tree)
             subdb.add_alias(token, real_token, kind) unless real_token.nil?
           end
         end
 
         # handle default tokens
-        inflections.each do |kind, strict_kind, subdb, tokens|
+        inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           next unless tokens.has_key?(:default)
           if subdb.has_default_token?(kind)
-            raise I18n::DuplicatedInflectionToken.new(kind, nil, :default)
+            raise I18n::DuplicatedInflectionToken.new(orig_kind, nil, :default)
           end
           orig_target = tokens[:default]
           target = orig_target.to_s
           target = target[1..-1] if target[0..0] == I18n::Inflector::ALIAS_MARKER
           if target.empty?
-            raise I18n::BadInflectionToken.new(locale, token, kind, orig_target)
+            raise I18n::BadInflectionToken.new(locale, token, orig_kind, orig_target)
           end
           target = subdb.get_true_token(target.to_sym, kind)
           if target.nil?
-            raise I18n::BadInflectionAlias.new(locale, :default, kind, orig_target)
+            raise I18n::BadInflectionAlias.new(locale, :default, orig_kind, orig_target)
           end
           subdb.set_default_token(kind, target)
         end
@@ -287,6 +287,7 @@ module I18n
           next if (tokens.nil? || tokens.empty?)
           subdb = idb
           strict_kind = nil
+          orig_kind = kind
           if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
             kind        = kind.to_s[1..-1]
             next if kind.empty?
@@ -294,7 +295,7 @@ module I18n
             subdb       = idb_strict
             strict_kind = kind
           end
-          [kind, strict_kind, subdb, tokens]
+          [orig_kind, kind, strict_kind, subdb, tokens]
         end
       end
 
