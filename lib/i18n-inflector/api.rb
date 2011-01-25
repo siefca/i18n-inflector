@@ -14,13 +14,19 @@ module I18n
     # to I18n backend. This class contains common operations
     # that can be performed on inflections. It can operate
     # on both unnamed an named patterns (regular and strict kinds).
+    # This class is used by backend methods to interpolate
+    # strings and load inflections.
     # 
     # It uses the databases containing instances of
     # {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}
     # that are stored in the Hashes and indexed by locale names.
     # 
-    # It is also used by backend methods
-    # to interpolate strings and load databases.
+    # Note that strict kinds used to handle named patterns
+    # internally are stored in a different database than
+    # regular kinds. Most of the methods of this class are also
+    # aware of strict kinds and will call proper methods handling
+    # strict inflection data when the +@+ symbol is detected
+    # at the beginning of the given identifier of a kind.
     # 
     # ==== Usage
     # You can access the instance of this class attached to
@@ -57,13 +63,7 @@ module I18n
       #   I18n.translate('welcome', :inflector_raises => true)
       attr_reader :options
 
-      # This reader allows to reach a reference to the
-      # object that is a kind of {I18n::Inflector::API_Strict}
-      # and handles inflections for named patterns (strict kinds).
-      # 
-      # @api public
-      # @return [I18n::Inflector::API_Strict] the object containing
-      #   database and operations for named patterns (strict kinds)
+      # @private
       def strict
         @strict ||= I18n::Inflector::API_Strict.new(@idb_strict, @options)
       end
@@ -103,9 +103,9 @@ module I18n
       end
 
       # Attaches instance of {I18n::Inflector::InflectionData} and
-      # optionally {I18n::Inflector::InflectionData_Strit}
+      # optionally {I18n::Inflector::InflectionData_Strict}
       # to the inflector.
-      #
+      # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note It doesn't create a copy of inflection data, but registers the given object(s).
@@ -117,13 +117,13 @@ module I18n
       # @overload add_database(db, db_strict)
       #   @note An array is returned and databases are
       #     used only if both databases are successfully attached. References to
-      #     both databases will be set to +nil+ if there would be a problem with attaching
+      #     both databases will be unset if there would be a problem with attaching
       #     any of them.
       #   @param [I18n::Inflector::InflectionData] db inflection data to add
       #   @param [I18n::Inflector::InflectionData_Strict] db_strict strict inflection data to add
       #   @return [Array<I18n::Inflector::InflectionData,I18n::Inflector::InflectionData_Strict>,nil] the
       #     array of the given objects or +nil+ if something went wrong (e.g. +nil+ was
-      #     given as a first argument)
+      #     given as the first argument)
       def add_database(db, db_strict=nil)
         r = super(db)
         return r if (r.nil? || db_strict.nil?)
@@ -152,6 +152,7 @@ module I18n
       # Checks if the given locale was configured to support inflection.
       # 
       # @api public
+      # @note That method uses information from regular and strict kinds.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Boolean] +true+ if a locale supports inflection
       # @overload inflected_locale?(locale)
@@ -170,6 +171,7 @@ module I18n
       # Gets locales which have configured inflection support.
       # 
       # @api public
+      # @note That method uses information from regular and strict kinds.
       # @return [Array<Symbol>] the array containing locales that support inflection
       # 
       # @overload inflected_locales
@@ -177,10 +179,10 @@ module I18n
       #   @return [Array<Symbol>] the array containing locales that support inflection
       # @overload inflected_locales(kind)
       #   Gets locales which have configured inflection support for the given +kind+.
-      #   @param[Symbol] kind the identifier of a kind
+      #   @param [Symbol] kind the identifier of a kind
       #   @return [Array<Symbol>] the array containing locales that support inflection
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#inflected_locales})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#inflected_locales})
       def inflected_locales(kind=nil)
         if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
           strict.inflected_locales(kind.to_s[1..-1])
@@ -192,11 +194,10 @@ module I18n
       # Tests if a kind exists.
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
       # @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #   for strict kinds will be called ({I18n::Inflector::API_Strict#has_kind?})
+      #   operating on strict kinds will be called ({I18n::Inflector::API_Strict#has_kind?})
       # @overload has_kind?(kind)
       #   Tests if a regular kind exists for the current locale.
       #   @param [Symbol] kind the identifier of a kind
@@ -220,9 +221,9 @@ module I18n
       # @return [Symbol,nil] the default token for the given kind or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #   for strict kinds will be called ({I18n::Inflector::API_Strict#default_token})
+      #   operating on strict kinds will be called ({I18n::Inflector::API_Strict#default_token})
       # @overload default_token(kind)
-      #   This method reads default token for the given +kind+ and current locale.
+      #   This method reads default token for the given +kind+ and the current locale.
       #   @param [Symbol,String] kind the kind of tokens
       #   @return [Symbol,nil] the default token for the given kind or +nil+ if
       #     there is no default token
@@ -243,7 +244,7 @@ module I18n
       # Checks if the given +token+ is an alias.
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+      # @note By default it uses regular kinds database, not strict kinds.
       # @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @raise [ArgumentError] if the count of arguments is invalid
@@ -259,7 +260,7 @@ module I18n
       # @overload has_alias?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is an alias.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#has_alias?})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#has_alias?})
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
@@ -267,7 +268,7 @@ module I18n
       # @overload has_alias?(token, strict_kind)
       #   Uses the current locale and the given +strict_kind+ (which name must begin with
       #   the +@+ symbol) to check if the given +token+ is an alias.
-      #   @note It calls {I18n::Inflector::API_Strict#has_alias?} on strict kinds database.
+      #   @note It calls {I18n::Inflector::API_Strict#has_alias?} on strict kinds data.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] strict_kind the kind of the given alias
       #   @return [Boolean] +true+ if the given +token+ is an alias, +false+ otherwise
@@ -289,7 +290,7 @@ module I18n
       # Checks if the given +token+ is a true token (not alias).
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+      # @note By default it uses regular kinds database, not strict kinds.
       # @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @raise [ArgumentError] if the count of arguments is invalid
@@ -305,7 +306,7 @@ module I18n
       # @overload has_true_token?(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to check if the given +token+ is a true token.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#has_true_token})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#has_true_token?})
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
@@ -313,7 +314,7 @@ module I18n
       # @overload has_true_token?(token, strict_kind)
       #   Uses the current locale and the given +strict_kind+ (which name must begin with
       #   the +@+ symbol) to check if the given +token+ is a true token.
-      #   @note It calls {I18n::Inflector::API_Strict#has_true_token?} on strict kinds database.
+      #   @note It calls {I18n::Inflector::API_Strict#has_true_token?} on strict kinds data.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] strict_kind the kind of the given token
       #   @return [Boolean] +true+ if the given +token+ is a true token, +false+ otherwise
@@ -335,7 +336,7 @@ module I18n
        # Checks if the given +token+ exists. It may be an alias or a true token.
        # 
        # @api public
-       # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+       # @note By default it uses regular kinds database, not strict kinds.
        # @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
        # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
        # @raise [ArgumentError] if the count of arguments is invalid
@@ -351,7 +352,7 @@ module I18n
        # @overload has_token?(token, kind, locale)
        #   Uses the given +locale+ and +kind+ to check if the given +token+ exists.
        #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-       #     for strict kinds will be called ({I18n::Inflector::API_Strict#has_token?})
+       #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#has_token?})
        #   @param [Symbol,String] token name of the checked token
        #   @param [Symbol,String] kind the kind used to narrow the check
        #   @param [Symbol] locale the locale to use
@@ -359,7 +360,7 @@ module I18n
        # @overload has_token?(token, strict_kind)
        #   Uses the current locale and the given +strict_kind+ (which name must begin with
        #   the +@+ symbol) to check if the given +token+ exists.
-       #   @note It calls {I18n::Inflector::API_Strict#has_token?} on strict kinds database.
+       #   @note It calls {I18n::Inflector::API_Strict#has_token?} on strict kinds data.
        #   @param [Symbol,String] token name of the checked token
        #   @param [Symbol,String] strict_kind the kind of the given token
        #   @return [Boolean] +true+ if the given +token+ exists, +false+ otherwise
@@ -381,7 +382,7 @@ module I18n
       # Gets true token for the given +token+ (which may be an alias).
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+      # @note By default it uses regular kinds database, not strict kinds.
       # @return [Symbol,nil] the true token if the given +token+ is an alias, token if
       #   the token is a real token or +nil+ otherwise
       # @raise [I18n::InvalidLocale] if there is no proper locale name
@@ -399,7 +400,7 @@ module I18n
       # @overload true_token(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to get a real token for the given +token+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#true_token})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#true_token})
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] kind the kind used to narrow the check
       #   @param [Symbol] locale the locale to use
@@ -408,7 +409,7 @@ module I18n
       # @overload true_token(token, strict_kind)
       #   Uses the current locale and the given +strict_kind+ (which name must begin with
       #   the +@+ symbol) to get a real token for the given +token+.
-      #   @note It calls {I18n::Inflector::API_Strict#true_token} on strict kinds database.
+      #   @note It calls {I18n::Inflector::API_Strict#true_token} on strict kinds data.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] strict_kind the kind of the given token
       #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
@@ -431,7 +432,7 @@ module I18n
       # Gets a kind for the given +token+ (which may be an alias).
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+      # @note By default it uses regular kinds database, not strict kinds.
       # @return [Symbol,nil] the kind of the given +token+ or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload kind(token)
@@ -448,7 +449,7 @@ module I18n
       # @overload kind(token, kind, locale)
       #   Uses the given +locale+ to get a kind of the given +token+ (which may be an alias).
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#kind})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#kind})
       #   @param [Symbol,String] token name of the token or alias
       #   @param [Symbol,String] kind the kind name to narrow the search
       #   @param [Symbol] locale the locale to use
@@ -457,7 +458,7 @@ module I18n
       # @overload kind(token, strict_kind)
       #   Uses the current locale and the given +strict_kind+ (which name must begin with
       #   the +@+ symbol) to get a kind of the given +token+ (which may be an alias).
-      #   @note It calls {I18n::Inflector::API_Strict#kind} on strict kinds database.
+      #   @note It calls {I18n::Inflector::API_Strict#kind} on strict kinds data.
       #   @param [Symbol,String] token name of the token or alias
       #   @param [Symbol,String] kind the kind of the given token
       #   @return [Symbol,nil] the kind of the given +token+
@@ -478,29 +479,29 @@ module I18n
       # Gets available inflection tokens and their descriptions.
       # 
       # @api public
-      # @note By default it uses regular kinds database, not strict kinds (for named patterns).
+      # @note By default it uses regular kinds database, not strict kinds.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Hash] the hash containing available inflection tokens and descriptions
       # @note You cannot deduce where aliases are pointing to, since the information
       #   about a target is replaced by the description. To get targets use the
-      #   {#inflection_raw_tokens} method. To simply list aliases and their targets use
-      #   the {#inflection_aliases} method.
+      #   {#raw_tokens} method. To simply list aliases and their targets use
+      #   the {#aliases} method.
       # @overload tokens
       #   Gets available inflection tokens and their descriptions.
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases,
-      #     for all kinds and current locale.
+      #     for all kinds and the current locale.
       # @overload tokens(kind)
       #   Gets available inflection tokens and their descriptions for some +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases, for current locale.
       # @overload tokens(kind, locale)
       #   Gets available inflection tokens and their descriptions for some +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -532,7 +533,7 @@ module I18n
       # @overload tokens_raw(kind)
       #   Gets available inflection tokens and their values for the given +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+. In case of
@@ -540,7 +541,7 @@ module I18n
       # @overload tokens_raw(kind, locale)
       #   Gets available inflection tokens and their values for the given +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -572,14 +573,14 @@ module I18n
       # @overload tokens_true(kind)
       #   Gets true inflection tokens and their values for the given +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values for the given +kind+
       # @overload tokens_true(kind, locale)
       #   Gets true inflection tokens and their values for the given +kind+ and +value+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -608,14 +609,14 @@ module I18n
       # @overload aliases(kind)
       #   Gets inflection aliases and their pointers for the given +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @return [Hash] the Hash containing available inflection
-      #     aliases for the given +kind+ and current locale
+      #     aliases for the given +kind+ and the current locale
       # @overload aliases(kind, locale)
       #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     for strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the Hash containing available inflection
@@ -638,7 +639,7 @@ module I18n
       # @note If the given +token+ is really an alias it
       #   returns the description of the true token that
       #   it points to. By default it uses regular kinds database,
-      #   not strict kinds (for named patterns).
+      #   not strict kinds.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [String,nil] the descriptive string or +nil+
       # @overload token_description(token)
@@ -654,6 +655,8 @@ module I18n
       #     went wrong (e.g. token was not found)
       # @overload token_description(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to get description of the given inflection +token+.
+      #   @note If +kind+ begins with the +@+ symbol then the variant of this method
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#token_description})
       #   @param [Symbol,String] token the identifier of a token
       #   @param [Symbol,String] kind the kind to narrow the results
       #   @param [Symbol] locale the locale to use
@@ -662,7 +665,7 @@ module I18n
       # @overload token_description(token, strict_kind)
       #   Uses the default locale and the given +kind+ (which name must begin with
       #   the +@+ symbol) to get description of the given inflection +token+.
-      #   @note It calls {I18n::Inflector::API_Strict#kind} on strict kinds database.
+      #   @note It calls {I18n::Inflector::API_Strict#token_description} on strict kinds data.
       #   @param [Symbol,String] token the identifier of a token
       #   @param [Symbol,String] strict_kind the kind of a token
       #   @param [Symbol] locale the locale to use
@@ -682,7 +685,7 @@ module I18n
         data_safe(locale).get_description(token.to_sym, kind)
       end
 
-      # Interpolates inflection values in a given +string+
+      # Interpolates inflection values in the given +string+
       # using kinds given in +options+ and a matching tokens.
       # 
       # @param [String] string the translation string
@@ -831,7 +834,7 @@ module I18n
             # outside this block if excluded_defaults switch is on
             parsed_default_v = ext_value if (excluded_defaults && !default_token.nil?)
 
-            # throw the value if a given option matches one of the tokens from group
+            # throw the value if the given option matches one of the tokens from group
             # or negatively matches one of the negated tokens
             case negatives.count
             when 0 then next unless tokens[option]

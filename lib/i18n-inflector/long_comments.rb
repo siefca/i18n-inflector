@@ -10,10 +10,11 @@
 # 
 
 module I18n
-  # @version 2.0
+  # @version 2.1
   # This module contains inflection classes and modules for enabling
   # the inflection support in I18n translations.
-  # Its submodule overwrites the Simple backend translate method
+  # It is used by the module called {I18n::Backend::Inflector}
+  # that overwrites the Simple backend translate method
   # so that it will interpolate additional inflection tokens present
   # in translations. These tokens may appear in *patterns* which
   # are contained within <tt>@{</tt> and <tt>}</tt> symbols.
@@ -39,9 +40,12 @@ module I18n
   # pattern. To select which one an additional option is used. That option
   # must be passed to translate method.
   # 
+  # There are also so called <b>named patterns</b> that will be explained
+  # later.
+  # 
   # == Configuration
-  # To recognize tokens present in patterns this module uses keys grouped
-  # in the scope called `inflections` for a given locale. For instance
+  # To recognize tokens present in patterns keys grouped
+  # in the scope called +inflections+ for the given locale are used. For instance
   # (YAML format):
   #   en:
   #     i18n:
@@ -76,19 +80,30 @@ module I18n
   # This is required in order to keep patterns simple and tokens interpolation
   # fast.
   # 
-  # Kind is also used to instruct I18n.translate method which
-  # token it should pick. This will be explained later.
+  # Kind is also used to instruct {I18n::Backend::Inflector#translate} method which
+  # token it should pick. This is done through options and
+  # will be explained later.
+  # 
+  # There is also a class of kind called <b>strict kind</b> used by
+  # named patterns; that will be explained later.
   # 
   # === Tokens
-  # The token is an element of a pattern. A pattern may have many tokens
+  # The token is an element of a pattern. Any pattern may have many tokens
   # of the same kind separated by vertical bars. Each token name used in a
   # pattern should end with colon sign. After this colon a value should
   # appear (or an empty string).
-  #
+  # 
+  # Tokens also appear in a configuration data. They are assigned to kinds.
+  # Token names must be unique across all kinds, since it would be impossible
+  # for interpolation routine to guess a kind of a token present in a pattern.
+  # There is however a class of kinds called strict kinds, for which tokens
+  # must be unique only within a kind. The named patterns that are using
+  # strict kinds will be explained later.
+  # 
   # === Aliases
   # Aliases are special tokens that point to other tokens. They cannot
-  # be used in inflection patterns but they are fully recognized values
-  # of options while evaluating kinds.
+  # be used in inflection patterns but they are fully recognized options
+  # that can be passed to +translate+ method.
   # 
   # Aliases might be helpful in multilingual applications that are using
   # a fixed set of values passed through options to describe some properties
@@ -150,6 +165,67 @@ module I18n
   # but might be helpful (e.g. in UI). For obvious reasons you cannot
   # describe aliases.
   # 
+  # == Named patterns
+  # 
+  # A named pattern is a pattern that may contain special clause
+  # containing name of a kind that tokens present in a pattern
+  # are assigned to. It looks like:
+  # 
+  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
+  # 
+  # === Strict kinds
+  # 
+  # In order to handle named patterns properly a new data structure
+  # is used. It is called strict kind. The strict kinds are defined
+  # in a configuration in a similar way the regular kinds are but
+  # tokens assigned to them may have the same names across the whole
+  # configuration (but not across the same kind; within a single kind
+  # they must stay unique). That implies a requirement of giving the
+  # identifier of a kind when referencing to a token. This is the
+  # example configuration using strict kinds:
+  # 
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         @gender:
+  #           f:      "female"
+  #           m:      "male"
+  #           n:      "neuter"
+  #           woman:  @f
+  #           man:    @m
+  #           default: n
+  #         @title:
+  #           s:      "sir"
+  #           l:      "lady"
+  #           u:      "you"
+  #           m:      @s
+  #           f:      @l
+  #           default: u
+  # 
+  # The only thing that syntactically distinguishes named kinds
+  # from regular kinds is a presence of the +@+ symbol.
+  # 
+  # You can mix regular and strict kinds having the same names.
+  # The proper class of kind will be picked up by interpolation
+  # method easily, since the first mentioned class uses
+  # patterns that are not named, and the second uses named patterns.
+  # 
+  # ==== Note for developers
+  # 
+  # Strict kinds used to handle named patterns internally
+  # are stored in a different database and handled by
+  # similar but different API methods than regular kinds. However
+  # Most of the {I18n::Inflector::API} methods are also aware of strict kinds
+  # and will call proper methods handling strict inflections data when the +@+
+  # symbol is detected at the beginning of the given identifier of a kind
+  # passed as an argument.
+  # 
+  # If you're interested in accessing API methods for strict kinds
+  # (and strict kinds data) associated with default I18n backend
+  # use:
+  # 
+  #   I18n.inflector.strict
+  # 
   # == Interpolation
   # The value of each token present in a pattern is to be picked by the interpolation
   # routine and will replace the whole pattern, when the token name from that
@@ -197,7 +273,7 @@ module I18n
   # 
   # Be aware that enabling extended error reporting makes it unable
   # to use fallback values in most cases. Local fallbacks will then be
-  # applied only when a given option contains a proper value for some
+  # applied only when the given option contains a proper value for some
   # kind but it's just not present in a pattern, for example:
   # 
   # ===== YAML:
@@ -214,7 +290,7 @@ module I18n
   #   I18n.translate('welcome', :gender => :o, :raises => true)
   #   # => "Dear All"
   #   # since the token :o was configured but not used in the pattern
-  #
+  # 
   # === Unknown and empty tokens in options
   # If an option containing token is not present at all then the interpolation
   # routine will try the default token for a processed kind if the default
@@ -348,8 +424,39 @@ module I18n
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
   # * {I18n::BadInflectionToken I18n::BadInflectionToken}
   # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
-  #
   module Inflector
+
+    class API
+
+      # This reader allows to reach a reference to the
+      # object that is a kind of {I18n::Inflector::API_Strict}
+      # and handles inflections for named patterns (strict kinds).
+      # 
+      # @api public
+      # @return [I18n::Inflector::API_Strict] the object containing
+      #   database and operations for named patterns (strict kinds)
+      attr_reader :strict
+
+      # Gets known regular inflection kinds.
+      # 
+      # @api public
+      # @note To get all inflection kinds (regular and strict) for default inflector
+      #   use: <tt>I18n.inflector.kinds + I18n.inflector.strict.kinds</tt>
+      # @return [Array<Symbol>] the array containing known inflection kinds
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @overload kinds
+      #   Gets known inflection kinds for the current locale.
+      #   @return [Array<Symbol>] the array containing known inflection kinds
+      # @overload kinds(locale)
+      #   Gets known inflection kinds for the given +locale+.
+      #   @param [Symbol] locale the locale for which operation has to be done
+      #   @return [Array<Symbol>] the array containing known inflection kinds
+      def kinds(locale=nil)
+        super
+      end
+      alias_method :inflection_kinds, :kinds
+
+    end
 
   end
 
