@@ -156,7 +156,7 @@ module I18n
       #   @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
       def has_kind?(kind, locale=nil)
         return false if kind.to_s.empty?
-        data_safe(locale).has_kind?(kind)
+        data_safe(locale).has_kind?(kind.to_sym)
       end
 
       # Reads default token for the given +kind+.
@@ -177,7 +177,7 @@ module I18n
       #     there is no default token
       def default_token(kind, locale=nil)
         return nil if kind.to_s.empty?
-        data_safe(locale).get_default_token(kind)
+        data_safe(locale).get_default_token(kind.to_sym)
       end
 
       # Checks if the given +token+ is an alias.
