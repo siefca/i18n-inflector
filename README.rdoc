@@ -43,6 +43,12 @@ Example translation data:
       
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
 
+From version 1.2.0 Inflector supports so called named patterns,
+which can be used if there is a need to be strict and/or to
+use the same token names but assigned to different kinds. Example:
+
+   welcome:  "Dear @gender{f:Lady|m:Sir|n:You|All}"
+
 == Why?
 
 It's intended to be used in a web projects or other projects where
