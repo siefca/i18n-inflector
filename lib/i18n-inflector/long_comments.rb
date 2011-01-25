@@ -168,7 +168,7 @@ module I18n
   # == Named patterns
   # 
   # A named pattern is a pattern that may contain special clause
-  # containing name of a kind that tokens present in a pattern
+  # containing name of a kind that tokens from a pattern
   # are assigned to. It looks like:
   # 
   #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
@@ -176,13 +176,14 @@ module I18n
   # === Strict kinds
   # 
   # In order to handle named patterns properly a new data structure
-  # is used. It is called strict kind. The strict kinds are defined
+  # is used. It is called the <b>strict kind</b>. Strict kinds are defined
   # in a configuration in a similar way the regular kinds are but
-  # tokens assigned to them may have the same names across the whole
-  # configuration (but not across the same kind; within a single kind
-  # they must stay unique). That implies a requirement of giving the
-  # identifier of a kind when referencing to a token. This is the
-  # example configuration using strict kinds:
+  # tokens assigned to them may have the same names across a whole
+  # configuration. (Note that within a strict kind tokens should still
+  # be unique.) That implies a requirement of passing the
+  # identifier of a kind when referring to such tokens.
+  # 
+  # Here is the example configuration using strict kinds:
   # 
   #   en:
   #     i18n:
@@ -212,16 +213,16 @@ module I18n
   # 
   # ==== Note for developers
   # 
-  # Strict kinds used to handle named patterns internally
-  # are stored in a different database and handled by
+  # Strict kinds that are used to handle named patterns
+  # are internally stored in a different database and handled by
   # similar but different API methods than regular kinds. However
-  # Most of the {I18n::Inflector::API} methods are also aware of strict kinds
-  # and will call proper methods handling strict inflections data when the +@+
-  # symbol is detected at the beginning of the given identifier of a kind
-  # passed as an argument.
+  # most of the {I18n::Inflector::API} methods are also aware of strict kinds
+  # and will call proper methods oprating on strict inflections
+  # data when the +@+ symbol is detected at the beginning of
+  # the identifier of a kind passed as an argument.
   # 
   # If you're interested in accessing API methods for strict kinds
-  # (and strict kinds data) associated with default I18n backend
+  # (and strict kinds data) only, associated with default I18n backend
   # use:
   # 
   #   I18n.inflector.strict
