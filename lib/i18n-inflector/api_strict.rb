@@ -124,7 +124,7 @@ module I18n
       alias_method :locales,            :inflected_locales
       alias_method :supported_locales,  :inflected_locales
 
-      # Gets known inflection kinds.
+      # Gets known strict inflection kinds.
       # 
       # @api public
       # @return [Array<Symbol>] the array containing known inflection kinds
@@ -165,7 +165,7 @@ module I18n
       # @return [Symbol,nil] the default token for the given kind or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload default_token(kind)
-      #   This method reads default token for the given +kind+ and current locale.
+      #   This method reads default token for the given +kind+ and the current locale.
       #   @param [Symbol,String] kind the kind of tokens
       #   @return [Symbol,nil] the default token for the given kind or +nil+ if
       #     there is no default token
@@ -323,7 +323,7 @@ module I18n
       #   Gets available inflection tokens and their descriptions.
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values, including aliases,
-      #     for all kinds and current locale.
+      #     for all kinds and the current locale.
       # @overload tokens(kind)
       #   Gets available inflection tokens and their descriptions for some +kind+.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
@@ -410,7 +410,7 @@ module I18n
       #   Gets inflection aliases and their pointers for the given +kind+.
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @return [Hash] the Hash containing available inflection
-      #     aliases for the given +kind+ and current locale
+      #     aliases for the given +kind+ and the current locale
       # @overload aliases(kind, locale)
       #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
       #   @param [Symbol,String] kind the kind of aliases to get

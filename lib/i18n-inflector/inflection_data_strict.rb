@@ -134,7 +134,7 @@ module I18n
         @defaults.has_key?(kind)
       end
 
-      # Tests if a given alias is really an alias.
+      # Tests if the given alias is really an alias.
       # 
       # @param [Symbol] alias_name the identifier of an alias
       # @param [Symbol] kind the identifier of a kind

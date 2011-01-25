@@ -131,11 +131,10 @@ You can run tests both with
 
 == More information
 
-See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
-
-See {I18n::Inflector} module documentation for information about API and detailed usage.
-
-See {I18n::Backend::Inflector} module documentation for detailed information about internals.
+* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
+* See {I18n::Inflector} module documentation for information about detailed usage.
+* See {I18n::Backend::Inflector} module documentation for detailed information about internals.
+* See {I18n::Backend::Inflector::API} class documentation for detailed information about API.
 
 == See also
 

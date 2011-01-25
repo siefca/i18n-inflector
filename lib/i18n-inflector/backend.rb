@@ -122,7 +122,7 @@ module I18n
       end
 
       # Gives an access to the internal structure containing configuration data
-      # for a given locale.
+      # for the given locale.
       # 
       # @note Under some very rare conditions this method may be called while
       #   translation data is loading. It must always return when translations
@@ -130,7 +130,7 @@ module I18n
       #   will eat a kittien!
       # @param [Symbol] locale the locale to use
       # @return [Hash,nil] part of the translation data that
-      #   reflects inflections for a given locale or +nil+
+      #   reflects inflections for the given locale or +nil+
       #   if translations are not initialized
       def inflection_subtree(locale)
         return nil unless initialized?
@@ -179,6 +179,7 @@ module I18n
         else
           orig_token = token
           token = value[1..-1]
+
           if token.to_s.empty?
             raise I18n::BadInflectionToken.new(locale, token, kind)
           end
@@ -207,7 +208,7 @@ module I18n
       #   @return [I18n::Inflector::InflectionData,nil] the database containing inflections tokens
       #     or +nil+ if something went wrong
       # @overload load_inflection_tokens(locale, subtree)
-      #   Loads inflection tokens for the given locale using data given in an argument
+      #   Loads inflection tokens for the given locale using datthe given in an argument
       #   @param [Symbol] locale the locale to use and work for
       #   @param [Hash] subtree the tree (in a form of nested Hashes) containing inflection tokens to scan
       #   @return [I18n::Inflector::InflectionData,nil] the database containing inflections tokens
