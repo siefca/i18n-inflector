@@ -43,7 +43,7 @@ Example translation data:
       
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
 
-From version 1.2.0 Inflector supports so called named patterns,
+From version 2.1.0 Inflector supports so called named patterns,
 which can be used if there is a need to be strict and/or to
 use the same token names but assigned to different kinds. Example:
 
@@ -128,19 +128,19 @@ Detailed example:
    I18n.t('welcome', :gender => :o)
    # => "Dear You"
 
+== More information
+
+* See {I18n::Inflector} module documentation for detailed information about the usage.
+* See {I18n::Backend::Inflector} module documentation for detailed information about the internals.
+* See {I18n::Backend::Inflector::API} class documentation for detailed information about the API.
+* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
+
 == Tests
 
 You can run tests both with
 
 * <tt>rake test</tt> or just <tt>rake</tt>
 * run a test file directly, e.g. <tt>ruby -Ilib -Itest test/inflector_test.rb</tt>
-
-== More information
-
-* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] for more info about usage.
-* See {I18n::Inflector} module documentation for information about detailed usage.
-* See {I18n::Backend::Inflector} module documentation for detailed information about internals.
-* See {I18n::Backend::Inflector::API} class documentation for detailed information about API.
 
 == See also
 

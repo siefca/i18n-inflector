@@ -40,6 +40,7 @@ module I18n
     # @see I18n::Inflector::API_Strict The API_Strict class
     #   for accessing inflection data for named
     #   patterns (strict kinds).
+    # @see file:EXAMPLES The examples of real-life usage.
     # @api public
     class API < API_Strict
 

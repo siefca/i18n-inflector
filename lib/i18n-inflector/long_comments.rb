@@ -31,6 +31,9 @@ module I18n
   #   i18n.inflector.true_tokens.keys
   #   # => [:f, :m, :n]
   #
+  # See the {file:EXAMPLES} for more information about real-life
+  # usage of Inflector.
+  # 
   # == Inflection pattern
   # An example inflection pattern contained in a translation record looks like:
   #   welcome: "Dear @{f:Madam|m:Sir|n:You|All}"
@@ -172,6 +175,30 @@ module I18n
   # are assigned to. It looks like:
   # 
   #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
+  # 
+  # === Configuring named patterns
+  # 
+  # To recognize tokens present in a named patterns,
+  # inflector uses keys grouped in the scope called +inflections+
+  # for the given locale. For instance (YAML format):
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         @gender:
+  #           f:      "female"
+  #           woman:  @f
+  #           default: f
+  # 
+  # Elements in the example above are:
+  # * +en+: language
+  # * +i18n+: configuration scope
+  # * +inflections+: inflections configuration scope
+  # * +gender+: <bb>strict kind</bb> scope
+  # * +f+: inflection token
+  # * <tt>"female"</tt>: token's description
+  # * +woman+: inflection alias
+  # * <tt>@f</tt>: pointer to real token
+  # * +default+: default token for a strict kind +gender+
   # 
   # === Strict kinds
   # 
@@ -470,7 +497,7 @@ module I18n
 
     class API
 
-      # This reader allows to reach a reference to the
+      # This reader allows to reach a reference of the
       # object that is a kind of {I18n::Inflector::API_Strict}
       # and handles inflections for named patterns (strict kinds).
       # 
