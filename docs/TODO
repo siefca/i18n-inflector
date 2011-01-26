@@ -1,8 +1,11 @@
 == Near future
 
-* add a switch that causes inflection arguments to be gathered before using original
+* add a switch that causes inflection arguments to be gathered and removed before using original
   version of translate and then injected when interpolating happens (default value
   for that switch should be true if there is I18n version 4 installed)
+
+  - not so good idea to turn it on by default since the same variable may be used to interpolate
+    inflections and for direct interpolation
 
 * attach inflection key name to some raised errors
 
@@ -12,5 +15,11 @@
 
 == Distant future
 
-* Nested strict kinds (!)
+* Loud tokens: description substitution, e.g.: "Dear @{u|i:me}" gives "Dear You" if u is described as "You"
+
+* Combined patterns (!)
+
+  @person+time{i+now:am|i+past:was}
+
+* case-insensitivity switch for inflection options (?)
 
