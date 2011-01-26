@@ -65,8 +65,10 @@ module I18n
       # @param [Symbol] token the name of a token to add
       # @param [Symbol] kind the kind of a token
       # @param [String] description the description of a token
-      # @return [void]
+      # @return [Boolean] +true+ if everything went ok, +false+ otherwise
+      #  (in case of bad names or non-existent targets)
       def add_token(token, kind, description)
+        return false if (token.to_s.empty? || kind.to_s.empty? || description.nil?)
         token = token.to_sym
         @tokens[token] = {}
         @tokens[token][:kind]         = kind.to_sym
