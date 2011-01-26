@@ -86,6 +86,14 @@ module I18n
         end
       end
 
+      # This method converts resulting keys
+      # to array.
+      def keys
+        ary = []
+        self.each{ |k,v| ary << k }
+        return ary
+      end
+
       # Hash selecting enumerator
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def select(&block)

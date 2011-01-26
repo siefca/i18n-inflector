@@ -136,11 +136,10 @@ module I18n
         inflected_locales = LazyHashEnumerator.new(@idb || {})
         inflected_locales = inflected_locales.
                             reject{ |lang,data| data.nil? || data.empty? }
-        return inflected_locales.to_h.keys if kind.nil?
+        return inflected_locales.keys if kind.nil?
         kind = kind.to_sym
         inflected_locales.
           reject{|land,data| !data.has_kind?(kind)}.
-          to_h.
           keys
       end
       alias_method :locales,            :inflected_locales
