@@ -349,14 +349,6 @@ module I18n
         @tokens[token][:description] if (kind.nil? || @tokens[token][:kind] == kind)
       end
 
-      # Test if the inflection data have no elements.
-      # 
-      # @return [Boolean] +true+ if the inflection data
-      #   have no elements
-      def empty?
-        @tokens.empty?
-      end
-
     end # InflectionData
 
   end

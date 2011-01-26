@@ -263,6 +263,14 @@ module I18n
         @tokens[kind][token][:description]
       end
 
+      # Test if the inflection data have no elements.
+      # 
+      # @return [Boolean] +true+ if the inflection data
+      #   have no elements
+      def empty?
+        @tokens.empty?
+      end
+
     end # InflectionData_Strict
 
   end

@@ -133,10 +133,15 @@ module I18n
       #   @return [Array<Symbol>] the array containing locales that support inflection
       def inflected_locales(kind=nil)
         return [] if (!kind.nil? && kind.to_s.empty?)
-        inflected_locales = (@idb.keys || [])
-        return inflected_locales if kind.nil?
+        inflected_locales = LazyHashEnumerator.new(@idb || {})
+        inflected_locales = inflected_locales.
+                            reject{ |lang,data| data.nil? || data.empty? }
+        return inflected_locales.to_h.keys if kind.nil?
         kind = kind.to_sym
-        inflected_locales.reject{|l| @idb[l].nil? || !@idb[l].has_kind?(kind)}
+        inflected_locales.
+          reject{|land,data| !data.has_kind?(kind)}.
+          to_h.
+          keys
       end
       alias_method :locales,            :inflected_locales
       alias_method :supported_locales,  :inflected_locales
