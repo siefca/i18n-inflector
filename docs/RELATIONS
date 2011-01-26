@@ -1,32 +1,28 @@
 == This library contains
 
 * Module {I18n::Inflector} containing everything
-* Class {I18n::Inflector::API} used to create inflector object attached to I18n backend
-* Class {I18n::Inflector::InflectionData} used by {I18n::Inflector::InflectionStore} instances to store
-  inflection data for regular kinds and tokens
-* Class {I18n::Inflector::InflectionData_Strict} used by {I18n::Inflector::InflectionStore} instances to store
-  inflection data for strict kinds and assigned tokens for handling named patterns
-* Class {I18n::Inflector::InflectionStore} used by {I18n::Inflector::API} instances to store
-  inflection data and manipulate them, also is used by {I18n::Backend::Inflector} instances when loading
-  translations to create new database within {I18n::Inflector::Core} instance attachend to backend
-* Class {I18n::Inflector::InflectionOptions} is used inside of {I18n::Inflector::Core} for keeping
-  switches and options 
+* Class {I18n::Inflector::API} used to create inflector object attached to I18n backend (handles regular and strict kinds)
+* Class {I18n::Inflector::API_Strict} which instance is attached to {I18n::Inflector::API} and handles strict kinds
+* Class {I18n::Inflector::InflectionData} used to store inflection data for regular kinds and tokens
+* Class {I18n::Inflector::InflectionData_Strict} used to store inflection data for strict kinds and tokens
+* Class {I18n::Inflector::InflectionOptions} used for keeping switches and options 
+* Class {I18n::Inflector::LazyHashEnumerator} used to manage lazy evaluation of internal data
 * Module {I18n::Backend::Inflector} used to alter methods of {I18n::Backend::Simple}
+* Several classes for error reporting
 
 == Relations
 
 * {I18n.backend} is the currently used backend and the instance of {I18n::Backend::Simple}
-* {I18n.backend.inflector} is the instance of {I18n::Inflector::Core} attached to backend
+* {I18n.backend.inflector} is the instance of {I18n::Inflector::API} attached to backend
 * {I18n.inflector} is the proxy module method that calls inflector for currently used backend {I18n.backend.inflector}
 * {I18n.backend.inflector.options} is the instance of {I18n::Inflector::InflectionOptions} and
   mainly it controls a behavior of interpolation method
-* {I18n::Inflector::Core} has an instance variable defined that contains database of translation data
-* Each entry in the internal database of {I18n::Inflector::Core} is indexed by locale and is kind of 
-  {I18n::Inflector::InflectionStore}
-* Class {I18n::Inflector::InflectionStore} is a child class of {I18n::Inflector::InflectionData}
-* Class {I18n::Inflector::InflectionStore} contains reference to an instance of {I18n::Inflector::InflectionData_Strict}
-  in the instance variable +strict+
+* {I18n.backend.inflector.strict} is the instance of {I18n::Inflector::API_Strict} and handles strict kinds
+* {I18n.backend.inflector} uses {I18n.backend.inflector.strict} to access strict kinds when it's needed
+* {I18n::Inflector::API} has an instance variable @idb that contains database of inflections indexed by locale
+* {I18n::Inflector::API_Strict} has an instance variable @idb that contains database of inflections indexed by locale
+* Translation databases are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}
 * When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
-  takes the loaded data, processes the <tt>i18n.inflections</tt> part for each locale and creates configuration
-  that is keeped as an instance of {I18n::Inflector::InflectionStore}. That data is registered within the
-  inflecor object attached to backend that loaded the translations.
+  takes the loaded data, processes their <tt>i18n.inflections</tt> scope for each locale and creates database
+  objects which are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}. That
+  objects are then attached to instances of {I18n::Inflector::API} and {I18n::Inflector::API_Strict}.
