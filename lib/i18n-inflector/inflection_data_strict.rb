@@ -15,7 +15,7 @@ module I18n
     # and basic operations for strict kinds and tokens assigned to them.
     # Methods in this class vary from methods from {I18n::Inflector::InflectionData}
     # in a way that +kind+ argument is usually required, not optional, since
-    # managing strict kinds requires a kind of a token to be always known.
+    # managing the strict kinds requires a kind of any token to be always known.
     class InflectionData_Strict
 
       # This constant contains a dummy hash for an empty token. It makes
@@ -34,7 +34,7 @@ module I18n
       # chaining calls to internal data easier.
       DUMMY_HASH    = Hash.new.freeze
 
-      # Locale that this database works on.
+      # Locale that this database works for.
       attr_reader :locale
 
       # Initializes internal structures.
@@ -51,7 +51,8 @@ module I18n
       # Adds an alias (overwriting existing alias).
       # 
       # @param [Symbol] name the name of an alias
-      # @param [Symbol] target the target token for the given +alias+
+      # @param [Symbol] target the target token for the created alias
+      # @param [Symbol] kind the identifier of a kind
       # @return [Boolean] +true+ if everything went ok, +false+ otherwise
       #  (in case of bad names or non-existent targets)
       def add_alias(name, target, kind)
@@ -73,8 +74,10 @@ module I18n
       # @param [Symbol] token the name of a token to add
       # @param [Symbol] kind the identifier of a kind
       # @param [String] description the description of a token
-      # @return [void]
+      # @return [Boolean] +true+ if everything went ok, +false+ otherwise
+      #  (in case of bad names)
       def add_token(token, kind, description)
+        return false if (token.to_s.empty? || kind.to_s.empty? || description.nil?)
         token     = token.to_sym
         kind      = kind.to_sym
         kind_tree = @tokens[kind]
@@ -84,9 +87,10 @@ module I18n
         end
         token = kind_tree[token] = {}
         token[:description] = description.to_s
+        true
       end
 
-      # Sets the default token for a kind.
+      # Sets the default token for the given strict kind.
       # 
       # @param [Symbol] kind the kind to which the default
       #   token should be assigned
@@ -96,7 +100,8 @@ module I18n
         @defaults[kind.to_sym] = target.to_sym
       end
 
-      # Tests if a token is a true token.
+      # Tests if the given token of the given
+      # strict kind is a true token.
       # 
       # @param [Symbol] token the identifier of a token
       # @param [Symbol] kind the identifier of a kind
@@ -107,7 +112,8 @@ module I18n
         @tokens[kind].has_key?(token) && @tokens[kind][token][:target].nil?
       end
 
-      # Tests if a token (or alias) is present.
+      # Tests if the given token (or alias) of the
+      # given strict kind is present.
       # 
       # @param [Symbol] token the identifier of a token
       # @param [Symbol] kind the identifier of a kind
@@ -118,7 +124,7 @@ module I18n
        @tokens[kind].has_key?(token)
       end
 
-      # Tests if a kind exists.
+      # Tests if a strict kind exists.
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Boolean] +true+ if the given +kind+ exists
@@ -126,7 +132,8 @@ module I18n
         @tokens.has_key?(kind)
       end
 
-      # Tests if a kind has a default token assigned.
+      # Tests if the given strict kind has a default
+      # token assigned.
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Boolean] +true+ if there is a default
@@ -135,7 +142,8 @@ module I18n
         @defaults.has_key?(kind)
       end
 
-      # Tests if the given alias is really an alias.
+      # Tests if the given alias of the given strict
+      # kind is really an alias.
       # 
       # @param [Symbol] alias_name the identifier of an alias
       # @param [Symbol] kind the identifier of a kind
@@ -145,7 +153,8 @@ module I18n
         not @tokens[kind][alias_name][:target].nil?
       end
 
-      # Reads all the true tokens (not aliases).
+      # Reads all the true tokens (not aliases) of the
+      # given strict kind.
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Hash] the true tokens of the given kind in a
@@ -157,7 +166,7 @@ module I18n
         to_h
       end
 
-      # Reads all the aliases.
+      # Reads all the aliases of the given strict kind.
       # 
       # @param [Symbol] kind the identifier of a kind
       # @return [Hash] the aliases of the given kind in a
@@ -169,7 +178,8 @@ module I18n
         to_h
       end
 
-      # Reads all the tokens in a way that it is possible to
+      # Reads all the tokens of the given strict kind
+      # in a way that it is possible to
       # distinguish true tokens from aliases.
       # 
       # @note True tokens have descriptions (String) and aliases
@@ -183,7 +193,8 @@ module I18n
         to_h
       end
 
-      # Reads all the tokens (including aliases).
+      # Reads all the tokens (including aliases) of the given
+      # strict kind.
       # 
       # @note Use {#get_raw_tokens} if you want to distinguish
       #   true tokens from aliases.
@@ -194,7 +205,7 @@ module I18n
         @lazy_tokens[kind].map{ |token,data| data[:description] }.to_h
       end
 
-      # Gets a target token for the alias.
+      # Gets a target token for the given alias of a strict kind.
       # 
       # @param [Symbol] alias_name the identifier of an alias
       # @param [Symbol] kind the identifier of a kind
@@ -204,21 +215,22 @@ module I18n
         @tokens[kind][alias_name][:target]
       end
 
-      # Gets a kind of the given token or alias.
+      # Gets a strict kind of the given token or alias.
       # 
       # @note This method may be concidered dummy since there is a
       #   need to give the inflection kind, but it's here in order
       #   to preserve compatibility with the same method from
       #   {I18n::Inflector::InflectionData} which guesses the kind.
       # @param [Symbol] token identifier of a token
-      # @param [Symbol] kind the identifier of a kind
+      # @param [Symbol] kind the identifier of a kind (expectations filter)
       # @return [Symbol,nil] the kind of the given +token+
       #   or +nil+ if the token is unknown or is not of the given kind
       def get_kind(token, kind)
         @tokens[kind].has_key?(token) ? kind : nil
       end
 
-      # Gets a true token for the given identifier.
+      # Gets a true token (of the given strict kind) for the given
+      # identifier.
       # 
       # @note If the given +token+ is really an alias it will
       #   be resolved and the real token pointed by that alias
@@ -235,14 +247,15 @@ module I18n
         o[:target].nil? ? token : o[:target]
       end
 
-      # Gets all known kinds.
+      # Gets all known strict kinds.
       # 
-      # @return [Array<Symbol>] an array containing all the known kinds
+      # @return [Array<Symbol>] an array containing all the known strict
+      #   kinds
       def get_kinds
         @tokens.keys
       end
 
-      # Reads the default token of a kind.
+      # Reads the default token of a strict kind.
       # 
       # @note It will always return true token (not an alias).
       # @param [Symbol] kind the identifier of a kind
@@ -252,7 +265,7 @@ module I18n
         @defaults[kind]
       end
 
-      # Gets a description of a token or alias.
+      # Gets a description of a token or alias belonging to a strict kind.
       # 
       # @note If the token is really an alias it will resolve the alias first.
       # @param [Symbol] token the identifier of a token
