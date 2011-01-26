@@ -378,41 +378,41 @@ module I18n
        end
        alias_method :token_exists?, :has_token?
 
-      # Gets true token for the given +token+ (which may be an alias).
-      # 
-      # @api public
+      # Gets true token for the given +token+. If the token
+      # is an alias it will be resolved
+      # and a true token (target) will be returned.
       # @note By default it uses regular kinds database, not strict kinds.
-      # @return [Symbol,nil] the true token if the given +token+ is an alias, token if
-      #   the token is a real token or +nil+ otherwise
+      # @api public
+      # @return [Symbol,nil] the true token or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload true_token(token)
       #   Uses current locale to get a real token for the given +token+.
       #   @param [Symbol,String] token name of the checked token
-      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
-      #     the token is a real token or +nil+ otherwise
+      #   @return [Symbol,nil] the true token or +nil+
       # @overload true_token(token, locale)
       #   Uses the given +locale+ to get a real token for the given +token+.
+      #   If the token is an alias it will be resolved
+      #   and a true token (target) will be returned.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol] locale the locale to use
-      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
-      #     the token is a real token or +nil+ otherwise
+      #   @return [Symbol,nil] the true token or +nil+
       # @overload true_token(token, kind, locale)
       #   Uses the given +locale+ and +kind+ to get a real token for the given +token+.
+      #   If the token is an alias it will be resolved
+      #   and a true token (target) will be returned.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
       #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#true_token})
       #   @param [Symbol,String] token name of the checked token
-      #   @param [Symbol,String] kind the kind used to narrow the check
+      #   @param [Symbol,String] kind the kind of the given token
       #   @param [Symbol] locale the locale to use
-      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
-      #     the token is a real token or +nil+ otherwise
+      #   @return [Symbol,nil] the true token or +nil+
       # @overload true_token(token, strict_kind)
       #   Uses the current locale and the given +strict_kind+ (which name must begin with
       #   the +@+ symbol) to get a real token for the given +token+.
       #   @note It calls {I18n::Inflector::API_Strict#true_token} on strict kinds data.
       #   @param [Symbol,String] token name of the checked token
       #   @param [Symbol,String] strict_kind the kind of the given token
-      #   @return [Symbol,nil] the true token if the given +token+ is an alias, token if
-      #     the token is a real token or +nil+ otherwise
+      #   @return [Symbol,nil] the true token
       def true_token(*args)
         token, kind, locale = tkl_args(args)
         return nil if (token.nil? || token.to_s.empty?)
