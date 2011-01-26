@@ -22,7 +22,7 @@ module I18n
         @kinds          = Hash.new(false)
         @tokens         = Hash.new(DUMMY_TOKEN)
         @defaults       = Hash.new
-        @lazy_tokens    = LazyEnumerator.new(@tokens)
+        @lazy_tokens    = LazyHashEnumerator.new(@tokens)
         @locale         = locale
       end
 
@@ -165,9 +165,9 @@ module I18n
       #     form of Hash (<tt>token => description</tt>)
       def get_true_tokens(kind=nil)
         t = @lazy_tokens
-        t = t.h_select  { |token,data| data[:kind] == kind  } unless kind.nil?
-        t.h_select      { |token,data| data[:target].nil?   }.
-          h_map         { |token,data| data[:description]   }.
+        t = t.select  { |token,data| data[:kind] == kind  } unless kind.nil?
+        t.select      { |token,data| data[:target].nil?   }.
+          map         { |token,data| data[:description]   }.
           to_h
       end
 
@@ -186,9 +186,9 @@ module I18n
       #     form of Hash (<tt>alias => target</tt>)
       def get_aliases(kind=nil)
         t = @lazy_tokens
-        t = t.h_select  { |token,data| data[:kind] == kind  } unless kind.nil?
-        t.h_reject      { |token,data| data[:target].nil?   }.
-          h_map         { |token,data| data[:target]        }.
+        t = t.select  { |token,data| data[:kind] == kind  } unless kind.nil?
+        t.reject      { |token,data| data[:target].nil?   }.
+          map         { |token,data| data[:target]        }.
           to_h
       end
 
@@ -210,8 +210,8 @@ module I18n
       #     form of Hash (<tt>token => description|target</tt>)
       def get_raw_tokens(kind=nil)
         t = @lazy_tokens
-        t = t.h_select  { |token,data| data[:kind] == kind } unless kind.nil?
-        t.h_map         { |token,data| data[:target] || data[:description]  }.
+        t = t.select  { |token,data| data[:kind] == kind } unless kind.nil?
+        t.map         { |token,data| data[:target] || data[:description]  }.
           to_h
       end
 
@@ -232,8 +232,8 @@ module I18n
       #     form of Hash (<tt>token => description</tt>)
       def get_tokens(kind=nil)
         t = @lazy_tokens
-        t = t.h_select  { |token,data| data[:kind] == kind } unless kind.nil?
-        t.h_map         { |token,data| data[:description]  }.
+        t = t.select  { |token,data| data[:kind] == kind } unless kind.nil?
+        t.map         { |token,data| data[:description]  }.
           to_h
       end
 

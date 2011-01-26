@@ -12,7 +12,7 @@ module I18n
     if RUBY_VERSION.gsub(/\D/,'')[0..1].to_i < 19
       require 'enumerator' rescue nil
 
-      class LazyEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
+      class LazyHashEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
 
         # This class allows to initialize the Enumerator with a block
         class Yielder
@@ -46,18 +46,18 @@ module I18n
           alias_method :with_object, :each_with_object
         end
 
-      end # class LazyEnumerator for ruby18
+      end # class LazyHashEnumerator for ruby18
 
     else # if RUBY_VERSION >= 1.9.0
 
-      class LazyEnumerator < Enumerator
+      class LazyHashEnumerator < Enumerator
       end
 
     end
 
-    # This class implements simple enumerators for arrays
-    # and hashes that allow to do lazy operations on them.
-    class LazyEnumerator
+    # This class implements simple enumerators for hashes
+    # that allow to do lazy operations on them.
+    class LazyHashEnumerator
 
       # Creates a Hash kind of object by collecting all
       # data from enumerated collection.
@@ -66,30 +66,30 @@ module I18n
         Hash[self.to_a]
       end
 
-      # Array mapping enumerator
-      # @return [I18n::Inflector::LazyEnumerator] the enumerator
-      def a_map(&block)
-        LazyEnumerator.new do |yielder|
-          self.each do |value|
-            yielder.yield(block.call(value))
-          end
-        end
-      end
-
       # Hash mapping enumerator
-      # @return [I18n::Inflector::LazyEnumerator] the enumerator
-      def h_map(&block)
-        LazyEnumerator.new do |yielder|
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def map(&block)
+        LazyHashEnumerator.new do |yielder|
           self.each do |k,v|
             yielder.yield(k,block.call(k,v))
           end
         end
       end
 
-      # Hash selecting enumerator
+      # Hash to Array mapping enumerator
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
-      def h_select(&block)
-        LazyEnumerator.new do |yielder|
+      def ary_map(&block)
+        LazyHashEnumerator.new do |yielder|
+          self.each do |value|
+            yielder.yield(block.call(value))
+          end
+        end
+      end
+
+      # Hash selecting enumerator
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def select(&block)
+        LazyHashEnumerator.new do |yielder|
           self.each do |k,v|
             yielder.yield(k,v) if block.call(k,v)
           end
@@ -97,16 +97,16 @@ module I18n
       end
 
       # Hash rejecting enumerator
-      # @return [I18n::Inflector::LazyEnumerator] the enumerator
-      def h_reject(&block)
-        LazyEnumerator.new do |yielder|
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def reject(&block)
+        LazyHashEnumerator.new do |yielder|
           self.each do |k,v|
             yielder.yield(k,v) unless block.call(k,v)
           end
         end
       end
 
-    end # class LazyEnumerator
+    end # class LazyHashEnumerator
 
   end
 end

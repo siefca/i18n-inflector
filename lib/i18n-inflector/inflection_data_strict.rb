@@ -28,7 +28,7 @@ module I18n
 
       # This constant contains a dummy iterator for hash of hashes.
       # It makes chaining calls to internal data easier.
-      DUMMY_T_LAZY  = LazyEnumerator.new(DUMMY_TOKENS).freeze
+      DUMMY_T_LAZY  = LazyHashEnumerator.new(DUMMY_TOKENS).freeze
 
       # This constant contains a dummy hash. It makes
       # chaining calls to internal data easier.
@@ -80,7 +80,7 @@ module I18n
         kind_tree = @tokens[kind]
         if kind_tree.equal?(DUMMY_TOKENS)
           kind_tree = @tokens[kind] = Hash.new(DUMMY_TOKEN)
-          @lazy_tokens[kind] = LazyEnumerator.new(kind_tree)
+          @lazy_tokens[kind] = LazyHashEnumerator.new(kind_tree)
         end
         token = kind_tree[token] = {}
         token[:description] = description.to_s
@@ -152,8 +152,8 @@ module I18n
       #   form of Hash (<tt>token => description</tt>)
       def get_true_tokens(kind)
         @lazy_tokens[kind].
-        h_reject { |token,data| !data[:target].nil? }.
-        h_map    { |token,data| data[:description]  }.
+        reject { |token,data| !data[:target].nil? }.
+        map    { |token,data| data[:description]  }.
         to_h
       end
 
@@ -164,8 +164,8 @@ module I18n
       #   form of Hash (<tt>alias => target</tt>)
       def get_aliases(kind)
         @lazy_tokens[kind].
-        h_reject { |token,data| data[:target].nil?  }.
-        h_map    { |token,data| data[:target]       }.
+        reject { |token,data| data[:target].nil?  }.
+        map    { |token,data| data[:target]       }.
         to_h
       end
 
@@ -179,7 +179,7 @@ module I18n
       #   form of Hash (<tt>token => description|target</tt>)
       def get_raw_tokens(kind)
         @lazy_tokens[kind].
-        h_map { |token,data| data[:target] || data[:description] }.
+        map { |token,data| data[:target] || data[:description] }.
         to_h
       end
 
@@ -191,7 +191,7 @@ module I18n
       # @return [Hash] the tokens of the given kind in a
       #   form of Hash (<tt>token => description</tt>)
       def get_tokens(kind)
-        @lazy_tokens[kind].h_map{ |token,data| data[:description] }.to_h
+        @lazy_tokens[kind].map{ |token,data| data[:description] }.to_h
       end
 
       # Gets a target token for the alias.

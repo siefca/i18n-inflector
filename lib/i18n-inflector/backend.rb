@@ -283,12 +283,11 @@ module I18n
 
       # @private
       def prepare_inflections(inflections, idb, idb_strict)
-        I18n::Inflector::LazyEnumerator.new(inflections).a_map do |obj|
-          kind, tokens = obj
+        I18n::Inflector::LazyHashEnumerator.new(inflections).ary_map do |kind, tokens|
           next if (tokens.nil? || tokens.empty?)
-          subdb = idb
+          subdb       = idb
           strict_kind = nil
-          orig_kind = kind
+          orig_kind   = kind
           if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
             kind        = kind.to_s[1..-1]
             next if kind.empty?
