@@ -55,6 +55,7 @@ module I18n
       #   and the result is processed by {I18n::Inflector::API#interpolate}
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
+        orig_options = options.dup
         translated_string = super
 
         return translated_string if (locale.nil? || locale.to_s.empty?)
@@ -67,7 +68,7 @@ module I18n
           return translated_string
         end
 
-        @inflector.interpolate(translated_string, locale, options.dup)
+        @inflector.interpolate(translated_string, locale, orig_options)
       end
 
       # Stores translations in memory.
