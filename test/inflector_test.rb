@@ -225,6 +225,8 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "backend inflector translate: works with %{} patterns" do
     store_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}!')
     assert_equal 'Dear Dude!', I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
+    store_translations(:xx, 'to be'   => '%{person} @{i:am|you:are}')
+    assert_equal 'you are', I18n.t('to be', :person => :you, :locale => :xx)
   end
 
   test "backend inflector translate: works with tokens separated by commas" do
