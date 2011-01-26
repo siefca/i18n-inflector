@@ -8,6 +8,7 @@ Rakefile
 ci/i18n-inflector.gemspec
 ci/i18nv4-Gemfile
 docs/COPYING
+docs/EXAMPLES
 docs/HISTORY
 docs/LEGAL
 docs/LGPL

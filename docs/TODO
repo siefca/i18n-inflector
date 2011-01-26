@@ -1,5 +1,3 @@
-* write some examples in the section EXAMPLES
-
 == Near future
 
 * add a switch that causes inflection arguments to be gathered before using original
@@ -9,3 +7,10 @@
 * attach inflection key name to some raised errors
 
 * add some external iterators for tokens, aliases, kinds, true_tokens
+
+* allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
+
+== Distant future
+
+* Nested strict kinds (!)
+
