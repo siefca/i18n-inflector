@@ -37,7 +37,7 @@ module I18n
       #   @return [Boolean] +true+ if everything went ok, +false+ otherwise
       #     (in case of bad or +nil+ names or non-existent targets)
       # @overload add_alias(name, target, kind)
-      #   Adds an alias (overwriting an existing alias) when the given
+      #   Adds an alias (overwriting an existing alias) if the given
       #   +kind+ matches the kind of the given target.
       #   @param [Symbol] name the name of an alias
       #   @param [Symbol] target the target token for the given +alias+
@@ -83,6 +83,7 @@ module I18n
       #     a token and not an alias, +false+ otherwise 
       # @overload has_true_token?(token, kind)
       #   Tests if the token is a true token.
+      #   The kind will work as the expectation filter.
       #   @param [Symbol] token the identifier of a token
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Boolean] +true+ if the given +token+ is
@@ -104,6 +105,7 @@ module I18n
       #     (which may be an alias) exists
       # @overload has_token(token, kind)
       #   Tests if a token (or alias) is present.
+      #   The kind will work as the expectation filter.
       #   @param [Symbol] token the identifier of a token
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Boolean] +true+ if the given +token+ 
@@ -140,6 +142,7 @@ module I18n
       #     +false+ otherwise
       # @overload has_alias?(alias_name, kind)
       #   Tests if the given alias is really an alias.
+      #   The kind will work as the expectation filter.
       #   @param [Symbol] alias_name the identifier of an alias
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Boolean] +true+ if the given alias is really an alias
@@ -154,14 +157,14 @@ module I18n
       # 
       # @return [Hash] the true tokens in a
       #     form of Hash (<tt>token => description</tt>)
-      # @overload get_true_tokens(kind)
+      # @overload get_true_tokens
       #   Reads all the true tokens (not aliases).
       #   @return [Hash] the true tokens in a
       #     form of Hash (<tt>token => description</tt>)
       # @overload get_true_tokens(kind)
-      #   Reads all the true tokens (not aliases).
+      #   Reads all the true tokens (not aliases) of the given +kind+.
       #   @param [Symbol] kind the identifier of a kind
-      #   @return [Hash] the true tokens of the given kind in a
+      #   @return [Hash] the true tokens in a
       #     form of Hash (<tt>token => description</tt>)
       def get_true_tokens(kind=nil)
         t = @lazy_tokens
@@ -175,14 +178,14 @@ module I18n
       # 
       # @return [Hash] the aliases in a
       #     form of Hash (<tt>alias => target</tt>)
-      # @overload get_aliases(kind)
+      # @overload get_aliases
       #   Reads all the aliases.
       #   @return [Hash] the aliases in a
       #     form of Hash (<tt>alias => target</tt>)
       # @overload get_aliases(kind)
-      #   Reads all the aliases.
+      #   Reads all the aliases of the given +kind+.
       #   @param [Symbol] kind the identifier of a kind
-      #   @return [Hash] the aliases of the given kind in a
+      #   @return [Hash] the aliases in a
       #     form of Hash (<tt>alias => target</tt>)
       def get_aliases(kind=nil)
         t = @lazy_tokens
@@ -200,13 +203,15 @@ module I18n
       # @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
       # @overload get_raw_tokens
-      #   Reads all the tokens.
+      #   Reads all the tokens in a way that it is possible to
+      #   distinguish true tokens from aliases.
       #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
       # @overload get_raw_tokens(kind)
-      #   Reads all the tokens.
+      #   Reads all the tokens of the given +kind+ in a way
+      #   that it is possible to distinguish true tokens from aliases.
       #   @param [Symbol] kind the identifier of a kind
-      #   @return [Hash] the tokens of the given kind in a
+      #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description|target</tt>)
       def get_raw_tokens(kind=nil)
         t = @lazy_tokens
@@ -217,18 +222,19 @@ module I18n
 
       # Reads all the tokens (including aliases).
       # 
-      # @note Use {get_raw_tokens} if you want to distinguish
+      # @note Use {#get_raw_tokens} if you want to distinguish
       #   true tokens from aliases.
       # @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description</tt>)
-      # @overload get_raw_tokens(kind)
+      # @overload get_tokens
       #   Reads all the tokens (including aliases).
       #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description</tt>)
-      # @overload get_raw_tokens(kind)
-      #   Reads all the tokens (including aliases).
+      # @overload get_tokens(kind)
+      #   Reads all the tokens (including aliases) of the
+      #   given +kind+.
       #   @param [Symbol] kind the identifier of a kind
-      #   @return [Hash] the tokens of the given kind in a
+      #   @return [Hash] the tokens in a
       #     form of Hash (<tt>token => description</tt>)
       def get_tokens(kind=nil)
         t = @lazy_tokens
@@ -239,18 +245,39 @@ module I18n
 
       # Gets a target token for the alias.
       # 
-      # @param [Symbol] alias_name the identifier of an alias
       # @return [Symbol,nil] the token that the given alias points to
       #   or +nil+ if it isn't really an alias
-      def get_target_for_alias(alias_name)
+      # @overload get_target_for_alias(alias_name)
+      #   Gets a target token for the alias.
+      #   @param [Symbol] alias_name the identifier of an alias
+      #   @return [Symbol,nil] the token that the given alias points to
+      #     or +nil+ if it isn't really an alias
+      # @overload get_target_for_alias(alias_name, kind)
+      #   Gets a target token for the alias that's +kind+ is given.
+      #   @param [Symbol] alias_name the identifier of an alias
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [Symbol,nil] the token that the given alias points to
+      #     or +nil+ if it isn't really an alias
+      def get_target_for_alias(alias_name, kind=nil)
         @tokens[alias_name][:target]
       end
 
       # Gets a kind of the given token or alias.
       # 
-      # @param [Symbol] token identifier of a token
       # @return [Symbol,nil] the kind of the given +token+
       #   or +nil+ if the token is unknown
+      # @overload get_kind(token)
+      #   Gets a kind of the given token or alias.
+      #   @param [Symbol] token identifier of a token
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     or +nil+ if the token is unknown
+      # @overload get_kind(token, kind)
+      #   Gets a kind of the given token or alias.
+      #   The kind will work as the expectation filter.
+      #   @param [Symbol] token identifier of a token
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [Symbol,nil] the kind of the given +token+
+      #     or +nil+ if the token is unknown
       def get_kind(token, kind=nil)
         k = @tokens[token][:kind]
         return k if (kind.nil? || kind == k)
@@ -262,14 +289,16 @@ module I18n
       # @note If the given +token+ is really an alias it will
       #   be resolved and the real token pointed by that alias
       #   will be returned.
+      # @return [Symbol,nil] the true token for the given +token+
+      #   or +nil+
       # @overload get_true_token(token)
-      #   Gets a true token for the given token identifier.
+      #   Gets a true token for the given +token+ identifier.
       #   @param [Symbol] token the identifier of a token
       #   @return [Symbol,nil] the true token for the given +token+
       #     or +nil+ if the token is unknown
       # @overload get_true_token(token, kind)
-      #   Gets a true token for the given token identifier and the
-      #     given kind.
+      #   Gets a true token for the given +token+ identifier and the
+      #   given +kind+. The kind will work as the expectation filter.
       #   @param [Symbol] token the identifier of a token
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Symbol,nil] the true token for the given +token+
@@ -301,12 +330,21 @@ module I18n
         @defaults[kind]
       end
 
-      # Gets a description of a token or alias.
-      # 
+      # Gets a description of a token or an alias.
       # @note If the token is really an alias it will resolve the alias first.
-      # @param [Symbol] token the identifier of a token
       # @return [String,nil] the string containing description of the given
       #   token (which may be an alias) or +nil+ if the token is unknown
+      # @overload get_description(token)
+      #   Gets a description of a token or an alias.
+      #   @param [Symbol] token the identifier of a token
+      #   @return [String,nil] the string containing description of the given
+      #     token (which may be an alias) or +nil+ if the token is unknown
+      # @overload get_description(token, kind)
+      #   Gets a description of a token or an alias of the given +kind+
+      #   @param [Symbol] token the identifier of a token
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [String,nil] the string containing description of the given
+      #     token (which may be an alias) or +nil+ if the token is unknown
       def get_description(token, kind=nil)
         @tokens[token][:description] if (kind.nil? || @tokens[token][:kind] == kind)
       end
