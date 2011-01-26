@@ -89,7 +89,7 @@ module I18n
         @idb[locale] = I18n::Inflector::InflectionData.new(locale)
       end
 
-      # Creates internal databases for the specified locale.
+      # Creates internal databases (regular and strict) for the specified locale.
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name

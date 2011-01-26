@@ -40,8 +40,8 @@ module I18n
     # contains the +@+ symbol.
     # 
     # For an instance connected to default I18n backend
-    # the object containing inflection optionsis shared with
-    # the regular API.
+    # the object containing inflection options is shared
+    # with the regular API.
     # 
     # @api public
     class API_Strict
@@ -59,7 +59,7 @@ module I18n
         @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new : options
       end
 
-      # Creates a strict inflections database for the specified locale.
+      # Creates an empty strict inflections database for the specified locale.
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
@@ -182,18 +182,18 @@ module I18n
         data_safe(locale).has_kind?(kind.to_sym)
       end
 
-      # Reads default token for the given strict +kind+.
+      # Reads default token of the given strict +kind+.
       # 
       # @api public
       # @return [Symbol,nil] the default token or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload default_token(kind)
-      #   This method reads default token for the given +kind+ and the current locale.
+      #   This method reads default token of the given +kind+ and the current locale.
       #   @param [Symbol,String] kind the kind of tokens
       #   @return [Symbol,nil] the default token or +nil+ if
       #     there is no default token
       # @overload default_token(kind, locale)
-      #   This method reads default token for the given +kind+ and the given +locale+.
+      #   This method reads default token of the given +kind+ and the given +locale+.
       #   @param [Symbol,String] kind the kind of tokens
       #   @param [Symbol] locale the locale to use
       #   @return [Symbol,nil] the default token or +nil+ if
@@ -283,15 +283,15 @@ module I18n
       # @return [Symbol,nil] the true token or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload true_token(token, kind)
-      #   Uses the current +locale+ and the given +kind+ to get a real token for the given +token+.
-      #   If the token is an alias it will be resolved
+      #   Uses the current +locale+ and the given +kind+ to get a real token
+      #   for the given +token+. If the token is an alias it will be resolved
       #   and a true token (target) will be returned.
       #   @param [Symbol,String] token the identifier of the checked token
       #   @param [Symbol,String] kind the identifier of a kind
       #   @return [Symbol,nil] the true token or +nil+
       # @overload true_token(token, kind, locale)
-      #   Uses the given +locale+ and +kind+ to get a real token for the given +token+.
-      #   If the token is an alias it will be resolved
+      #   Uses the given +locale+ and +kind+ to get a real token
+      #   for the given +token+. If the token is an alias it will be resolved
       #   and a true token (target) will be returned.
       #   @param [Symbol,String] token the identifier of the checked token
       #   @param [Symbol,String] kind the identifier of a kind
@@ -304,20 +304,21 @@ module I18n
       end
       alias_method :resolve_alias, :true_token
 
-      # Gets a kind for the given +token+ belonging to a strict kind (that token may be an alias).
+      # Gets a kind of the given +token+ (which may be an alias) belonging to a strict kind.
       # 
       # @api public
       # @return [Symbol,nil] the kind of the given +token+ or +nil+
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @overload kind(token, kind)
-      #   Uses current locale to get a kind of the given +token+ (which may be an alias).
+      #   Uses current locale and the given +kind+ to get a kind of
+      #   the given +token+ (which may be an alias).
       #   @param [Symbol,String] token name of the token or alias
-      #   @param [Symbol,String] kind the identifier of a kind
+      #   @param [Symbol,String] kind the identifier of a kind (expectations filter)
       #   @return [Symbol,nil] the kind of the given +token+ or +nil+
       # @overload kind(token, kind, locale)
       #   Uses the given +locale+ to get a kind of the given +token+ (which may be an alias).
       #   @param [Symbol,String] token name of the token or alias
-      #   @param [Symbol,String] kind the identifier of a kind
+      #   @param [Symbol,String] kind the identifier of a kind (expectations filter)
       #   @param [Symbol] locale the locale to use
       #   @return [Symbol,nil] the kind of the given +token+ or +nil+
       def kind(token, kind=nil, locale=nil)
@@ -341,7 +342,7 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens (including
       #     aliases) as keys and their descriptions as values
       # @overload tokens(kind, locale)
-      #   Gets available inflection tokens and their descriptions for the given
+      #   Gets available inflection tokens and their descriptions of the given
       #   +kind+ and +locale+.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
@@ -360,14 +361,14 @@ module I18n
       # @note You may deduce whether the returned values are aliases or true tokens
       #   by testing if a value is a kind of Symbol or a String.
       # @overload tokens_raw(kind)
-      #   Gets available inflection tokens and their values for the given +kind+ and
+      #   Gets available inflection tokens and their values of the given +kind+ and
       #   the current locale.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values; in case of aliases the returned
       #     values are Symbols
       # @overload tokens_raw(kind, locale)
-      #   Gets available inflection tokens and their values for the given +kind+ and +locale+.
+      #   Gets available inflection tokens (and their values) of the given +kind+ and +locale+.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -386,13 +387,13 @@ module I18n
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note It returns only true tokens, not aliases.
       # @overload tokens_true(kind)
-      #   Gets true inflection tokens and their values for the given +kind+ and
+      #   Gets true inflection tokens (and their values) of the given +kind+ and
       #   the current locale.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values
       # @overload tokens_true(kind, locale)
-      #   Gets true inflection tokens and their values for the given +kind+ and +locale+.
+      #   Gets true inflection tokens (and their values) of the given +kind+ and +locale+.
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the hash containing available inflection tokens as keys
@@ -409,11 +410,11 @@ module I18n
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @return [Hash] the Hash containing available inflection aliases (<tt>alias => target</tt>)
       # @overload aliases(kind)
-      #   Gets inflection aliases and their pointers for the given +kind+ and the current locale.
+      #   Gets inflection aliases (and their pointers) of the given +kind+ and the current locale.
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @return [Hash] the Hash containing available inflection aliases
       # @overload aliases(kind, locale)
-      #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
+      #   Gets inflection aliases (and their pointers) of the given +kind+ and +locale+.
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the Hash containing available inflection aliases
