@@ -36,6 +36,7 @@ class I18nInflectorTest < Test::Unit::TestCase
 
     store_translations(:xx, 'welcome'       => 'Dear @{f:Lady|m:Sir|n:You|All}!')
     store_translations(:xx, 'named_welcome' => 'Dear @gender{f:Lady|m:Sir|n:You|All}!')
+    I18n.locale = :en
   end
 
   test "backend inflector has methods to test its switches" do
@@ -194,10 +195,10 @@ class I18nInflectorTest < Test::Unit::TestCase
     tr = I18n.backend.send(:translations)
     tr[:xx][:i18n][:inflections][:gender].delete(:default)
     store_translations(:xx, :i18n => { :inflections => { :gender => { :o => 'other' }}})
-    assert_raise(I18n::InvalidOptionForKind) { I18n.t('welcome', :locale => :xx, :inflector_raises => true) }
-    assert_raise(I18n::InvalidOptionForKind) { I18n.t('welcome', :locale => :xx, :gender => "", :inflector_raises => true) }
-    assert_raise(I18n::InvalidOptionForKind) { I18n.t('welcome', :locale => :xx, :gender => nil, :inflector_raises => true) }
-    assert_raise I18n::InvalidOptionForKind do
+    assert_raise(I18n::InflectionOptionNotFound)  { I18n.t('welcome', :locale => :xx, :inflector_raises => true) }
+    assert_raise(I18n::InflectionOptionIncorrect) { I18n.t('welcome', :locale => :xx, :gender => "", :inflector_raises => true) }
+    assert_raise(I18n::InflectionOptionIncorrect) { I18n.t('welcome', :locale => :xx, :gender => nil, :inflector_raises => true) }
+    assert_raise I18n::InflectionOptionNotFound do
      I18n.inflector.options.raises = true
      I18n.t('welcome', :locale => :xx)
     end
@@ -273,11 +274,22 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "backend inflector translate: recognizes named patterns and strict kinds" do
     store_translations(:xx, :i18n => { :inflections => { :@gender => { :s => 'sir', :o => 'other', :s => 'a', :n => 'n', :default => 'n' }}})
     store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
-    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s,       :locale => :xx)
-    assert_equal 'Dear Other!', I18n.t('hi', :gender => :o,       :locale => :xx)
-    assert_equal 'Dear You!',   I18n.t('hi',                      :locale => :xx)
-    assert_equal 'Dear You!',   I18n.t('hi', :gender => "",       :locale => :xx)
-    assert_equal 'Dear You!',   I18n.t('hi', :gender => :unknown, :locale => :xx)
+    assert_equal 'Dear Sir!',   I18n.t('hi', :gender  => :s,       :locale => :xx)
+    assert_equal 'Dear Other!', I18n.t('hi', :gender  => :o,       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi',                       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender  => "",       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender  => :unknown, :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :@gender => :unknown, :locale => :xx)
+  end
+
+  test "backend inflector translate: prioritizes @-style kinds in options for named patterns" do
+    store_translations(:xx, :i18n => { :inflections => { :@gender => { :s => 'sir', :o => 'other', :s => 'a', :n => 'n', :default => 'n' }}})
+    store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
+    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s,                       :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => :s, :@gender => :unknown, :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => :s, :@gender => nil,      :locale => :xx)
+    assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s, :@gender => :s,       :locale => :xx)
+
   end
 
   test "inflector inflected_locales: lists languages that support inflection" do
