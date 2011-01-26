@@ -300,6 +300,18 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "inflector.strict inflected_locales: lists languages that support inflection" do
     assert_equal [:xx], I18n.inflector.strict.inflected_locales
     assert_equal [:xx], I18n.inflector.strict.inflected_locales(:gender)
+    store_translations(:yy, :i18n => { :inflections => { :@person => { :s => 'sir'}}})
+    assert_equal [:xx], I18n.inflector.strict.inflected_locales(:gender)
+    assert_equal [:yy], I18n.inflector.strict.inflected_locales(:person)
+    assert_equal [:xx], I18n.inflector.inflected_locales(:gender)
+    assert_equal [:yy], I18n.inflector.inflected_locales(:@person)
+    assert_equal [:xx,:yy], I18n.inflector.inflected_locales.sort{|k,v| k.to_s<=>v.to_s}
+    assert_equal [:xx,:yy], I18n.inflector.strict.inflected_locales.sort{|k,v| k.to_s<=>v.to_s}
+    store_translations(:zz, :i18n => { :inflections => { :some => { :s => 'sir'}}})
+    assert_equal [:xx,:yy,:zz], I18n.inflector.inflected_locales.sort{|k,v| k.to_s<=>v.to_s}
+    assert_equal [:xx,:yy],     I18n.inflector.strict.inflected_locales.sort{|k,v| k.to_s<=>v.to_s}
+    assert_equal [],            I18n.inflector.inflected_locales(:@some)
+    assert_equal [:zz],         I18n.inflector.inflected_locales(:some)
   end
 
   test "inflector inflected_locale?: tests if the given locale supports inflection" do
