@@ -62,10 +62,6 @@ module I18n
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
 
-    # @abstract This is for backward compatibility with the old naming scheme.
-    class Core < API
-    end
-
   end # module Inflector
 
 end # module I18n

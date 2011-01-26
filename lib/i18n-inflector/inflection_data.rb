@@ -48,7 +48,7 @@ module I18n
         target  = target.to_s
         name    = name.to_s
         return false if (name.empty? || target.empty?)
-        kind    = nil if kind.to_s.empty?
+        kind    = nil if kind.to_s.empty? unless kind.nil?
         name    = name.to_sym
         target  = target.to_sym
         t_kind  = get_kind(target)

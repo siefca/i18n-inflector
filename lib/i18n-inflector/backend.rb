@@ -57,7 +57,7 @@ module I18n
       def translate(locale, key, options = {})
         translated_string = super
 
-        return translated_string if locale.to_s.empty?
+        return translated_string if (locale.nil? || locale.to_s.empty?)
 
         unless @inflector.inflected_locale?(locale)
           return translated_string.gsub(I18n::Inflector::PATTERN,'')
@@ -180,7 +180,7 @@ module I18n
           orig_token = token
           token = value[1..-1]
 
-          if token.to_s.empty?
+          if (token.nil? || token.to_s.empty?)
             raise I18n::BadInflectionToken.new(locale, token, kind)
           end
           token = token.to_sym
@@ -233,7 +233,7 @@ module I18n
             end
 
             # validate token's name
-            raise I18n::BadInflectionToken.new(locale, token, orig_kind) if token.to_s.empty?
+            raise I18n::BadInflectionToken.new(locale, token, orig_kind) if (token.nil? || token.to_s.empty?)
 
             # validate token's description
             if description.nil?

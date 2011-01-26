@@ -55,6 +55,7 @@ module I18n
       # @return [Boolean] +true+ if everything went ok, +false+ otherwise
       #  (in case of bad names or non-existent targets)
       def add_alias(name, target, kind)
+        return false if (name.nil? || target.nil? || kind.nil?)
         return false if (name.to_s.empty? || target.to_s.empty? || kind.to_s.empty?)
         name    = name.to_sym
         target  = target.to_sym

@@ -9,7 +9,7 @@ class Test::Unit::TestCase
     I18n.load_path          = []
     I18n.available_locales  = nil
     I18n.backend            = nil
-  end
+  end if not method_defined?(:teardown)
 
   def translations
     I18n.backend.instance_variable_get(:@translations)
