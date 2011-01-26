@@ -211,6 +211,41 @@ module I18n
   # method easily, since the first mentioned class uses
   # patterns that are not named, and the second uses named patterns.
   # 
+  # ==== Strict kinds in options
+  # 
+  # The interpolation routine recognizes strict kinds passed as
+  # options in almost the same way that it does it for regular
+  # kinds. The only difference is that you can override usage
+  # of a regular kind inflection option (if there is any) by
+  # putting a strict kind option with name prefixed by +@+ symbol.
+  # The inflection options starting with this symbol have
+  # precedence over inflection options without it;
+  # that is of course only true for strict kinds and has any effect
+  # only when both options describing the same kind are present.
+  # 
+  # In other words: interpolation routine is looking for
+  # strict kinds in inflection options using their names
+  # with +@+ in front. When that fails it falls back to
+  # trying an option named like the strict kind but without
+  # the +@+ symbol. Examples:
+  # 
+  #  I18n.translate(welcome, :gender => :m, :@gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  #  
+  #  I18n.translate(welcome, :@gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  #  
+  #  I18n.translate(welcome, :gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  # 
+  # In the example above we assume that +welcome+ is defined
+  # like that:
+  # 
+  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
+  # 
+  # Note that for regular kinds the option named <tt>:@gender</tt>
+  # will have no meaning.
+  # 
   # ==== Note for developers
   # 
   # Strict kinds that are used to handle named patterns
@@ -219,10 +254,16 @@ module I18n
   # most of the {I18n::Inflector::API} methods are also aware of strict kinds
   # and will call proper methods oprating on strict inflections
   # data when the +@+ symbol is detected at the beginning of
-  # the identifier of a kind passed as an argument.
+  # the identifier of a kind passed as an argument. For example:
   # 
-  # If you're interested in accessing API methods for strict kinds
-  # (and strict kinds data) only, associated with default I18n backend
+  #   I18n.inflector.has_token?(:m, :@gender)
+  # 
+  # will effectively call:
+  # 
+  #  I18n.inflector.strict.has_token?(:m, :gender)
+  # 
+  # As you can see above, to access {API_Strict} methods for strict kinds
+  # (and strict kinds data) only, associated with default I18n backend,
   # use:
   # 
   #   I18n.inflector.strict
