@@ -1,8 +1,5 @@
 * update documentation for InflectionDataStrict[ ] and InflectionData[ ]
-* update documentation for API[done] and API_Strict[ ]
 * update RELATIONS
-* validate error messages for strict kinds (if kind is prefixed by @)
-
 
 * write some examples in section API Examples
 
@@ -12,3 +9,6 @@
   version of translate and then injected when interpolating happens (default value
   for that switch should be true if there is I18n version 4 installed)
 
+* attach inflection key name to some raised errors
+
+* add some external iterators for tokens, aliases, kinds, true_tokens
