@@ -60,10 +60,10 @@ module I18n
     LOUD_MARKER   = '~'
 
     # Contains a list of escape strings that cause loud tokens to be escaped.
-    LOUD_ESCAPES  = { '~~' => true, '\\~' => true }
+    LOUD_ESCAPES  = HSet['~~', '\\~']
 
     # Contains a list of escape symbols that cause pattern to be escaped.
-    ESCAPES       = { '@' => true, '\\' => true }
+    ESCAPES       = HSet['@', '\\']
 
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
