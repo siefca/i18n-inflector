@@ -131,8 +131,8 @@ Detailed example:
 == More information
 
 * See {I18n::Inflector} module documentation for detailed information about the usage.
+* See {I18n::Inflector::API} class documentation for detailed information about the API.
 * See {I18n::Backend::Inflector} module documentation for detailed information about the internals.
-* See {I18n::Backend::Inflector::API} class documentation for detailed information about the API.
 * See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
 
 == Tests
