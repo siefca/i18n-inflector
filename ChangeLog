@@ -1,3 +1,231 @@
+commit f8c13ef824d68bed04a96d52a8be8399d21617f1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 01:27:11 2011 +0100
+
+    Added some tests for multiple patterns in one translation data
+
+commit becf2f23bd41e7902d2510531e9383abb310a861
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 01:26:47 2011 +0100
+
+    Ideas reorganized in TODO
+
+commit 44fce7b2959040657d5d52f21a1c1a3c63a80921
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 01:26:17 2011 +0100
+
+    Added EXAMPLES
+
+commit b43472f4d4433b1d1cc7001b8bec9844f9a6b6f4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 22:29:20 2011 +0100
+
+    Ideas updated
+
+commit bcc5c7994867e784bcb6950db18021a82a1a9daf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 22:26:54 2011 +0100
+
+    Added a test that verifies whether original translate eats options and impacts interpolation
+
+commit 7c274ca8a6192495c4b3bfa2edc99339d01a4308
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 20:45:25 2011 +0100
+
+    Options for translate are now duplicated before calling the original version
+
+commit 138273a0780289ec7b330c8f54090bb72b0e9d82
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 20:19:08 2011 +0100
+
+    Manifest.txt regenerated
+
+commit 5c47868b4a51012e8a722a66a383b014eb9e959e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 19:36:33 2011 +0100
+
+    Added LazyHashEnumerator#keys for dumping keys of a resulting hash
+
+commit 831eff126f9d233c75e3793798f20ae23d7de6db
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 19:33:16 2011 +0100
+
+    File RELATIONS updated
+
+commit c3c3cdf4abd57631b52bb3b960bd08289bf6edc9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 17:37:40 2011 +0100
+
+    Added some extra tests for InflectionData#add_token and InflectionData_Strict#add_token
+
+commit df4675d463fc9b405077282bd474671b80b65656
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 17:37:04 2011 +0100
+
+    Documentation for InflectionDataStrict updated
+
+commit b764b00b1c5de5d377a064404c3a3dc45864e1a9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 17:15:32 2011 +0100
+
+    Documentation updates
+
+commit ff581f4dd2e0ea9ee2f19474f84b10fc79b8b0c2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 16:45:45 2011 +0100
+
+    Method API_Strict#inflected_locales fixed; verifies results with InflectionData_Strict#empty?
+
+commit 1f270ea082729c30c9851fa519e0f1c07ca39528
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 16:42:03 2011 +0100
+
+    Added some tests for getting inflections
+
+commit 26cea141be36b443f866d04a04bd57941bc02bb0
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 16:41:36 2011 +0100
+
+    Documentation updates
+
+commit e9646adb37bde86f9131f3be8e5e1faef292fb84
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 03:30:33 2011 +0100
+
+    Documentation updated for the class InflectionData
+
+commit 739c724cbfc452925c0ad74dd1ede66f5e495804
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 03:29:51 2011 +0100
+
+    Added EXAMPLES file to documentation
+
+commit d27b9d5457872dbdd66d14611b1016e2fb5e2ecf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 02:55:23 2011 +0100
+
+    TODO updated
+
+commit 4a052f86d488c37f1c4c70a716bc4d5fc3a507fc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 02:54:53 2011 +0100
+
+    Documentation for class API_Strict updated
+
+commit d9c380cb22848e001de5eb98f9103950dd470d61
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:55:54 2011 +0100
+
+    Class LazyEnumerator cleaned and renamed to LazyHashEnumerator
+
+commit 5dff82b62eefa0ecefbb2109870f5d27ad4b867b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:08:58 2011 +0100
+
+    Strict kinds described
+
+commit 14d91e3eb09eccfddbc9e73f97c8d715f158c4eb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:08:33 2011 +0100
+
+    Added RELATIONS documentation to compat gemspec
+
+commit 70d0f47ead977140ec0e87aa1e28f06f2b652040
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:08:03 2011 +0100
+
+    Improvements of interpolation routine, error reporting and arguments validation
+
+commit ce54b7309fef659b8a06e6f011d30a4dc15587e5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:04:59 2011 +0100
+
+    Added tests for named patterns, some tests fixed
+
+commit 5d81d7514ad94a12b72e7ffcb2f2168511a52f2f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Jan 26 01:04:27 2011 +0100
+
+    Added new error classes InflectionOptionNotFound and InflectionOptionIncorrect
+
+commit 2d0d2f041798681ce598f95bfa2847e7c86e8fef
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 04:10:18 2011 +0100
+
+    Added note about named patterns to README
+
+commit 663aedad35b98c6aac08073ef13f6145041eb431
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 04:00:47 2011 +0100
+
+    Documentation updated
+
+commit 0658fe79eaa385ca058ed29e4cc8a18007875a11
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 03:36:24 2011 +0100
+
+    Added tests for easy API calls with @kind in arguments
+
+commit aa9dd4a1133eeb50dfe5237f142350fb6e0609d9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 03:35:04 2011 +0100
+
+    Documentation fixes
+
+commit 3b241abe7ae39219a0e847bddc65e76f89590055
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 03:34:29 2011 +0100
+
+    Fixed bug in typing that caused some API calls to has_kind? and default_token to be erroneus
+
+commit 71600f1056aa3e89fe2f5c21982bca5f5379ec50
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 03:32:43 2011 +0100
+
+    Documentation for API updated and corrected
+
+commit e007ce75e59bbb42f2d6474d8fbfd0888937bd1b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jan 25 03:32:05 2011 +0100
+
+    Fixed bug that caused some aliases for strict kinds to not be loaded because of missing @
+
+commit 25303663e091123e1820b33f2c3e670c054fc25f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 18:31:09 2011 +0100
+
+    Documentation updated, tests fixed
+
+commit 370ad6e4e5f1ab6dcbe7b9a7edd703064ee708a9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 18:29:53 2011 +0100
+
+    API_Named calls changed to API_Strict, documentation updated
+
+commit d95b43f359b438e4a1fef4907545dae4ec7abe9d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 18:29:01 2011 +0100
+
+    API_Named renamed to API_Strict
+
+commit a5c1467e931279022173e86e5e05992a30768334
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 14:38:59 2011 +0100
+
+    Fixes: slow blocks removed, magic @kind interpreting finished, Ruby's version test improved
+
+commit fbdd10ae7ff73ceb5b5697f138f2e02deee8bb5e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 13:02:52 2011 +0100
+
+    Removed backport.rb, added some backporting code directly to LazyEnumerator class
+
+commit 570709c07a293b4a1cd4e1b864744ac38f12f2ee
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 24 11:32:01 2011 +0100
+
+    Manifest.txt and ChangeLog regenerated
+
 commit 691d74f506c78566f2d5d04d55f0381a0a2209a6
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Jan 24 11:31:31 2011 +0100
