@@ -1,3 +1,34 @@
+=== 2.1.0 / 2011-01-27
+
+* major enhancements
+
+  * Added named patterns support (strict kinds)
+  * API improved: major class is I18n::Inflector::API
+  * Added class I18n::Inflector::API_Strict for accessing strict inflections
+  * Added lazy enumerators for internal hashes, which saves some memory
+  * Added strict kinds detection (@-style kind names) to most of the methods from main API class
+  * Added new error classes: InflectionOptionNotFound and InflectionOptionIncorrect
+  * Added class for handling inflection data for strict kinds: I18n::Inflector::InflectionData_Strict
+  * Inflections for regular and strict kinds are handled by separate data structures and objects
+  * Documentation updated
+
+* minor bugfixes
+
+  * Error reporting fixed in some places
+  * Strict kinds interpolation improved
+  * Removed some slow blocks
+  * Loading inflection tokens cleaned up
+
+=== 2.0.1 / 2011-01-15
+
+* minor enhancements
+
+  * Documentation updated
+
+* minor bugfixes
+
+  * Fixed duplicated dependency generation in Hoe
+
 === 2.0.0 / 2011-01-14
 
 * major enhancements

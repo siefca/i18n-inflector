@@ -1,3 +1,9 @@
+commit 72a808453e71b18c696943b37d8bd07c3f5c6c93
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 01:29:55 2011 +0100
+
+    Tested with Ruby 1.8 and 1.9, with Rails app, with i18n-inflector-rails, with I18n v4.1 and v5.0
+
 commit f8c13ef824d68bed04a96d52a8be8399d21617f1
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jan 27 01:27:11 2011 +0100
