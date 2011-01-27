@@ -63,7 +63,9 @@ module I18n
       # data from enumerated collection.
       # @return [Hash] the resulting hash
       def to_h
-        Hash[self.to_a]
+        h = Hash.new
+        self.each{|k,v| h[k]=v }
+        h
       end
 
       # Hash mapping enumerator
