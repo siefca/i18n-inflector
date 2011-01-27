@@ -229,6 +229,13 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'you are', I18n.t('to be', :person => :you, :locale => :xx)
   end
 
+  test "backend inflector translate: works with doubled patterns" do
+    store_translations(:xx, 'dd' => 'Dear @{f:Lady|m:Sir|All}! Dear @{f:Lady|m:Sir|All}!')
+    assert_equal 'Dear Lady! Dear Lady!', I18n.t('dd', :gender => :f, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{f:Lady|m:%{test}}! Dear @{f:Lady|m:%{test}}!')
+    assert_equal 'Dear Dude! Dear Dude!', I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
+  end
+
   test "backend inflector translate: works with tokens separated by commas" do
     store_translations(:xx, 'hi' => 'Dear @{f,m:Someone|n:You|All}!')
     assert_equal 'Dear Someone!', I18n.t('hi', :gender => :m, :locale => :xx)
