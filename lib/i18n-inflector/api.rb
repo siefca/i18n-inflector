@@ -714,7 +714,7 @@ module I18n
           ext_pattern     = $&
           ext_value       = nil
           ext_freetext    = ''
-          found           = false
+          found           = nil
           parsed_default_v= nil
 
           # leave escaped pattern as-is
@@ -868,32 +868,31 @@ module I18n
 
             # skip further evaluation of the pattern
             # since the right token has been found
-            found = true
+            found = option
             break
 
           end # single token (or a group) processing
 
-          result = nil
-
           # return value of a token that matches option's value
           # given for a kind or try to return a free text
           # if it's present
-          if found
-            result = ext_value
-          elsif (excluded_defaults && !parsed_kind.nil?)
+          if found.nil?
             # if there is excluded_defaults switch turned on
             # and a correct token was found in an inflection option but
             # has not been found in a pattern then interpolate
             # the pattern with a value picked for the default
             # token for that kind if a default token was present
             # in a pattern
-            kind    = nil
-            token   = options[parsed_kind]
-            kind    = subdb.get_kind(token)
-            result  = parsed_default_v unless kind.nil?
+            ext_value = (excluded_defaults && !parsed_kind.nil? &&
+                         subdb.has_token?(options[parsed_kind], parsed_kind)) ?
+                         parsed_default_v : nil
+          elsif ext_value == LOUD_MARKER  # interpolate loud tokens
+            ext_value = subdb.get_description(found, parsed_kind)
+          elsif LOUD_ESCAPES[ext_value]
+            ext_value = LOUD_MARKER
           end
 
-          pattern_fix + (result || ext_freetext)
+          pattern_fix + (ext_value || ext_freetext)
 
         end # single pattern processing
 

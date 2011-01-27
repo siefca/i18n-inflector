@@ -15,8 +15,6 @@
 
 == Distant future
 
-* Loud tokens: description substitution, e.g.: "Dear @{u|i:me}" gives "Dear You" if u is described as "You"
-
 * Combined patterns (!!!!!!!!!!!!)
 
   - @person+time{i+now:am|i+past:was}
@@ -27,3 +25,4 @@
 
 * think about allowing negative matches to be AND-ed, e.g.: !m&!f:impersonal (?)
   - that will double positive-matching syntax, and make it even less KISS
+

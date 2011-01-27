@@ -56,6 +56,12 @@ module I18n
     # Conatins a symbol used to mark tokens as negative.
     OPERATOR_NOT  = '!'
 
+    # Conatins a symbol used to mark tokens as loud.
+    LOUD_MARKER   = '~'
+
+    # Contains a list of escape strings that cause loud tokens to be escaped.
+    LOUD_ESCAPES  = { '~~' => true, '\\~' => true }
+
     # Contains a list of escape symbols that cause pattern to be escaped.
     ESCAPES       = { '@' => true, '\\' => true }
 
