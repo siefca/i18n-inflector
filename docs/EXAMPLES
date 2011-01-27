@@ -215,7 +215,7 @@ prefixes and suffixes of words we're able make our patterns compact.
   #=> "Na pewno?"
 
   # It would look like that without commas:
-  I18n.backend.store_translations(:pl, :are_you_sure => "@{m:Jesteś pewien|f:Jesteś pewna}@{n:Na pewno}?")
+  I18n.backend.store_translations(:pl, :are_you_sure => "@{m:Jesteś pewien|f:Jesteś pewna|n:Na pewno}?")
 
   # That would also work but it's less readable.
   # PS: Have you ever configured Sendmail? ;-)

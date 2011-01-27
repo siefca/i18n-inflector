@@ -170,15 +170,14 @@ module I18n
   # 
   # == Named patterns
   # 
-  # A named pattern is a pattern that may contain special clause
-  # containing name of a kind that tokens from a pattern
-  # are assigned to. It looks like:
+  # A named pattern is a pattern that contains name of a kind
+  # that tokens from a pattern are assigned to. It looks like:
   # 
   #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
   # 
   # === Configuring named patterns
   # 
-  # To recognize tokens present in a named patterns,
+  # To recognize tokens present in named patterns,
   # inflector uses keys grouped in the scope called +inflections+
   # for the given locale. For instance (YAML format):
   #   en:
@@ -206,7 +205,7 @@ module I18n
   # is used. It is called the <b>strict kind</b>. Strict kinds are defined
   # in a configuration in a similar way the regular kinds are but
   # tokens assigned to them may have the same names across a whole
-  # configuration. (Note that within a strict kind tokens should still
+  # configuration. (Note that tokens of the same strict kind should still
   # be unique.) That implies a requirement of passing the
   # identifier of a kind when referring to such tokens.
   # 
@@ -230,7 +229,7 @@ module I18n
   #           f:      @l
   #           default: u
   # 
-  # The only thing that syntactically distinguishes named kinds
+  # The only thing that syntactically distinguishes strict kinds
   # from regular kinds is a presence of the +@+ symbol.
   # 
   # You can mix regular and strict kinds having the same names.
@@ -429,7 +428,7 @@ module I18n
   #   # => Hello !
   # 
   # === Aliases in a pattern
-  # Normally it possible to use only true tokens in patterns, not aliases.
+  # Normally it is possible to use only true tokens in patterns, not aliases.
   # However, if you feel lucky and you're not affraid of messy patterns
   # you can use the switch {I18n::Inflector::InflectionOptions#aliased_patterns}
   # or corresponding <tt>:inflector_aliased_patterns</tt> option passed to translation
