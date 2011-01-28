@@ -145,8 +145,8 @@ module I18n
 
             # try @-style option for strict kind, fallback to regular if not found
             # and memorize option name for error reporting
-            oname = !strict_kind.nil? && options.has_key?(parsed_symbol) ?
-                    parsed_symbol : (options.has_key?(kind) ? kind : nil)
+            oname = !strict_kind.nil? && used_kinds.has_key?(parsed_symbol) ?
+                    parsed_symbol : (used_kinds.has_key?(kind) ? kind : nil)
 
             # Get option if possible and memorize for error reporting;
             # fallback to default token if option still not found
@@ -154,7 +154,7 @@ module I18n
               option      = default_token
               orig_option = nil
             else
-              option      = options[oname]
+              option      = used_kinds[oname]
               orig_option = option
             end
 
@@ -218,7 +218,7 @@ module I18n
             # token for that kind if a default token was present
             # in a pattern
             ext_value = (excluded_defaults && !parsed_kind.nil? &&
-                         subdb.has_token?(options[parsed_kind], parsed_kind)) ?
+                         subdb.has_token?(used_kinds[parsed_kind], parsed_kind)) ?
                          parsed_default_v : nil
           elsif ext_value == LOUD_MARKER  # interpolate loud tokens
             ext_value = subdb.get_description(found, parsed_kind)
