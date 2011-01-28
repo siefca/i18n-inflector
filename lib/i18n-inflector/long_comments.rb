@@ -417,6 +417,7 @@ module I18n
   # Note: <em>Uses inflection configuration given in the first example.</em> 
   #   en:
   #     welcome:  "Hello @{!m:Ladies|n:You}!"
+  # 
   # ===== Code:
   #   I18n.t('welcome', :gender => :n)
   #   # => Hello Ladies!
@@ -426,6 +427,28 @@ module I18n
   #   
   #   I18n.t('welcome', :gender => :m)
   #   # => Hello !
+  # 
+  # === Loud tokens
+  # Sometimes there might be a need to use descriptions of
+  # matching tokens instead of some given values. Use <b>loud tokens</b>
+  # to achieve that. Any matching token in a pattern that has tilde symbol (+~+)
+  # set as its value will be replaced by its description. In case of
+  # undescribed aliases, the description from a target token will be used.
+  # 
+  # ===== YAML:
+  # Note: <em>Uses inflection configuration given in the first example.</em> 
+  #   en:
+  #     welcome:  "Hello @{m:~|n:~}!"
+  # 
+  # ===== Code:
+  #   I18n.t('welcome', :gender => :n)
+  #   # => Hello neuter!
+  #   
+  #   I18n.t('welcome', :gender => :f)
+  #   # => Hello female!
+  # 
+  # To use tilde symbol as the only value of a token you may esape it
+  # by putting a backslash in front of the symbol.
   # 
   # === Aliases in a pattern
   # Normally it is possible to use only true tokens in patterns, not aliases.

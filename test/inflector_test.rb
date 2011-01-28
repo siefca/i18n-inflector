@@ -243,8 +243,10 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{!n:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
-    store_translations(:xx, 'hi' => 'Dear @{!n:~~|n:You|All}!')
+    store_translations(:xx, 'hi' => 'Dear @{!n:\~|n:You|All}!')
     assert_equal 'Dear ~!', I18n.t('hi', :gender => :m, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{!n:\\\\~|n:You|All}!')
+    assert_equal 'Dear \\~!', I18n.t('hi', :gender => :m, :locale => :xx)
   end
 
   test "backend inflector translate: works with tokens separated by commas" do

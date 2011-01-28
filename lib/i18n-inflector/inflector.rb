@@ -36,34 +36,40 @@ module I18n
 
     # Contains <tt>@</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
-    FAST_MATCHER  = '@'
+    FAST_MATCHER    = '@'
 
     # Contains a regular expression that catches patterns.
-    PATTERN       = /(.?)@([^\{]*)\{([^\}]+)\}/
+    PATTERN         = /(.?)@([^\{]*)\{([^\}]+)\}/
 
     # Contains a regular expression that catches tokens.
-    TOKENS        = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
-
-    # Contains a symbol that indicates an alias.
-    ALIAS_MARKER  = '@'
+    TOKENS          = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
 
     # Contains a symbol that indicates a named pattern.
-    NAMED_MARKER  = '@'
+    NAMED_MARKER    = '@'
+
+    # Contains a symbol used to mark patterns as combined.
+    COMBINED_MARKER = '+'
 
     # Conatins a symbol used to separate multiple tokens.
-    OPERATOR_MULTI = ','
+    OPERATOR_MULTI  = ','
 
     # Conatins a symbol used to mark tokens as negative.
-    OPERATOR_NOT  = '!'
+    OPERATOR_NOT    = '!'
+
+    # Contains a symbol that indicates an alias.
+    ALIAS_MARKER    = '@'
 
     # Conatins a symbol used to mark tokens as loud.
-    LOUD_MARKER   = '~'
+    LOUD_MARKER     = '~'
 
-    # Contains a list of escape strings that cause loud tokens to be escaped.
-    LOUD_ESCAPES  = HSet['~~', '\\~']
+    # Contains a general esape symbol.
+    ESCAPE          = '\\'
 
-    # Contains a list of escape symbols that cause pattern to be escaped.
-    ESCAPES       = HSet['@', '\\']
+    # Contains a regular expression that catches escape symbols.
+    ESCAPE_R        = /\\([^\\])/
+
+    # Contains a list of escape symbols that cause a pattern to be escaped.
+    ESCAPES         = HSet['@', '\\']
 
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys

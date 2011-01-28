@@ -11,6 +11,7 @@ require 'i18n-inflector/options'
 require 'i18n-inflector/backend'
 require 'i18n-inflector/inflector'
 require 'i18n-inflector/errors'
+require 'i18n-inflector/interpolate'
 require 'i18n-inflector/api_strict'
 require 'i18n-inflector/api'
 
