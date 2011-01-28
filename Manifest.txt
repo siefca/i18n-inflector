@@ -20,9 +20,11 @@ lib/i18n-inflector/api.rb
 lib/i18n-inflector/api_strict.rb
 lib/i18n-inflector/backend.rb
 lib/i18n-inflector/errors.rb
+lib/i18n-inflector/hset.rb
 lib/i18n-inflector/inflection_data.rb
 lib/i18n-inflector/inflection_data_strict.rb
 lib/i18n-inflector/inflector.rb
+lib/i18n-inflector/interpolate.rb
 lib/i18n-inflector/lazy_enum.rb
 lib/i18n-inflector/long_comments.rb
 lib/i18n-inflector/options.rb
