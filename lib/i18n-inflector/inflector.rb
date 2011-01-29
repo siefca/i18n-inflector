@@ -42,7 +42,7 @@ module I18n
     PATTERN         = /(.?)@([^\{]*)\{([^\}]+)\}/
 
     # Contains a regular expression that catches tokens.
-    TOKENS          = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/ 
+    TOKENS          = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/
 
     # Contains a symbol that indicates a named pattern.
     NAMED_MARKER    = '@'
@@ -70,6 +70,15 @@ module I18n
 
     # Contains a list of escape symbols that cause a pattern to be escaped.
     ESCAPES         = HSet['@', '\\']
+
+    # Max. number of patterns to keep in cache.
+    CACHE_SIZE      = 128
+
+    # Max. number of variants of patterns (created by different options).
+    CACHE_VAR       = 3
+
+    # Contains known interpolation options that may be passed to translate.
+    KNOWN_OPTIONS   = [:raises, :aliased_patterns, :unknown_defaults, :excluded_defaults]
 
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
