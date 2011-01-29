@@ -8,11 +8,48 @@
 
 module I18n
 
-  # @abstract This class is a parent class for exceptions raised when
-  #   inflection option is bad or missing.
-  class InvalidOptionForKind < ArgumentError
+  # @abstract It is a parent class for all exceptions
+  #   related to inflections.
+  class InflectionException < ArgumentError
+  end
 
-    attr_reader :pattern, :kind, :token, :option
+  # @abstract It is a parent class for all exceptions
+  #   related to inflection patterns that are processed.
+  class InflectionPatternException < InflectionException
+
+    attr_reader :pattern
+    attr_reader :token
+    attr_reader :kind
+
+    def initialize(*args)
+      @pattern  ||= nil
+      @token    ||= nil
+      @kind     ||= nil
+      super
+    end
+
+  end
+
+  # @abstract It is a parent class for all exceptions
+  #   related to configuration data of inflections that is processed.
+  class InflectionConfigurationException < InflectionException
+
+    attr_reader :token
+    attr_reader :kind
+
+    def initialize(*args)
+      @token  ||= nil
+      @kind   ||= nil
+      super
+    end
+
+  end
+
+  # @abstract It is a parent class for exceptions raised when
+  #   inflection option is bad or missing.
+  class InvalidOptionForKind < InflectionPatternException
+
+    attr_reader :option
 
     def initialize(pattern, kind, token, option)
       @pattern, @kind, @token, @option, @option_present = pattern, kind, token, option
@@ -56,12 +93,9 @@ module I18n
 
   # This is raised when token given in pattern is invalid (empty or has no
   # kind assigned).
-  class InvalidInflectionToken < ArgumentError
-
-    attr_reader :pattern, :token
-
-    def initialize(pattern, token)
-      @pattern, @token = pattern, token
+  class InvalidInflectionToken < InflectionPatternException
+    def initialize(pattern, token, kind=nil)
+      @pattern, @token, @kind = pattern, token, kind
       super "token #{token.inspect} used in translation " + 
             "pattern #{pattern.inspect} is invalid"
     end
@@ -70,9 +104,7 @@ module I18n
 
   # This is raised when an inflection token used in a pattern does not match
   # an assumed kind determined by reading previous tokens from that pattern.
-  class MisplacedInflectionToken < ArgumentError
-
-    attr_reader :pattern, :token, :kind
+  class MisplacedInflectionToken < InflectionPatternException
 
     def initialize(pattern, token, kind)
       @pattern, @token, @kind = pattern, token, kind
@@ -84,9 +116,9 @@ module I18n
 
   # This is raised when an inflection token of the same name is already defined in
   # inflections tree of translation data.
-  class DuplicatedInflectionToken < ArgumentError
+  class DuplicatedInflectionToken < InflectionConfigurationException
 
-    attr_reader :original_kind, :kind, :token
+    attr_reader :original_kind
 
     def initialize(original_kind, kind, token)
       @original_kind, @kind, @token = original_kind, kind, token
@@ -100,9 +132,9 @@ module I18n
   # This is raised when an alias for an inflection token points to a token that
   # doesn't exists. It is also raised when default token of some kind points
   # to a non-existent token.
-  class BadInflectionAlias < ArgumentError
+  class BadInflectionAlias < InflectionConfigurationException
 
-    attr_reader :locale, :token, :kind, :pointer
+    attr_reader :locale, :pointer
 
     def initialize(locale, token, kind, pointer)
       @locale, @token, @kind, @pointer = locale, token, kind, pointer
@@ -117,9 +149,9 @@ module I18n
 
   # This is raised when an inflection token or its description has a bad name. This
   # includes an empty name or a name containing prohibited characters.
-  class BadInflectionToken < ArgumentError
+  class BadInflectionToken < InflectionConfigurationException
 
-    attr_reader :locale, :token, :kind, :description
+    attr_reader :locale, :description
 
     def initialize(locale, token, kind=nil, description=nil)
       @locale, @token, @kind, @description = locale, token, kind, description
