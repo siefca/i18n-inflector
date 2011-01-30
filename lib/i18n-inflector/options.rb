@@ -24,11 +24,6 @@ module I18n
     #   translate('welcome', :inflector_<option_name> => value)
     class InflectionOptions
 
-      # This reader allows to access known options map.
-      # @api public
-      # @return [Hash] map the known options map
-      attr_reader :known
-
       # This is a switch that enables extended error reporting. When it's enabled then
       # errors are raised in case of unknown or empty tokens present in a pattern
       # or in options. This switch is by default set to +false+.
@@ -201,15 +196,57 @@ module I18n
         nil
       end
 
+      # This method processes the given argument
+      # in a way that it will use default values
+      # for options that are missing.
+      # 
+      # @api public
+      # @note It modifies the given object.
+      # @param [Hash] options the options
+      # @return [Hash] the given options
+      def prepare_options!(options)
+        @known.
+        reject { |name,long| options.has_key?(long) }.
+        each   { |name,long| options[long] = instance_variable_get(name) }
+        options
+      end
+
+      # This method prepares options for translate method.
+      # That means removal of all kind-related options
+      # and all options that are flags.
+      # 
+      # @api public
+      # @note It modifies the given object.
+      # @param [Hash] options the given options
+      # @return [Hash] the given options
+      def prepare_for_translate!(options)
+        @known.each { |name,long| options.delete long }
+        options
+      end
+
+      # Lists all known options in a long format
+      # (each name preceeded by <tt>inflector_</tt>).
+      # 
+      # @api public
+      # @return [Array<Symbol>] the known options
+      def known
+        @known.values
+      end
+
+      protected
+
       # This method generates known options map
       # so their names are easy to access.
+      # 
+      # @return [void]
       def generate_known_options
-        @known = Hash.new
+        k = Hash.new
         instance_variables.map do |opt|
-          next if opt == :known
-          name = opt.to_s[1..-1]
-          @known[name.to_sym] = ('inflector_' + name).to_sym
+          sopt = opt.to_sym
+          next if sopt == :@known
+          k[sopt] = ('inflector_' + opt[1..-1]).to_sym
         end
+        @known = LazyHashEnumerator.new(k)
         nil
       end
 

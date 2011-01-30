@@ -31,18 +31,10 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
-        read_options!(options)
-        interpolate_core(string, locale, options)
+        interpolate_core( string, locale, @options.prepare_options!(options) )
       end
 
       private
-
-      # @private
-      def read_options!(options)
-        @options.known.each_pair do |name, long_name|
-          options[long_name] = @options.method(name).call unless options.has_key?(long_name)
-        end
-      end
 
       # @private
       def interpolate_core(string, locale, options)

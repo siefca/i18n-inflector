@@ -56,6 +56,7 @@ module I18n
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
         orig_options = options.dup
+        @inflector.options.prepare_for_translate!(options)
         translated_string = super
 
         return translated_string if (locale.nil? || locale.to_s.empty?)

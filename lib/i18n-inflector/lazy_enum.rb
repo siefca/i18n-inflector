@@ -125,10 +125,18 @@ module I18n
       end
 
       # This method converts resulting keys
-      # to array.
+      # to an array.
       def keys
         ary = []
         self.each{ |k,v| ary << k }
+        return ary
+      end
+
+      # This method converts resulting values
+      # to an array.
+      def values
+        ary = []
+        self.each{ |k,v| ary << v }
         return ary
       end
 
