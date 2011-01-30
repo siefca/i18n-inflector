@@ -71,12 +71,6 @@ module I18n
     # Contains a list of escape symbols that cause a pattern to be escaped.
     ESCAPES         = HSet['@', '\\']
 
-    # Max. number of patterns to keep in cache.
-    CACHE_SIZE      = 128
-
-    # Max. number of variants of patterns (created by different options).
-    CACHE_VAR       = 3
-
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
 
