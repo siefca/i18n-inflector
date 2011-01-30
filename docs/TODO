@@ -1,7 +1,5 @@
 == Near future
 
-* document complex patterns
-
 * add some simple cache that counts hits and removes lowest in case of fulfillment
 
 * add a switch that causes inflection arguments to be gathered and removed before using original
@@ -17,8 +15,6 @@
 
 == Distant future
 
-* case-insensitivity switch for inflection options (?)
-
-* scoped kinds (e.g: person.singular, person.plural) and tokens inheritance
+* scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance)
 
 * add some external iterators for tokens, aliases, kinds, true_tokens

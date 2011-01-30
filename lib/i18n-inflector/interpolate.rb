@@ -86,7 +86,7 @@ module I18n
               begin
                 ext_value = interpolate_complex(strict_kind,
                                                  pattern_content,
-                                                 locale, options)
+                                                 locale, options, idb_strict)
               rescue I18n::InflectionPatternException => e
                 e.pattern = ext_pattern
                 raise
@@ -273,10 +273,11 @@ module I18n
       # @param [Symbol] locale the locale to use
       # @param [Hash] options the options
       # @return [String] the interpolated pattern
-      def interpolate_complex(complex_kind, content, locale, options)
+      def interpolate_complex(complex_kind, content, locale, options, db)
         return '' if (content.nil? || content.empty?)
         free_text    = ''
         expectations = Hash.new
+        kinds        = complex_kind.split(COMPLEX_MARKER)
 
         # This functional block splits complex pattern
         # into a basic patterns and calls interpolate
@@ -285,6 +286,7 @@ module I18n
         # for combined tokens. I wish Ruby had lazy variants
         # of most hash and array operations..
         begin
+
           results = LazyArrayEnumerator.new(
             content.scan(TOKENS).
             map do |tokens, value, free|
@@ -295,8 +297,10 @@ module I18n
               symtokens = tokens.to_sym
               expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
               tokens.split(COMPLEX_MARKER)
-            end.compact.unshift(complex_kind.split(COMPLEX_MARKER)).transpose
-            ).
+            end.
+            compact.
+            unshift(kinds).
+            transpose).
             map do |tokens|
               PATTERN_MARKER + tokens.shift +
               '{' + tokens.uniq.map{|token| token + ':' + token}.join('|') + '}'
@@ -305,10 +309,23 @@ module I18n
               interpolate_core(pattern, locale, options)
             end.
             to_a.join(COMPLEX_MARKER).to_sym
+
         rescue IndexError
-          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind)
+
+          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind) if options[:inflector_raises]
+          return free_text
+
         end
-        expectations[results] || free_text
+
+        result = expectations[results]
+
+        # Process loud tokens
+        if (!result.nil? && result == LOUD_MARKER)
+          kinds  = kinds.each
+          result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, kinds.next.to_sym) }.join(' ')
+        end
+
+        result || free_text
       end # def interpolate_complex
 
     end # module Interpolate
