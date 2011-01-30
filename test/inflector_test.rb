@@ -247,21 +247,34 @@ class I18nInflectorTest < Test::Unit::TestCase
 
   test "backend inflector translate: works with complex patterns" do
     store_translations(:xx, :i18n => { :inflections => { :@tense => { :now => 'now', :past => 'later', :default => 'now' }}})
-    store_translations(:xx, 'hi' => '@gender+tense{m+now:he is|f+past:she was} here!')
-    assert_equal 'he is here!', I18n.t('hi', :gender => :m, :person => :you, :locale => :xx, :inflector_raises => true)
+    store_translations(:xx, 'hi'  => '@gender+tense{m+now:he is|f+past:she was} here!')
+    assert_equal 'he is here!',   I18n.t('hi', :gender => :m, :locale => :xx, :inflector_raises => true)
+    assert_equal 'she was here!', I18n.t('hi', :gender => :f, :tense => :past, :locale => :xx, :inflector_raises => true)
+    assert_equal 'she was here!', I18n.t('hi', :gender => :feminine, :tense => :past, :locale => :xx, :inflector_raises => true)
+    store_translations(:xx, 'hi' => '@gender+tense{masculine+now:he is|feminine+past:she was}')
+    assert_equal 'he is',   I18n.t('hi', :gender => :m, :tense => :now, :inflector_aliased_patterns => true, :locale => :xx)
+    assert_equal 'she was', I18n.t('hi', :gender => :f, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{masculine+now:he is|feminine+past:she was}')
+    assert_equal 'she was', I18n.t('hi', :gender => :f, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{masculine+now:he is|feminine+past:she was}')
+    assert_equal 'she was', I18n.t('hi', :gender => :feminine, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{m+now:~|f+past:she was}')
+    assert_equal 'male now', I18n.t('hi', :gender => :m, :tense => :now, :locale => :xx)
   end
 
   test "backend inflector translate: raises I18n::ComplexPatternMalformed for malformed complex patterns" do
     store_translations(:xx, :i18n => { :inflections => { :@tense => { :now => 'now', :past => 'later', :default => 'now' }}})
     store_translations(:xx, 'hi' => '@gender+tense{now:he is|f+past:she was} here!')
     assert_raise I18n::ComplexPatternMalformed do
-      I18n.t('hi', :gender => :m, :person => :you, :locale => :xx)
+      I18n.t('hi', :gender => :m, :person => :you, :locale => :xx, :inflector_raises => true)
     end
   end
 
   test "backend inflector translate: works with loud tokens" do
     store_translations(:xx, 'hi' => 'Dear @{m:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{masculine:~|n:You|All}!')
+    assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx, :inflector_aliased_patterns => true)
     store_translations(:xx, 'hi' => 'Dear @{f,m:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{!n:~|n:You|All}!')
@@ -310,6 +323,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :m,         :locale => :xx, :inflector_aliased_patterns => true)
     assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :masculine, :locale => :xx, :inflector_aliased_patterns => true)
     assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :f,         :locale => :xx, :inflector_aliased_patterns => true)
+    assert_equal 'Dear Lady!',  I18n.t('hi', :gender => :feminine,  :locale => :xx, :inflector_aliased_patterns => true)
     assert_equal 'Dear All!',   I18n.t('hi', :gender => :s,         :locale => :xx, :inflector_aliased_patterns => true)
     assert_equal 'Dear You!',   I18n.t('hi', :locale => :xx, :inflector_aliased_patterns => true)
     I18n.inflector.options.aliased_patterns = true
