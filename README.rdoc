@@ -54,7 +54,7 @@ which can be used to inflect some sentence or a word by more
 than one kind. That is be very helpful for highly inflected
 languages. Example:
 
-      welcome:  "Dear @gender+number{f+s:Lady|f+p:Ladies|m+s:Sir|m+p:Gentlemen|All}"
+  welcome:  "Dear @gender+number{f+s:Lady|f+p:Ladies|m+s:Sir|m+p:Gentlemen|All}"
 
 == Why?
 

@@ -68,7 +68,12 @@ module I18n
           return translated_string
         end
 
-        @inflector.interpolate(translated_string, locale, orig_options)
+        begin
+          @inflector.interpolate(translated_string, locale, orig_options)
+        rescue I18n::InflectionException => e
+          e.key = key
+          raise
+        end
       end
 
       # Stores translations in memory.

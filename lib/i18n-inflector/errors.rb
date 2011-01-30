@@ -14,9 +14,11 @@ module I18n
 
     attr_accessor :token
     attr_accessor :kind
+    attr_accessor :key
 
     def initialize(locale, token, kind)
       @locale, @token, @kind = locale, token, kind
+      @key = nil
       super()
     end
 
@@ -34,7 +36,8 @@ module I18n
     end
 
     def message
-      @pattern.nil? ? "" : "locale: #{@locale}, pattern: #{@pattern} - "
+      key = @key.nil? ? "" : "key: #{key}, "
+      @pattern.nil? ? "" : "locale: #{@locale}, #{key}pattern: #{@pattern} - "
     end
 
   end
@@ -46,7 +49,8 @@ module I18n
     attr_accessor :locale
 
     def message
-      "#{@locale}.i18n.inflections.#{@kind}: "
+      key = @key.nil? ? "" : ".#{key}"
+      "#{@locale}.i18n.inflections.#{@kind}#{key}: "
     end
 
   end
