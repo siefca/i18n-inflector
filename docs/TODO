@@ -1,16 +1,5 @@
 == Near future
 
-* add some simple cache that counts hits and removes lowest in case of fulfillment
-
-* add a switch that causes inflection arguments to be gathered and removed before using original
-  version of translate and then injected when interpolating happens (default value
-  for that switch should be true if there is I18n version 4 installed)
-
-  - not so good idea to turn it on by default since the same variable may be used to interpolate
-    inflections and variables
-
-* attach translation data name to raised errors
-
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
 
 == Distant future
