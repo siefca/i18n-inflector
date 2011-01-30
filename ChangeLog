@@ -1,3 +1,91 @@
+commit 0c77a0c49f32b3a20d1ad6fd6c16ff441e12d8d3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 05:56:50 2011 +0100
+
+    Added complex patterns support
+
+commit 67c0fc2acfe950d96752094fb42d87e9154d562c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 05:55:24 2011 +0100
+
+    Added lazy enumerators for arrays
+
+commit 6e1db292b9f49570780558b1b1d5a3e9aa833e3f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 04:14:52 2011 +0100
+
+    Options reading refactored: more efficient way of gathering global & local options in API methods
+
+commit b99e4a5b02a685ec0f3c210e00428a337c99082a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 04:09:42 2011 +0100
+
+    Error messages handling refactored: exceptions are more hierarchical and more DRY
+
+commit b9c35db66702d137f21a3ef8cc64caba59b20202
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 29 23:38:01 2011 +0100
+
+    Added some constants for future features
+
+commit d29026e54e5f0fea1f43fd5eb89b37808ed12e09
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jan 29 23:37:26 2011 +0100
+
+    Added abstract error reporting classes:
+    
+    - I18n::InflectionException,
+    - I18n::InflectionPatternException,
+    - I18n::InclectionConfigurationException.
+
+commit e88c43fccf877dd69ae25c2793f0da4e3103b31c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 28 03:50:17 2011 +0100
+
+    Bugfix: filtering reserved option names enabled :>
+
+commit 67f6a0c12cbbe4a7e6980b0b3d2f68e39b665dbf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 28 01:50:24 2011 +0100
+
+    Manifest.txt updated
+
+commit e624ff5e8102ad5bdd0279a428debaded911df8f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jan 28 01:49:37 2011 +0100
+
+    Interpolation method moved to I18n::Inflector::Interpolate, loud tokens documented, escaping fixed
+
+commit 25d9c41cf12c4cbfec237abe9dec7b1991df004a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 18:01:20 2011 +0100
+
+    Lists of escape strings are now kind of HSet
+
+commit 290ee7fb55aaca4dfe788f34fffb914660829cae
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 17:33:01 2011 +0100
+
+    Added support for loud tokens
+
+commit 7da2fcd563bdc6c9b8bc0475c4163e16860c27e4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 02:46:44 2011 +0100
+
+    Documentation fixes
+
+commit ceb547f1cc32690ff9ee1e6d5225dfe18119164f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 02:46:30 2011 +0100
+
+    Intermediate array removed when dumping hash from LazyHashEnumerator
+
+commit 50eff6c3ce7def1dddd2f840590f17c8a38c5b61
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Jan 27 02:26:30 2011 +0100
+
+    Fixed typo in README
+
 commit abe5a4570b80924c323dde65e30ba30be50446ce
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Thu Jan 27 01:30:54 2011 +0100

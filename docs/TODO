@@ -1,30 +1,24 @@
 == Near future
 
-* document loud tokens
+* document complex patterns
+
+* add some simple cache that counts hits and removes lowest in case of fulfillment
 
 * add a switch that causes inflection arguments to be gathered and removed before using original
   version of translate and then injected when interpolating happens (default value
   for that switch should be true if there is I18n version 4 installed)
 
   - not so good idea to turn it on by default since the same variable may be used to interpolate
-    inflections and for direct interpolation
+    inflections and variables
 
-* attach inflection key name to some raised errors
-
-* add some external iterators for tokens, aliases, kinds, true_tokens
+* attach translation data name to raised errors
 
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
 
 == Distant future
 
-* Combined patterns (!!!!!!!!!!!!)
-
-  - @person+time{i+now:am|i+past:was}
-  - @person+time{i+now:am|i+past:was|he,she,it+now:is}
-  - @g_sender+g_receiver{...} - for Hebrew for example
-
 * case-insensitivity switch for inflection options (?)
 
-* think about allowing negative matches to be AND-ed, e.g.: !m&!f:impersonal (?)
-  - that will double positive-matching syntax, and make it even less KISS
+* scoped kinds (e.g: person.singular, person.plural) and tokens inheritance
 
+* add some external iterators for tokens, aliases, kinds, true_tokens

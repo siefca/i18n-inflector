@@ -1,3 +1,24 @@
+=== 2.2.0 / 2011-0
+
+* major enhancements
+
+  * added loud tokens support
+  * added complex patterns support
+  
+* minor enhancements
+
+  * Refactored error reporting code
+  * Refactored options gathering code
+  * Removed intermediate array from LazyHashEnumerator#to_h
+  * Added I18n::Inflector::LazyArrayEnumerator class
+  * Added I18n::Inflector::HSet class for keeping collections of data
+  * Interpolation method moved to I18n::Inflector::Interpolate module
+
+* minor bugfixes
+
+  * Fixed interpolation routine when :excluded_defaults is on and a kind is strict
+  * Enabled filtering of reserved names in options
+
 === 2.1.0 / 2011-01-27
 
 * major enhancements
