@@ -230,7 +230,7 @@ module I18n
 
             # test for duplicate
             if subdb.has_token?(token, strict_kind)
-              raise I18n::DuplicatedInflectionToken.new(subdb.get_kind(token, strict_kind), orig_kind, token)
+              raise I18n::DuplicatedInflectionToken.new(locale, token, orig_kind, subdb.get_kind(token, strict_kind))
             end
 
             # validate token's name
@@ -264,7 +264,7 @@ module I18n
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           next unless tokens.has_key?(:default)
           if subdb.has_default_token?(kind)
-            raise I18n::DuplicatedInflectionToken.new(orig_kind, nil, :default)
+            raise I18n::DuplicatedInflectionToken.new(locale, :default, kind, orig_kind)
           end
           orig_target = tokens[:default]
           target = orig_target.to_s

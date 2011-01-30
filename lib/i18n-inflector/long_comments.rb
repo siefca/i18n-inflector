@@ -499,6 +499,7 @@ module I18n
   #   # => I18n::InvalidOptionForKind: option :gender required by the pattern
   #   #                                "@{m:Sir|f:Madam|Fallback}" was not found
   # 
+  # === Exception meanings
   # Here are the exceptions that may be raised when option +:raises+
   # is set to +true+:
   # 
@@ -515,6 +516,26 @@ module I18n
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
   # * {I18n::BadInflectionToken I18n::BadInflectionToken}
   # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
+  # 
+  # === Exception hierarchy
+  #   ArgumentError
+  #   |
+  #   |-- I18n::InflectionException
+  #       |
+  #       |-- I18n::InflectionPatternException
+  #       |   |
+  #       |   |-- I18n::InvalidInflectionToken
+  #       |   |-- I18n::MisplacedInflectionToken
+  #       |   |-- I18n::InvalidOptionForKind
+  #       |       |-- I18n::InflectionOptionNotFound
+  #       |       |-- I18n::InflectionOptionIncorrect
+  #       |
+  #       |-- I18n::InflectionConfigurationException
+  #           |
+  #           |-- I18n::DuplicatedInflectionToken
+  #           |-- I18n::BadInflectionAlias
+  #           |-- I18n::BadInflectionToken
+  # 
   module Inflector
 
     class API

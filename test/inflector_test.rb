@@ -73,18 +73,27 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector store_translations: raises I18n::BadInflectionAlias when bad alias is given" do
-     assert_raise I18n::BadInflectionAlias do
-       store_translations(:xx, :i18n => { :inflections => { :gender => { :o => '@nonexistant' }}})
-     end
-     assert_raise I18n::BadInflectionAlias do
-       store_translations(:xx, :i18n => { :inflections => { :gender => { :default => '@nonexistant' }}})
-     end
-      assert_raise I18n::BadInflectionAlias do
-        store_translations(:xx, :i18n => { :inflections => { :@gender => { :oh => '@nonex' }}})
-      end
-      assert_raise I18n::BadInflectionAlias do
-        store_translations(:xx, :i18n => { :inflections => { :@gender => { :default => '@nonex' }}})
-      end
+    assert_raise I18n::BadInflectionAlias do
+      store_translations(:xx, :i18n => { :inflections => { :gender => { :o => '@nonexistant' }}})
+    end
+  end
+
+  test "backend inflector store_translations: raises I18n::BadInflectionAlias when bad default is given" do
+    assert_raise I18n::BadInflectionAlias do
+      store_translations(:xx, :i18n => { :inflections => { :gender => { :default => '@nonexistant' }}})
+    end
+  end
+
+  test "backend inflector strict store_translations: raises I18n::BadInflectionAlias when bad alias is given" do
+    assert_raise I18n::BadInflectionAlias do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :oh => '@nonex' }}})
+    end
+  end
+
+  test "backend inflector strict store_translations: raises I18n::BadInflectionAlias when bad default is given" do
+    assert_raise I18n::BadInflectionAlias do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :default => '@nonex' }}})
+    end
   end
 
   test "backend inflector store_translations: raises I18n::BadInflectionToken when bad token is given" do

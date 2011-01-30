@@ -86,7 +86,7 @@ module I18n
             if ext_token.empty?
               # free text not found too? that should never happend.
               if ext_freetext.empty?
-                raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+                raise I18n::InvalidInflectionToken.new(locale, ext_pattern, ext_token) if raises
               end
               next
             end
@@ -95,7 +95,7 @@ module I18n
             ext_token.split(OPERATOR_MULTI).each do |t|
               # token name corrupted
               if t.empty?
-                raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
+                raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
                 next
               end
 
@@ -103,7 +103,7 @@ module I18n
               if t[0..0] == OPERATOR_NOT
                 t = t[1..-1]
                 if t.empty?
-                  raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
+                  raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
                   next
                 end
                 t = t.to_sym
@@ -117,7 +117,7 @@ module I18n
               # get kind for that token
               kind  = subdb.get_kind(t, strict_kind)
               if kind.nil?
-                raise I18n::InvalidInflectionToken.new(ext_pattern, t) if raises
+                raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
                 next
               end
 
@@ -129,7 +129,7 @@ module I18n
               elsif parsed_kind != kind
                 # tokens of different kinds in one regular (not named) pattern are prohibited
                 if raises
-                  raise I18n::MisplacedInflectionToken.new(ext_pattern, t, parsed_symbol)
+                  raise I18n::MisplacedInflectionToken.new(locale, ext_pattern, t, parsed_symbol)
                 end
                 next
               end
@@ -140,7 +140,7 @@ module I18n
 
             # self-explanatory
             if (tokens.empty? && negatives.empty?)
-              raise I18n::InvalidInflectionToken.new(ext_pattern, ext_token) if raises
+              raise I18n::InvalidInflectionToken.new(locale, ext_pattern, ext_token) if raises
             end
 
             # try @-style option for strict kind, fallback to regular if not found
@@ -174,7 +174,7 @@ module I18n
             end
 
             # if the option is still unknown or bad
-            # raise an exception
+            # then raise an exception
             if option.nil?
               if raises
                 if oname.nil?
@@ -184,7 +184,7 @@ module I18n
                 else
                   ex          = InflectionOptionIncorrect
                 end
-                raise ex.new(ext_pattern, oname, ext_token, orig_option)
+                raise ex.new(locale, ext_pattern, ext_token, oname, orig_option)
               end
               next
             end

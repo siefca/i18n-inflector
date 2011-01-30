@@ -11,21 +11,30 @@ module I18n
   # @abstract It is a parent class for all exceptions
   #   related to inflections.
   class InflectionException < ArgumentError
+
+    attr_accessor :token
+    attr_accessor :kind
+
+    def initialize(locale, token, kind)
+      @locale, @token, @kind = locale, token, kind
+      super()
+    end
+
   end
 
   # @abstract It is a parent class for all exceptions
   #   related to inflection patterns that are processed.
   class InflectionPatternException < InflectionException
 
-    attr_reader :pattern
-    attr_reader :token
-    attr_reader :kind
+    attr_accessor :pattern
 
-    def initialize(*args)
-      @pattern  ||= nil
-      @token    ||= nil
-      @kind     ||= nil
-      super
+    def initialize(locale, pattern, token, kind)
+      super(locale, token, kind)
+      @pattern = pattern
+    end
+
+    def message
+      @pattern.nil? ? "" : "locale: #{@locale}, pattern: #{@pattern} - "
     end
 
   end
@@ -34,13 +43,10 @@ module I18n
   #   related to configuration data of inflections that is processed.
   class InflectionConfigurationException < InflectionException
 
-    attr_reader :token
-    attr_reader :kind
+    attr_accessor :locale
 
-    def initialize(*args)
-      @token  ||= nil
-      @kind   ||= nil
-      super
+    def message
+      "#{@locale}.i18n.inflections.#{@kind}: "
     end
 
   end
@@ -49,12 +55,11 @@ module I18n
   #   inflection option is bad or missing.
   class InvalidOptionForKind < InflectionPatternException
 
-    attr_reader :option
+    attr_accessor :option
 
-    def initialize(pattern, kind, token, option)
-      @pattern, @kind, @token, @option, @option_present = pattern, kind, token, option
-      @message ||= ""
-      super(@message)
+    def initialize(locale, pattern, token, kind, option)
+      super(locale, pattern, token, kind)
+      @option = option
     end
 
   end
@@ -63,18 +68,17 @@ module I18n
   # is determined by looking at token placed in a pattern.
   class InflectionOptionNotFound < InvalidOptionForKind
 
-    def initialize(pattern, kind, token, option=nil)
-      kind = kind.to_s
+    def message
+      kind = @kind.to_s
       unless kind.empty?
         if kind[0..0] == I18n::Inflector::NAMED_MARKER
-          kind = ":#{kind} (or :#{kind[1..-1]})"
+          kindmsg = ":#{kind} (or :#{kind[1..-1]})"
         else
-          kind = kind.to_sym.inspect
+          kindmsg = kind.to_sym.inspect
         end
       end
-      @message = "option #{kind} required by the " +
-                 "pattern #{pattern.inspect} was not found"  
-      super
+      super +
+      "required option #{kindmsg} was not found"
     end
 
   end
@@ -83,21 +87,25 @@ module I18n
   # for a kind, is +nil+, empty or doesn't match any acceptable tokens.
   class InflectionOptionIncorrect < InvalidOptionForKind
 
-    def initialize(pattern, kind, token, option)
-      @message = "value #{option.inspect} of option #{kind.inspect} required by " +
-                 "#{pattern.inspect} does not match any token"
-      super
+    def message
+      super +
+      "required value #{@option.inspect} of option #{@kind.inspect} " \
+      "does not match any token"
     end
 
   end
 
-  # This is raised when token given in pattern is invalid (empty or has no
+  # This is raised when a token given in a pattern is invalid (empty or has no
   # kind assigned).
   class InvalidInflectionToken < InflectionPatternException
-    def initialize(pattern, token, kind=nil)
-      @pattern, @token, @kind = pattern, token, kind
-      super "token #{token.inspect} used in translation " + 
-            "pattern #{pattern.inspect} is invalid"
+
+    def initialize(locale, pattern, token, kind=nil)
+      super(locale, pattern, token, kind)
+    end
+
+    def message
+      badkind = !@token.to_s.empty? && kind.nil? ? " (kind mismatch)" : ""
+      super + "token #{@token.inspect} is invalid" + badkind
     end
 
   end
@@ -106,10 +114,14 @@ module I18n
   # an assumed kind determined by reading previous tokens from that pattern.
   class MisplacedInflectionToken < InflectionPatternException
 
-    def initialize(pattern, token, kind)
-      @pattern, @token, @kind = pattern, token, kind
-      super "inflection token #{token.inspect} from pattern #{pattern.inspect} " +
-            "is not of the expected kind #{kind.inspect}"
+    def initialize(locale, pattern, token, kind)
+      super(locale, pattern, token, kind)
+    end
+
+    def message
+      super +
+      "token #{@token.inspect} "   \
+      "is not of the expected kind #{@kind.inspect}"
     end
 
   end
@@ -118,13 +130,17 @@ module I18n
   # inflections tree of translation data.
   class DuplicatedInflectionToken < InflectionConfigurationException
 
-    attr_reader :original_kind
+    attr_accessor :original_kind
 
-    def initialize(original_kind, kind, token)
-      @original_kind, @kind, @token = original_kind, kind, token
-      and_cannot = kind.nil? ? "" : "and cannot be used with kind #{kind.inspect}"
-      super "inflection token #{token.inspect} was already assigned " +
-            "to kind #{original_kind} " + and_cannot
+    def initialize(locale, token, kind, original_kind)
+      super(locale, token, kind)
+      @original_kind = original_kind
+    end
+
+    def message
+      super +
+      "token #{@token.inspect} " \
+      "was already assigned to the kind #{@original_kind.inspect}"
     end
 
   end
@@ -134,15 +150,18 @@ module I18n
   # to a non-existent token.
   class BadInflectionAlias < InflectionConfigurationException
 
-    attr_reader :locale, :pointer
+    attr_accessor :pointer
 
     def initialize(locale, token, kind, pointer)
-      @locale, @token, @kind, @pointer = locale, token, kind, pointer
-      what = token == :default ? "default token" : "alias"
-      lang = locale.nil? ? "" : "for language #{locale.inspect} "
-      kinn = kind.nil? ?   "" : "of kind #{kind.inspect} "
-      super "the #{what} #{token.inspect} " + kinn + lang +
-            "points to an unknown token #{pointer.inspect}"
+      super(locale, token, kind)
+      @pointer = pointer
+    end
+
+    def message
+      what = token == :default ? "default token" : "alias #{@token.inspect}"
+      super +
+      "the #{what} " \
+      "points to an unknown token #{@pointer.inspect}"
     end
 
   end
@@ -151,17 +170,22 @@ module I18n
   # includes an empty name or a name containing prohibited characters.
   class BadInflectionToken < InflectionConfigurationException
 
-    attr_reader :locale, :description
+    attr_accessor :description
 
     def initialize(locale, token, kind=nil, description=nil)
-      @locale, @token, @kind, @description = locale, token, kind, description
-      kinn = kind.nil? ? "" : "of kind #{kind.inspect} "
-      if description.nil?
-        super "Inflection token #{token.inspect} " + kinn +
-              "for language #{locale.inspect} has a bad name"
+      super(locale, token, kind)
+      @description = description
+    end
+
+    def message
+      if @description.nil?
+        super +
+        "Inflection token #{@token.inspect} " \
+        "has a bad name"
       else
-        super "Inflection token #{token.inspect} " + kinn +
-              "for language #{locale.inspect} has a bad description #{description.inspect}"
+        super +
+        "Inflection token #{@token.inspect} " \
+        "has a bad description #{@description.inspect}"
       end
     end
 
