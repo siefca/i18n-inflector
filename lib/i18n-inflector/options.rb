@@ -24,6 +24,11 @@ module I18n
     #   translate('welcome', :inflector_<option_name> => value)
     class InflectionOptions
 
+      # This reader allows to access known options map.
+      # @api public
+      # @return [Hash] map the known options map
+      attr_reader :known
+
       # This is a switch that enables extended error reporting. When it's enabled then
       # errors are raised in case of unknown or empty tokens present in a pattern
       # or in options. This switch is by default set to +false+.
@@ -182,6 +187,7 @@ module I18n
       # This method initializes all internal structures.
       def initialize
         reset
+        generate_known_options
       end
 
       # This method resets all options to their default values.
@@ -192,6 +198,18 @@ module I18n
         @unknown_defaults   = true
         @aliased_patterns   = false
         @raises             = false
+        nil
+      end
+
+      # This method generates known options map
+      # so their names are easy to access.
+      def generate_known_options
+        @known = Hash.new
+        instance_variables.map do |opt|
+          next if opt == :known
+          name = opt.to_s[1..-1]
+          @known[name.to_sym] = ('inflector_' + name).to_sym
+        end
         nil
       end
 

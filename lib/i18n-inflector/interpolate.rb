@@ -9,7 +9,7 @@
 
 module I18n
   module Inflector
-    
+
     # This module contains methods for interpolating
     # inflection patterns.
     module Interpolate
@@ -31,12 +31,26 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
+        read_options!(options)
+        interpolate_core(string, locale, options)
+      end
+
+      private
+
+      # @private
+      def read_options!(options)
+        @options.known.each_pair do |name, long_name|
+          options[long_name] = @options.method(name).call unless options.has_key?(long_name)
+        end
+      end
+
+      # @private
+      def interpolate_core(string, locale, options)
         used_kinds        = options.except(*INFLECTOR_RESERVED_KEYS)
-        sw, op            = @options, options
-        raises            = (s=op.delete :inflector_raises).nil?            ? sw.raises            : s
-        aliased_patterns  = (s=op.delete :inflector_aliased_patterns).nil?  ? sw.aliased_patterns  : s
-        unknown_defaults  = (s=op.delete :inflector_unknown_defaults).nil?  ? sw.unknown_defaults  : s
-        excluded_defaults = (s=op.delete :inflector_excluded_defaults).nil? ? sw.excluded_defaults : s
+        raises            = options[:inflector_raises]
+        aliased_patterns  = options[:inflector_aliased_patterns]
+        unknown_defaults  = options[:inflector_unknown_defaults]
+        excluded_defaults = options[:inflector_excluded_defaults]
 
         idb               = @idb[locale]
         idb_strict        = @idb_strict[locale]
