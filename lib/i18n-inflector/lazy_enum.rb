@@ -12,7 +12,7 @@ module I18n
     if RUBY_VERSION.gsub(/\D/,'')[0..1].to_i < 19
       require 'enumerator' rescue nil
 
-      class LazyHashEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
+      class LazyEnumerator < Object.const_defined?(:Enumerator) ? Enumerator : Enumerable::Enumerator
 
         # This class allows to initialize the Enumerator with a block
         class Yielder
@@ -46,18 +46,54 @@ module I18n
           alias_method :with_object, :each_with_object
         end
 
-      end # class LazyHashEnumerator for ruby18
+      end # class LazyEnumerator for ruby18
 
     else # if RUBY_VERSION >= 1.9.0
 
-      class LazyHashEnumerator < Enumerator
+      class LazyEnumerator < Enumerator
+      end
+
+    end
+PATTERN_MARKER
+    # This class implements simple enumerators for arrays
+    # that allow to do lazy operations on them.
+    class LazyArrayEnumerator < LazyEnumerator
+
+      # Mapping enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      def map(&block)
+        LazyArrayEnumerator.new do |yielder|
+          self.each do |v|
+            yielder.yield(block.call(v))
+          end
+        end
+      end
+
+      # Array selecting enumerator
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def select(&block)
+        LazyArrayEnumerator.new do |yielder|
+          self.each do |v|
+            yielder.yield(v) if block.call(v)
+          end
+        end
+      end
+
+      # Array rejecting enumerator
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def reject(&block)
+        LazyArrayEnumerator.new do |yielder|
+          self.each do |v|
+            yielder.yield(v) unless block.call(v)
+          end
+        end
       end
 
     end
 
     # This class implements simple enumerators for hashes
     # that allow to do lazy operations on them.
-    class LazyHashEnumerator
+    class LazyHashEnumerator < LazyEnumerator
 
       # Creates a Hash kind of object by collecting all
       # data from enumerated collection.
