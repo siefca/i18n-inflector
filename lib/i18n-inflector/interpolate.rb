@@ -5,7 +5,7 @@
 # License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
 # 
 # This file contains I18n::Inflector::Interpolate module,
-# which is included in API.
+# which is included in the API.
 
 module I18n
   module Inflector
@@ -80,10 +80,24 @@ module I18n
             subdb         = idb
           else
             parsed_symbol = (NAMED_MARKER + strict_kind).to_sym
-            strict_kind   = strict_kind.to_sym
-            parsed_kind   = strict_kind
-            subdb         = idb_strict
-            default_token = subdb.get_default_token(parsed_kind)
+
+            # Complex markers processing
+            if strict_kind.include?(COMPLEX_MARKER)
+              begin
+                ext_value = interpolate_complex(strict_kind,
+                                                 pattern_content,
+                                                 locale, options)
+              rescue I18n::InflectionPatternException => e
+                e.pattern = ext_pattern
+                raise
+              end
+              found = pattern_content = "" # disable further processing
+            else
+              strict_kind   = strict_kind.to_sym
+              parsed_kind   = strict_kind
+              subdb         = idb_strict
+              default_token = subdb.get_default_token(parsed_kind)
+            end
           end
 
           # process pattern content's
@@ -245,7 +259,58 @@ module I18n
         end # single pattern processing
 
       end # def interpolate
-      
+
+      # This is a helper that reduces a complex inflection pattern
+      # by producing equivalent of regular patterns of it and
+      # by interpolating them using {#interpolate} method. After that
+      # the internal expectations matrix is used to gather
+      # atomic results and eventually return the value for matching
+      # combination.
+      # 
+      # @param [String] complex_kind the complex kind (many kinds separated
+      #   by the {COMPLEX_MARKER})
+      # @param [String] content the content of the processed pattern
+      # @param [Symbol] locale the locale to use
+      # @param [Hash] options the options
+      # @return [String] the interpolated pattern
+      def interpolate_complex(complex_kind, content, locale, options)
+        return '' if (content.nil? || content.empty?)
+        free_text    = ''
+        expectations = Hash.new
+
+        # This functional block splits complex pattern
+        # into a basic patterns and calls interpolate
+        # for each of them. Its side effect is an expectations
+        # hash that keeps configuration of the expected results
+        # for combined tokens. I wish Ruby had lazy variants
+        # of most hash and array operations..
+        begin
+          results = LazyArrayEnumerator.new(
+            content.scan(TOKENS).
+            map do |tokens, value, free|
+              if tokens.nil?
+                free_text = free unless free.nil?
+                next
+              end
+              symtokens = tokens.to_sym
+              expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
+              tokens.split(COMPLEX_MARKER)
+            end.compact.unshift(complex_kind.split(COMPLEX_MARKER)).transpose
+            ).
+            map do |tokens|
+              PATTERN_MARKER + tokens.shift +
+              '{' + tokens.uniq.map{|token| token + ':' + token}.join('|') + '}'
+            end.
+            map do |pattern|
+              interpolate_core(pattern, locale, options)
+            end.
+            to_a.join(COMPLEX_MARKER).to_sym
+        rescue IndexError
+          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind)
+        end
+        expectations[results] || free_text
+      end # def interpolate_complex
+
     end # module Interpolate
   end # module Inflector
 end # module I18n

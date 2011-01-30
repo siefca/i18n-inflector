@@ -120,8 +120,25 @@ module I18n
 
     def message
       super +
-      "token #{@token.inspect} "   \
+      "token #{@token.inspect} " \
       "is not of the expected kind #{@kind.inspect}"
+    end
+
+  end
+
+  # This is raised when a complex inflection pattern is malformed
+  # and cannot be reduced to regular patterns.
+  class ComplexPatternMalformed < InflectionPatternException
+
+    def initialize(locale, pattern, token, complex_kind)
+      unless pattern.include?(I18n::Inflector::PATTERN_MARKER)
+        pattern = I18n::Inflector::PATTERN_MARKER + "#{complex_kind}{#{pattern}}"
+      end
+      super(locale, pattern, token, complex_kind)
+    end
+
+    def message
+      super + "pattern is malformed; token count differs from kind count"
     end
 
   end

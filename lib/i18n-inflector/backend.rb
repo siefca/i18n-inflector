@@ -64,7 +64,7 @@ module I18n
           return translated_string.gsub(I18n::Inflector::PATTERN,'')
         end
 
-        unless translated_string.include?(I18n::Inflector::FAST_MATCHER)
+        unless translated_string.include?(I18n::Inflector::PATTERN_MARKER)
           return translated_string
         end
 

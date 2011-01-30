@@ -520,21 +520,22 @@ module I18n
   # === Exception hierarchy
   #   ArgumentError
   #   |
-  #   |-- I18n::InflectionException
+  #   `-- I18n::InflectionException
   #       |
   #       |-- I18n::InflectionPatternException
   #       |   |
   #       |   |-- I18n::InvalidInflectionToken
   #       |   |-- I18n::MisplacedInflectionToken
-  #       |   |-- I18n::InvalidOptionForKind
+  #       |   |-- I18n::ComplexPatternMalformed
+  #       |   `-- I18n::InvalidOptionForKind
   #       |       |-- I18n::InflectionOptionNotFound
-  #       |       |-- I18n::InflectionOptionIncorrect
+  #       |       `-- I18n::InflectionOptionIncorrect
   #       |
-  #       |-- I18n::InflectionConfigurationException
+  #       `-- I18n::InflectionConfigurationException
   #           |
   #           |-- I18n::DuplicatedInflectionToken
   #           |-- I18n::BadInflectionAlias
-  #           |-- I18n::BadInflectionToken
+  #           `-- I18n::BadInflectionToken
   # 
   module Inflector
 

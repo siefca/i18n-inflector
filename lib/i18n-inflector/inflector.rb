@@ -36,7 +36,7 @@ module I18n
 
     # Contains <tt>@</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
-    FAST_MATCHER    = '@'
+    PATTERN_MARKER  = '@'
 
     # Contains a regular expression that catches patterns.
     PATTERN         = /(.?)@([^\{]*)\{([^\}]+)\}/
@@ -47,8 +47,8 @@ module I18n
     # Contains a symbol that indicates a named pattern.
     NAMED_MARKER    = '@'
 
-    # Contains a symbol used to mark patterns as combined.
-    COMBINED_MARKER = '+'
+    # Contains a symbol used to mark patterns as complex.
+    COMPLEX_MARKER = '+'
 
     # Conatins a symbol used to separate multiple tokens.
     OPERATOR_MULTI  = ','
@@ -76,9 +76,6 @@ module I18n
 
     # Max. number of variants of patterns (created by different options).
     CACHE_VAR       = 3
-
-    # Contains known interpolation options that may be passed to translate.
-    KNOWN_OPTIONS   = [:raises, :aliased_patterns, :unknown_defaults, :excluded_defaults]
 
     # Reserved keys
     INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
