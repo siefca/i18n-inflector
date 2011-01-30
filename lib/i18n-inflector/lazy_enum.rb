@@ -54,7 +54,7 @@ module I18n
       end
 
     end
-PATTERN_MARKER
+
     # This class implements simple enumerators for arrays
     # that allow to do lazy operations on them.
     class LazyArrayEnumerator < LazyEnumerator
