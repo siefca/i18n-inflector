@@ -1,6 +1,8 @@
 == Near future
 
-* allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
+* validate reserved symbols (some tests)
+
+* allow different descriptions for aliases point to the same token, e.g.: now: @present ="description"
 
 == Distant future
 

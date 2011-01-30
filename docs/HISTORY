@@ -4,6 +4,7 @@
 
   * Added loud tokens support
   * Added complex patterns support
+  * Added :cache_aware switch
 
 * minor enhancements
 

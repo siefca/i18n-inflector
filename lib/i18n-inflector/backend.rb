@@ -55,10 +55,20 @@ module I18n
       #   and the result is processed by {I18n::Inflector::API#interpolate}
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
-        orig_options = options.dup
-        @inflector.options.prepare_for_translate!(options)
-        translated_string = super
 
+        cached = options.has_key?(:inflector_cache_aware) ?
+                 options[:inflector_cache_aware] : @inflector.options.cache_aware
+
+        cached = true
+        if cached
+          interpolate_options = options
+          @inflector.options.prepare_options!(options)
+        else
+          interpolate_options = options.dup
+          @inflector.options.clean_for_translate!(options)
+        end
+
+        translated_string = super
         return translated_string if (locale.nil? || locale.to_s.empty?)
 
         unless @inflector.inflected_locale?(locale)
@@ -70,7 +80,8 @@ module I18n
         end
 
         begin
-          @inflector.interpolate(translated_string, locale, orig_options)
+          @inflector.options.prepare_options!(interpolate_options) unless cached
+          @inflector.interpolate(translated_string, locale, interpolate_options)
         rescue I18n::InflectionException => e
           e.key = key
           raise

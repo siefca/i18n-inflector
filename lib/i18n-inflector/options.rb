@@ -24,6 +24,33 @@ module I18n
     #   translate('welcome', :inflector_<option_name> => value)
     class InflectionOptions
 
+      # This switch enables cache-aware mode. In that mode inflection
+      # options and flags are evaluated before calling original translate
+      # method and all options are passed to that method. Because options
+      # preparation for inflection methods is explicite (any missing switches
+      # and their default values are added to options) then original
+      # translate (or proxy caching method) will receive even those options
+      # that might have been changed globally.
+      # 
+      # Caching modules for I18n may use options passed to the translate
+      # method (if they are plugged in before inflector) for key
+      # transformation since the inflection options may influence
+      # the interpolation process and therefore the resulting string.
+      # 
+      # If however, the caching variant of the translate method is
+      # positioned before inflected variant in methods chain, then
+      # the only way of knowing all the settings by caching routine is to call
+      # <tt>options.options.prepare_options!(options)</tt> on the used backend,
+      # for example:
+      #   I18n.backend.inflector.options.prepare(options)
+      # That will alter the +options+ data so they will contain all switches
+      # and values.
+      # 
+      # @api public
+      # @return [Boolean] state of the switch
+      # @param [Boolean] state +true+ enables, +false+ disables this switch
+      attr_accessor :cache_aware
+
       # This is a switch that enables extended error reporting. When it's enabled then
       # errors are raised in case of unknown or empty tokens present in a pattern
       # or in options. This switch is by default set to +false+.
@@ -144,7 +171,7 @@ module I18n
       # When this switch is set to +true+ then inflector falls back to the default
       # token for a kind if the given inflection option is correct but doesn't exist in a pattern.
       # 
-      # There might happend that the inflection option
+      # There might happen that the inflection option
       # given to {#translate} method will contain some proper token, but that token
       # will not be present in a processed pattern. Normally an empty string will
       # be generated from such a pattern or a free text (if a local fallback is present
@@ -189,9 +216,10 @@ module I18n
       # 
       # @return [void]
       def reset
-        @excluded_defaults  = false
         @unknown_defaults   = true
+        @excluded_defaults  = false
         @aliased_patterns   = false
+        @cache_aware        = false
         @raises             = false
         nil
       end
@@ -219,7 +247,7 @@ module I18n
       # @note It modifies the given object.
       # @param [Hash] options the given options
       # @return [Hash] the given options
-      def prepare_for_translate!(options)
+      def clean_for_translate!(options)
         @known.each { |name,long| options.delete long }
         options
       end

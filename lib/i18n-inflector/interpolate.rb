@@ -29,9 +29,11 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#raises})
       # @option options [Boolean] :inflector_aliased_patterns (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
+      # @option options [Boolean] :inflector_cache_aware (false) local switch
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#cache_aware})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
-        interpolate_core( string, locale, @options.prepare_options!(options) )
+        interpolate_core(string, locale, options)
       end
 
       private
