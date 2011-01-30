@@ -45,6 +45,7 @@ module I18n
         @tokens       = Hash.new(DUMMY_TOKENS)
         @lazy_tokens  = Hash.new(DUMMY_T_LAZY)
         @defaults     = Hash.new
+        @known_kinds  = nil
         @locale       = locale
       end
 
@@ -82,6 +83,7 @@ module I18n
         kind      = kind.to_sym
         kind_tree = @tokens[kind]
         if kind_tree.equal?(DUMMY_TOKENS)
+          @known_kinds = nil
           kind_tree = @tokens[kind] = Hash.new(DUMMY_TOKEN)
           @lazy_tokens[kind] = LazyHashEnumerator.new(kind_tree)
         end
@@ -252,7 +254,7 @@ module I18n
       # @return [Array<Symbol>] an array containing all the known strict
       #   kinds
       def get_kinds
-        @tokens.keys
+        @known_kinds ||= @tokens.keys
       end
 
       # Reads the default token of a strict kind.

@@ -22,6 +22,7 @@ module I18n
         @kinds          = Hash.new(false)
         @tokens         = Hash.new(DUMMY_TOKEN)
         @defaults       = Hash.new
+        @known_kinds    = nil
         @lazy_tokens    = LazyHashEnumerator.new(@tokens)
         @locale         = locale
       end
@@ -74,6 +75,7 @@ module I18n
         @tokens[token][:kind]         = kind.to_sym
         @tokens[token][:description]  = description.to_s
         @kinds[kind] = true
+        @known_kinds = nil
       end
 
       # Tests if the token is a true token.
@@ -319,7 +321,7 @@ module I18n
       # 
       # @return [Array<Symbol>] an array containing all the known kinds
       def get_kinds
-        @kinds.keys
+        @known_kinds ||= @kinds.keys
       end
 
       # Reads the default token of a kind.
