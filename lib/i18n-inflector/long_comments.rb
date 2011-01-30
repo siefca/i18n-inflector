@@ -10,14 +10,15 @@
 # 
 
 module I18n
-  # @version 2.1
+  # @version 2.2
   # This module contains inflection classes and modules for enabling
   # the inflection support in I18n translations.
   # It is used by the module called {I18n::Backend::Inflector}
   # that overwrites the Simple backend translate method
-  # so that it will interpolate additional inflection tokens present
-  # in translations. These tokens may appear in *patterns* which
-  # are contained within <tt>@{</tt> and <tt>}</tt> symbols.
+  # so that it will interpolate additional inflection data present
+  # in translations. That data may appear in *patterns*
+  # contained within <tt>@{</tt> and <tt>}</tt> symbols. Each pattern
+  # consist of *tokens* and respective *values*.
   # 
   # == Usage
   #   require 'i18-inflector'
@@ -167,132 +168,6 @@ module I18n
   # are *descriptions* which are not used by interpolation routines
   # but might be helpful (e.g. in UI). For obvious reasons you cannot
   # describe aliases.
-  # 
-  # == Named patterns
-  # 
-  # A named pattern is a pattern that contains name of a kind
-  # that tokens from a pattern are assigned to. It looks like:
-  # 
-  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
-  # 
-  # === Configuring named patterns
-  # 
-  # To recognize tokens present in named patterns,
-  # inflector uses keys grouped in the scope called +inflections+
-  # for the given locale. For instance (YAML format):
-  #   en:
-  #     i18n:
-  #       inflections:
-  #         @gender:
-  #           f:      "female"
-  #           woman:  @f
-  #           default: f
-  # 
-  # Elements in the example above are:
-  # * +en+: language
-  # * +i18n+: configuration scope
-  # * +inflections+: inflections configuration scope
-  # * +gender+: <bb>strict kind</bb> scope
-  # * +f+: inflection token
-  # * <tt>"female"</tt>: token's description
-  # * +woman+: inflection alias
-  # * <tt>@f</tt>: pointer to real token
-  # * +default+: default token for a strict kind +gender+
-  # 
-  # === Strict kinds
-  # 
-  # In order to handle named patterns properly a new data structure
-  # is used. It is called the <b>strict kind</b>. Strict kinds are defined
-  # in a configuration in a similar way the regular kinds are but
-  # tokens assigned to them may have the same names across a whole
-  # configuration. (Note that tokens of the same strict kind should still
-  # be unique.) That implies a requirement of passing the
-  # identifier of a kind when referring to such tokens.
-  # 
-  # Here is the example configuration using strict kinds:
-  # 
-  #   en:
-  #     i18n:
-  #       inflections:
-  #         @gender:
-  #           f:      "female"
-  #           m:      "male"
-  #           n:      "neuter"
-  #           woman:  @f
-  #           man:    @m
-  #           default: n
-  #         @title:
-  #           s:      "sir"
-  #           l:      "lady"
-  #           u:      "you"
-  #           m:      @s
-  #           f:      @l
-  #           default: u
-  # 
-  # The only thing that syntactically distinguishes strict kinds
-  # from regular kinds is a presence of the +@+ symbol.
-  # 
-  # You can mix regular and strict kinds having the same names.
-  # The proper class of kind will be picked up by interpolation
-  # method easily, since the first mentioned class uses
-  # patterns that are not named, and the second uses named patterns.
-  # 
-  # ==== Strict kinds in options
-  # 
-  # The interpolation routine recognizes strict kinds passed as
-  # options in almost the same way that it does it for regular
-  # kinds. The only difference is that you can override usage
-  # of a regular kind inflection option (if there is any) by
-  # putting a strict kind option with name prefixed by +@+ symbol.
-  # The inflection options starting with this symbol have
-  # precedence over inflection options without it;
-  # that is of course only true for strict kinds and has any effect
-  # only when both options describing the same kind are present.
-  # 
-  # In other words: interpolation routine is looking for
-  # strict kinds in inflection options using their names
-  # with +@+ in front. When that fails it falls back to
-  # trying an option named like the strict kind but without
-  # the +@+ symbol. Examples:
-  # 
-  #  I18n.translate(welcome, :gender => :m, :@gender => :f)
-  #  # the :f will be picked for the strict kind gender
-  #  
-  #  I18n.translate(welcome, :@gender => :f)
-  #  # the :f will be picked for the strict kind gender
-  #  
-  #  I18n.translate(welcome, :gender => :f)
-  #  # the :f will be picked for the strict kind gender
-  # 
-  # In the example above we assume that +welcome+ is defined
-  # like that:
-  # 
-  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
-  # 
-  # Note that for regular kinds the option named <tt>:@gender</tt>
-  # will have no meaning.
-  # 
-  # ==== Note for developers
-  # 
-  # Strict kinds that are used to handle named patterns
-  # are internally stored in a different database and handled by
-  # similar but different API methods than regular kinds. However
-  # most of the {I18n::Inflector::API} methods are also aware of strict kinds
-  # and will call proper methods oprating on strict inflections
-  # data when the +@+ symbol is detected at the beginning of
-  # the identifier of a kind passed as an argument. For example:
-  # 
-  #   I18n.inflector.has_token?(:m, :@gender)
-  # 
-  # will effectively call:
-  # 
-  #  I18n.inflector.strict.has_token?(:m, :gender)
-  # 
-  # As you can see above, to access {API_Strict} methods for strict kinds
-  # (and strict kinds data) only, associated with default I18n backend,
-  # use:
-  # 
-  #   I18n.inflector.strict
   # 
   # == Interpolation
   # The value of each token present in a pattern is to be picked by the interpolation
@@ -484,6 +359,190 @@ module I18n
   #   I18n.t('welcome', :gender => :m, :locale => :xx)
   #   # => This is the @{pattern}!
   # 
+  # == Named patterns
+  # 
+  # A named pattern is a pattern that contains name of a kind
+  # that tokens from a pattern are assigned to. It looks like:
+  # 
+  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
+  # 
+  # === Configuring named patterns
+  # To recognize tokens present in named patterns,
+  # inflector uses keys grouped in the scope called +inflections+
+  # for the given locale. For instance (YAML format):
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         @gender:
+  #           f:      "female"
+  #           woman:  @f
+  #           default: f
+  # 
+  # Elements in the example above are:
+  # * +en+: language
+  # * +i18n+: configuration scope
+  # * +inflections+: inflections configuration scope
+  # * +gender+: <bb>strict kind</bb> scope
+  # * +f+: inflection token
+  # * <tt>"female"</tt>: token's description
+  # * +woman+: inflection alias
+  # * <tt>@f</tt>: pointer to real token
+  # * +default+: default token for a strict kind +gender+
+  # 
+  # === Strict kinds
+  # 
+  # In order to handle named patterns properly a new data structure
+  # is used. It is called the <b>strict kind</b>. Strict kinds are defined
+  # in a configuration in a similar way the regular kinds are but
+  # tokens assigned to them may have the same names across a whole
+  # configuration. (Note that tokens of the same strict kind should still
+  # be unique.) That implies a requirement of passing the
+  # identifier of a kind when referring to such tokens.
+  # 
+  # Here is the example configuration using strict kinds:
+  # 
+  #   en:
+  #     i18n:
+  #       inflections:
+  #         @gender:
+  #           f:      "female"
+  #           m:      "male"
+  #           n:      "neuter"
+  #           woman:  @f
+  #           man:    @m
+  #           default: n
+  #         @title:
+  #           s:      "sir"
+  #           l:      "lady"
+  #           u:      "you"
+  #           m:      @s
+  #           f:      @l
+  #           default: u
+  # 
+  # The only thing that syntactically distinguishes strict kinds
+  # from regular kinds is a presence of the +@+ symbol.
+  # 
+  # You can mix regular and strict kinds having the same names.
+  # The proper class of kind will be picked up by interpolation
+  # method easily, since the first mentioned class uses
+  # patterns that are not named, and the second uses named patterns.
+  # 
+  # ==== Strict kinds in options
+  # 
+  # The interpolation routine recognizes strict kinds passed as
+  # options in almost the same way that it does it for regular
+  # kinds. The only difference is that you can override usage
+  # of a regular kind inflection option (if there is any) by
+  # putting a strict kind option with name prefixed by +@+ symbol.
+  # The inflection options starting with this symbol have
+  # precedence over inflection options without it;
+  # that is of course only true for strict kinds and has any effect
+  # only when both options describing the same kind are present.
+  # 
+  # In other words: interpolation routine is looking for
+  # strict kinds in inflection options using their names
+  # with +@+ in front. When that fails it falls back to
+  # trying an option named like the strict kind but without
+  # the +@+ symbol. Examples:
+  # 
+  #  I18n.translate(welcome, :gender => :m, :@gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  #  
+  #  I18n.translate(welcome, :@gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  #  
+  #  I18n.translate(welcome, :gender => :f)
+  #  # the :f will be picked for the strict kind gender
+  # 
+  # In the example above we assume that +welcome+ is defined
+  # like that:
+  # 
+  #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
+  # 
+  # Note that for regular kinds the option named <tt>:@gender</tt>
+  # will have no meaning.
+  # 
+  # ==== Note for developers
+  # 
+  # Strict kinds that are used to handle named patterns
+  # are internally stored in a different database and handled by
+  # similar but different API methods than regular kinds. However
+  # most of the {I18n::Inflector::API} methods are also aware of strict kinds
+  # and will call proper methods oprating on strict inflections
+  # data when the +@+ symbol is detected at the beginning of
+  # the identifier of a kind passed as an argument. For example:
+  # 
+  #   I18n.inflector.has_token?(:m, :@gender)
+  # 
+  # will effectively call:
+  # 
+  #  I18n.inflector.strict.has_token?(:m, :gender)
+  # 
+  # As you can see above, to access {API_Strict} methods for strict kinds
+  # (and strict kinds data) only, associated with default I18n backend,
+  # use:
+  # 
+  #   I18n.inflector.strict
+  # 
+  # == Complex patterns
+  # 
+  # A <bb>complex pattern</bb> is a named pattern that uses more than
+  # one inflection kind and sets of a respective tokens. The given identifiers
+  # of kinds should be separated by the plus sign and instead of single
+  # tokens there should be token sets (a tokens separated by the plus
+  # sign too).
+  # 
+  # Example:
+  # 
+  #   welcome:  "Dear @gender+number{f+s:Lady|f+p:Ladies|m+s:Sir|m+p:Gentlemen|All}"
+  # 
+  # In the example above the complex pattern uses +gender+ and +number+
+  # inflection kinds and a token set (e.g. <tt>f+s</tt>) matches when
+  # both tokens match interpolation options (e.g. <tt>:gender => :f</tt>,
+  # <tt>:number => :s</tt>). The order of tokens in sets has meaning
+  # and should reflect the order of declared kinds.
+  # 
+  # Note, that the count of tokens in each set should reflect the count
+  # of kinds that are used. Otherwise the interpolation routine will
+  # interpolate a free text (if given) or an empty string. If the switch
+  # {InflectionOptions#raises} is on then the {I18n::ComplexPatternMalformed}
+  # exception will be raised in such a case.
+  # 
+  # The inflection tokens used in sets may make use of any features mentioned
+  # before (defaults, negative matching, token groups, aliases, aliased
+  # patterns, loud tokens).
+  # 
+  # === Loud tokens in complex patterns
+  # 
+  # In case of loud tokens (having values taken from their
+  # descriptions), the complex pattern will be replaced by
+  # the descriptions of matching tokens joined with a single space
+  # character. So, for instance, when the translation data looks like:
+  # 
+  #   i18n:
+  #     inflections:
+  #       @person:
+  #         i: 'I'
+  #         u: 'You'
+  #       @tense:
+  #         now:  'am'
+  #         past: 'were'
+  #   welcome: "@person+tense{i+now:~|u+past:~}"
+  # 
+  # the translate method will give the following results:
+  # 
+  #   I18n.translate('welcome', :person => :i, :tense => :now)
+  #   # => "I am"
+  # 
+  #   I18n.translate('welcome', :person => :you, :tense => :past)
+  #   # => "You were"
+  # 
+  # This example is abstract, since the combination of <tt>:i</tt>
+  # and <tt>:past</tt> will result in <tt>i were</tt> string, which is
+  # probably something unexpected. To achieve that kind of logic
+  # simply use combined patterns with the given values instead
+  # of loud tokens.
+  # 
   # == Errors
   # By default the module will silently ignore any interpolation errors.
   # You can turn off this default behavior by passing +:raises+ option.
@@ -503,14 +562,16 @@ module I18n
   # Here are the exceptions that may be raised when option +:raises+
   # is set to +true+:
   # 
-  # * {I18n::InvalidOptionForKind I18n::InvalidOptionForKind}
   # * {I18n::InvalidInflectionToken I18n::InvalidInflectionToken}
   # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
+  # * {I18n::InflectionOptionNotFound I18n::InflectionOptionNotFound}
+  # * {I18n::InflectionOptionIncorrect I18n::InflectionOptionIncorrect}
+  # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed} 
   # 
   # There are also exceptions that are raised regardless of :+raises+
   # presence or value.
   # These are usually caused by critical errors encountered during processing
-  # inflection data. Here is the list:
+  # inflection data:
   # 
   # * {I18n::InvalidLocale I18n::InvalidLocale}
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
@@ -520,9 +581,11 @@ module I18n
   # === Exception hierarchy
   #   ArgumentError
   #   |
+  #   `-- I18n::InvalidLocale
+  #   |
   #   `-- I18n::InflectionException
   #       |
-  #       |-- I18n::InflectionPatternException
+  #       `-- I18n::InflectionPatternException
   #       |   |
   #       |   |-- I18n::InvalidInflectionToken
   #       |   |-- I18n::MisplacedInflectionToken
