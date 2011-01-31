@@ -56,10 +56,10 @@ module I18n
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
 
+        # take care about cache-awareness
         cached = options.has_key?(:inflector_cache_aware) ?
                  options[:inflector_cache_aware] : @inflector.options.cache_aware
 
-        cached = true
         if cached
           interpolate_options = options
           @inflector.options.prepare_options!(options)
@@ -68,24 +68,34 @@ module I18n
           @inflector.options.clean_for_translate!(options)
         end
 
+        # translate string using original translate
         translated_string = super
+
+        # return immediatelly if something is wrong with locale (preventive)
         return translated_string if (locale.nil? || locale.to_s.empty?)
 
+        # locale is not inflected - return string cleaned from pattern
         unless @inflector.inflected_locale?(locale)
           return translated_string.gsub(I18n::Inflector::PATTERN,'')
         end
 
+        # no pattern in a string - return string as is
         unless translated_string.include?(I18n::Inflector::PATTERN_MARKER)
           return translated_string
         end
 
+        # interpolate string
         begin
+
           @inflector.options.prepare_options!(interpolate_options) unless cached
           @inflector.interpolate(translated_string, locale, interpolate_options)
+
+        # complete the exception by adding translation key
         rescue I18n::InflectionException => e
           e.key = key
           raise
         end
+
       end
 
       # Stores translations in memory.
