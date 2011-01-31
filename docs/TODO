@@ -2,10 +2,8 @@
 
 * validate reserved symbols (some tests)
 
-* allow different descriptions for aliases point to the same token, e.g.: now: @present ="description"
+* allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
 
 == Distant future
 
-* scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance)
-
-* add some external iterators for tokens, aliases, kinds, true_tokens
+* scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance) - do we need it at all?
