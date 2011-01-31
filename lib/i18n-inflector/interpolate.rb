@@ -271,8 +271,8 @@ module I18n
         return '' if (content.nil? || content.empty?)
         free_text    = ''
         expectations = Hash.new
-        kinds        = complex_kind.split(OPERATOR_COMPLEX)
-        each_kinds   = LazyArrayEnumerator.new(kinds).map{|k| k.to_sym}
+        kinds        = complex_kind.split(OPERATOR_COMPLEX).reject{ |k| k.nil? || k.empty? }.map{ |k| k.to_sym }
+        each_kinds   = LazyArrayEnumerator.new(kinds)
 
         # This functional block splits complex pattern
         # into a basic patterns and calls interpolate
@@ -292,31 +292,34 @@ module I18n
               tokens = tokens.split(OPERATOR_COMPLEX).map do |token|
                 db.get_true_token(token.to_sym, each_kinds.next.to_sym).to_s || token
               end
-              symtokens = tokens.join(OPERATOR_COMPLEX).to_sym
-              expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
+              symtokens = tokens.join(OPERATOR_COMPLEX)
+              unless symtokens.empty?
+                symtokens = symtokens.to_sym
+                expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
+              end
               tokens
             end.
             unshift(kinds).
             transpose.
             map do |tokens|
-              PATTERN_MARKER + tokens.shift +
+              PATTERN_MARKER + tokens.shift.to_s +
               '{' + tokens.uniq.map{ |token| token + ':' + token }.join('|') + '}'
             end.join(OPERATOR_COMPLEX)
-            results = interpolate_core(pattern, locale, options).to_sym
 
-        rescue IndexError
+            results = interpolate_core(pattern, locale, options)
+            result  = expectations[results.to_sym]
+
+            # Process loud tokens
+            if (!result.nil? && result == LOUD_MARKER)
+              each_kinds.rewind
+              result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, each_kinds.next) }.join(' ')
+            end
+
+        rescue IndexError, StopIteration
 
           raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind) if options[:inflector_raises]
-          return free_text
+          result = nil
 
-        end
-
-        result = expectations[results]
-
-        # Process loud tokens
-        if (!result.nil? && result == LOUD_MARKER)
-          each_kinds.rewind
-          result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, each_kinds.next) }.join(' ')
         end
 
         result || free_text
