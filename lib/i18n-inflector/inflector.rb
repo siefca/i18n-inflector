@@ -25,14 +25,14 @@ module I18n
   module Inflector
 
     # @private
-    def get_reserved_keys
+    def get_i18n_reserved_keys
       return I18n::RESERVED_KEYS                  if defined?(I18n::RESERVED_KEYS)
       return I18n::Backend::Base::RESERVED_KEYS   if defined?(I18n::Backend::Base::RESERVED_KEYS)
       return I18n::Backend::Simple::RESERVED_KEYS if defined?(I18n::Backend::Simple::RESERVED_KEYS)
       return RESERVED_KEYS                        if defined?(RESERVED_KEYS)
       []
     end
-    module_function :get_reserved_keys
+    module_function :get_i18n_reserved_keys
 
     # Contains <tt>@</tt> string that is used to quickly fallback
     # to standard +translate+ method if it's not found.
@@ -48,7 +48,7 @@ module I18n
     NAMED_MARKER    = '@'
 
     # Contains a symbol used to mark patterns as complex.
-    COMPLEX_MARKER = '+'
+    OPERATOR_COMPLEX= '+'
 
     # Conatins a symbol used to separate multiple tokens.
     OPERATOR_MULTI  = ','
@@ -72,7 +72,9 @@ module I18n
     ESCAPES         = HSet['@', '\\']
 
     # Reserved keys
-    INFLECTOR_RESERVED_KEYS = I18n::Inflector.get_reserved_keys
+    INFLECTOR_RESERVED_KEYS = get_i18n_reserved_keys +
+                              [LOUD_MARKER, OPERATOR_NOT, OPERATOR_MULTI,
+                               OPERATOR_COMPLEX, ALIAS_MARKER, NAMED_MARKER]
 
   end # module Inflector
 
