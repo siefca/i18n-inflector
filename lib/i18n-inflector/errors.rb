@@ -36,8 +36,8 @@ module I18n
     end
 
     def message
-      key = @key.nil? ? "" : "key: #{key}, "
-      @pattern.nil? ? "" : "locale: #{@locale}, #{key}pattern: #{@pattern} - "
+      mkey = @key.nil? ? "" : ".#{@key}"
+      @pattern.nil? ? "" : "#{@locale}#{mkey}: #{@pattern} - "
     end
 
   end
@@ -49,8 +49,8 @@ module I18n
     attr_accessor :locale
 
     def message
-      key = @key.nil? ? "" : ".#{key}"
-      "#{@locale}.i18n.inflections.#{@kind}#{key}: "
+      mkey = @key.nil? ? ".i18n.inflections.#{@kind}" : ".#{@key}"
+      "#{@locale}#{mkey}: "
     end
 
   end
