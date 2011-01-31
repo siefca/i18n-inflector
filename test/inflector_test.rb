@@ -258,6 +258,10 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'she was', I18n.t('hi', :gender => :f, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
     store_translations(:xx, 'hi' => '@gender+tense{masculine+now:he is|feminine+past:she was}')
     assert_equal 'she was', I18n.t('hi', :gender => :feminine, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{masculine+now:he is|m+past:he was}')
+    assert_equal 'he was', I18n.t('hi', :gender => :m, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{m+now:he is|masculine+past:he was}')
+    assert_equal 'he was', I18n.t('hi', :gender => :m, :tense => :past, :inflector_aliased_patterns => true, :locale => :xx)
     store_translations(:xx, 'hi' => '@gender+tense{m+now:~|f+past:she was}')
     assert_equal 'male now', I18n.t('hi', :gender => :m, :tense => :now, :locale => :xx)
   end

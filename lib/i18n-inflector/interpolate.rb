@@ -76,7 +76,7 @@ module I18n
             parsed_symbol = (NAMED_MARKER + strict_kind).to_sym
 
             # Complex markers processing
-            if strict_kind.include?(COMPLEX_MARKER)
+            if strict_kind.include?(OPERATOR_COMPLEX)
               begin
                 ext_value = interpolate_complex(strict_kind,
                                                  pattern_content,
@@ -262,7 +262,7 @@ module I18n
       # combination.
       # 
       # @param [String] complex_kind the complex kind (many kinds separated
-      #   by the {COMPLEX_MARKER})
+      #   by the {OPERATOR_COMPLEX})
       # @param [String] content the content of the processed pattern
       # @param [Symbol] locale the locale to use
       # @param [Hash] options the options
@@ -271,7 +271,8 @@ module I18n
         return '' if (content.nil? || content.empty?)
         free_text    = ''
         expectations = Hash.new
-        kinds        = complex_kind.split(COMPLEX_MARKER)
+        kinds        = complex_kind.split(OPERATOR_COMPLEX)
+        each_kinds   = LazyArrayEnumerator.new(kinds).map{|k| k.to_sym}
 
         # This functional block splits complex pattern
         # into a basic patterns and calls interpolate
@@ -281,28 +282,27 @@ module I18n
         # of most hash and array operations..
         begin
 
-          results = LazyArrayEnumerator.new(
-            content.scan(TOKENS).
+          pattern = content.scan(TOKENS).
             map do |tokens, value, free|
               if tokens.nil?
                 free_text = free unless free.nil?
                 next
               end
-              symtokens = tokens.to_sym
+              each_kinds.rewind 
+              tokens = tokens.split(OPERATOR_COMPLEX).map do |token|
+                db.get_true_token(token.to_sym, each_kinds.next.to_sym).to_s || token
+              end
+              symtokens = tokens.join(OPERATOR_COMPLEX).to_sym
               expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
-              tokens.split(COMPLEX_MARKER)
+              tokens
             end.
-            compact.
             unshift(kinds).
-            transpose).
+            transpose.
             map do |tokens|
               PATTERN_MARKER + tokens.shift +
-              '{' + tokens.uniq.map{|token| token + ':' + token}.join('|') + '}'
-            end.
-            map do |pattern|
-              interpolate_core(pattern, locale, options)
-            end.
-            to_a.join(COMPLEX_MARKER).to_sym
+              '{' + tokens.uniq.map{ |token| token + ':' + token }.join('|') + '}'
+            end.join(OPERATOR_COMPLEX)
+            results = interpolate_core(pattern, locale, options).to_sym
 
         rescue IndexError
 
@@ -315,8 +315,8 @@ module I18n
 
         # Process loud tokens
         if (!result.nil? && result == LOUD_MARKER)
-          kinds  = kinds.each
-          result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, kinds.next.to_sym) }.join(' ')
+          each_kinds.rewind
+          result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, each_kinds.next) }.join(' ')
         end
 
         result || free_text
