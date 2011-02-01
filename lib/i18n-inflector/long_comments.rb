@@ -509,8 +509,8 @@ module I18n
   # exception will be raised in such a case.
   # 
   # The inflection tokens used in sets may make use of any features mentioned
-  # before (defaults, negative matching, token groups, aliases, aliased
-  # patterns, loud tokens).
+  # before (defaults, excluded defaults, negative matching, token groups,
+  # aliases, aliased patterns, loud tokens).
   # 
   # === Loud tokens in complex patterns
   # 
@@ -566,14 +566,14 @@ module I18n
   # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
   # * {I18n::InflectionOptionNotFound I18n::InflectionOptionNotFound}
   # * {I18n::InflectionOptionIncorrect I18n::InflectionOptionIncorrect}
-  # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed} 
   # 
   # There are also exceptions that are raised regardless of :+raises+
   # presence or value.
   # These are usually caused by critical errors encountered during processing
-  # inflection data:
+  # inflection data or during operations on complex patterns.
   # 
   # * {I18n::InvalidLocale I18n::InvalidLocale}
+  # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed}
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
   # * {I18n::BadInflectionToken I18n::BadInflectionToken}
   # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
