@@ -7,3 +7,4 @@
 == Distant future
 
 * scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance) - do we need it at all?
+

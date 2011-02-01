@@ -79,8 +79,8 @@ module I18n
             if strict_kind.include?(OPERATOR_COMPLEX)
               begin
                 ext_value = interpolate_complex(strict_kind,
-                                                 pattern_content,
-                                                 locale, options, idb_strict)
+                                                pattern_content,
+                                                locale, options)
               rescue I18n::InflectionPatternException => e
                 e.pattern = ext_pattern
                 raise
@@ -256,10 +256,7 @@ module I18n
 
       # This is a helper that reduces a complex inflection pattern
       # by producing equivalent of regular patterns of it and
-      # by interpolating them using {#interpolate} method. After that
-      # the internal expectations matrix is used to gather
-      # atomic results and eventually return the value for matching
-      # combination.
+      # by interpolating them using {#interpolate} method.
       # 
       # @param [String] complex_kind the complex kind (many kinds separated
       #   by the {OPERATOR_COMPLEX})
@@ -267,65 +264,61 @@ module I18n
       # @param [Symbol] locale the locale to use
       # @param [Hash] options the options
       # @return [String] the interpolated pattern
-      def interpolate_complex(complex_kind, content, locale, options, db)
-        return '' if (content.nil? || content.empty?)
-        free_text    = ''
-        expectations = Hash.new
-        kinds        = complex_kind.split(OPERATOR_COMPLEX).reject{ |k| k.nil? || k.empty? }.map{ |k| k.to_sym }
-        each_kinds   = LazyArrayEnumerator.new(kinds)
+      def interpolate_complex(complex_kind, content, locale, options)
+        result      = nil
+        free_text   = ""
+        kinds       = complex_kind.split(OPERATOR_COMPLEX).
+                      reject{ |k| k.nil? || k.empty? }.each
 
-        # This functional block splits complex pattern
-        # into a basic patterns and calls interpolate
-        # for each of them. Its side effect is an expectations
-        # hash that keeps configuration of the expected results
-        # for combined tokens. I wish Ruby had lazy variants
-        # of most hash and array operations..
         begin
 
-          pattern = content.scan(TOKENS).
-            map do |tokens, value, free|
-              if tokens.nil?
-                free_text = free unless free.nil?
-                next
-              end
-              each_kinds.rewind 
-              tokens = tokens.split(OPERATOR_COMPLEX).map do |token|
-                db.get_true_token(token.to_sym, each_kinds.next.to_sym).to_s || token
-              end
-              symtokens = tokens.join(OPERATOR_COMPLEX)
-              unless symtokens.empty?
-                symtokens = symtokens.to_sym
-                expectations[symtokens] = value.to_s unless expectations.has_key?(symtokens)
-              end
-              tokens
-            end.
-            unshift(kinds).
-            transpose.
-            map do |tokens|
-              PATTERN_MARKER + tokens.shift.to_s +
-              '{' + tokens.uniq.map{ |token| token + ':' + token }.join('|') + '}'
-            end.join(OPERATOR_COMPLEX)
-
-            results = interpolate_core(pattern, locale, options)
-            result  = expectations[results.to_sym]
-
-            # Process loud tokens
-            if (!result.nil? && result == LOUD_MARKER)
-              each_kinds.rewind
-              result = results.to_s.split('+').map { |token| db.get_description(token.to_sym, each_kinds.next) }.join(' ')
+          content.scan(TOKENS) do |tokens, value, free|
+            if tokens.nil?
+              raise IndexError.new if free.empty?
+              free_text = free
+              next
             end
+
+            kinds.rewind
+
+            # process each token from set
+            results = tokens.split(OPERATOR_COMPLEX).map do |token|
+              raise IndexError.new if token.empty?
+              r = interpolate_core(
+                  PATTERN_MARKER + kinds.next + '{' + token + ':' + value + '}',
+                  locale, options)
+              if value == LOUD_MARKER
+                break if r.empty?
+              elsif r != value
+                break # stop with this set, because something is not matching
+              end
+              r
+            end
+
+            # some token didn't matched, try another set
+            next if results.nil?
+
+            # generate result for set or raise error
+            if results.size == kinds.count
+              result = value == LOUD_MARKER ? results.join(' ') : value
+              break
+            else
+              raise IndexError.new
+            end
+
+          end # scan tokens
 
         rescue IndexError, StopIteration
 
-          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind) if options[:inflector_raises]
+          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind)
           result = nil
 
         end
 
         result || free_text
-      end # def interpolate_complex
+
+      end
 
     end # module Interpolate
   end # module Inflector
 end # module I18n
-
