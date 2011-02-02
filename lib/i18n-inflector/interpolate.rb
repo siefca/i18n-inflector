@@ -284,13 +284,12 @@ module I18n
             # process each token from set
             results = tokens.split(OPERATOR_COMPLEX).map do |token|
               raise IndexError.new if token.empty?
-              r = interpolate_core(
-                  PATTERN_MARKER + kinds.next + '{' + token + ':' + value + '}',
-                  locale, options)
               if value == LOUD_MARKER
-                break if r.empty?
-              elsif r != value
-                break # stop with this set, because something is not matching
+                r = interpolate_core("#{PATTERN_MARKER}#{kinds.next}{#{token}:#{value}|@}", locale, options)
+                break if r == PATTERN_MARKER
+              else
+                r = interpolate_core("#{PATTERN_MARKER}#{kinds.next}{#{token}:#{value}}", locale, options)
+                break if r != value # stop with this set, because something is not matching
               end
               r
             end
