@@ -570,16 +570,19 @@ module I18n
   # There are also exceptions that are raised regardless of :+raises+
   # presence or value.
   # These are usually caused by critical errors encountered during processing
-  # inflection data or during operations on complex patterns.
+  # inflection data, during operations on complex patterns or exceptions
+  # raised by I18n. Note that pure I18n exceptions are not described here.
   # 
+  # * {I18n::ArgumentError I18n::ArgumentError}
   # * {I18n::InvalidLocale I18n::InvalidLocale}
   # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed}
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
+  # * {I18n::BadInflectionKind I18n::BadInflectionKind}
   # * {I18n::BadInflectionToken I18n::BadInflectionToken}
   # * {I18n::BadInflectionAlias I18n::BadInflectionAlias}
   # 
   # === Exception hierarchy
-  #   ArgumentError
+  #   I18n::ArgumentError
   #   |
   #   `-- I18n::InvalidLocale
   #   |
@@ -598,7 +601,8 @@ module I18n
   #           |
   #           |-- I18n::DuplicatedInflectionToken
   #           |-- I18n::BadInflectionAlias
-  #           `-- I18n::BadInflectionToken
+  #           |-- I18n::BadInflectionToken
+  #           `-- I18n::BadInflectionKind
   # 
   module Inflector
 
@@ -639,4 +643,9 @@ module I18n
   # @abstract This exception class is defined in package I18n. It is raised when
   #   the given and/or processed locale parameter is invalid.
   class InvalidLocale; end
+
+  # @abstract This exception class is defined in package I18n. It is raised when
+  #   the given and/or processed translation data or parameter are invalid.
+  class ArgumentError; end
+
 end
