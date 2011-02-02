@@ -10,7 +10,7 @@ module I18n
 
   # @abstract It is a parent class for all exceptions
   #   related to inflections.
-  class InflectionException < ArgumentError
+  class InflectionException < I18n::ArgumentError
 
     attr_accessor :token
     attr_accessor :kind
@@ -201,13 +201,29 @@ module I18n
     def message
       if @description.nil?
         super +
-        "Inflection token #{@token.inspect} " \
+        "inflection token #{@token.inspect} " \
         "has a bad name"
       else
         super +
-        "Inflection token #{@token.inspect} " \
+        "inflection token #{@token.inspect} " \
         "has a bad description #{@description.inspect}"
       end
+    end
+
+  end
+
+
+  # This is raised when an inflection kind has a bad name
+  # or is not a root for a tree of tokens.
+  class BadInflectionKind < InflectionConfigurationException
+
+    def initialize(locale, kind)
+      super(locale, nil, kind)
+    end
+
+    def message
+        super +
+        "inflection kind has bad name or type"
     end
 
   end
