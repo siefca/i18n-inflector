@@ -250,7 +250,7 @@ module I18n
 
         return nil if (idb.nil? || idb_strict.nil?)
 
-        inflections = prepare_inflections(inflections_tree, idb, idb_strict)
+        inflections = prepare_inflections(locale, inflections_tree, idb, idb_strict)
 
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
@@ -310,9 +310,15 @@ module I18n
       end
 
       # @private
-      def prepare_inflections(inflections, idb, idb_strict)
+      def prepare_inflections(locale, inflections, idb, idb_strict)
+        unless inflections.respond_to?(:has_key?)
+          raise I18n::BadInflectionKind.new(locale, :INFLECTIONS_ROOT)
+        end
         I18n::Inflector::LazyHashEnumerator.new(inflections).ary_map do |kind, tokens|
           next if (tokens.nil? || tokens.empty?)
+          unless tokens.respond_to?(:has_key?)
+            raise I18n::BadInflectionKind.new(locale, kind)
+          end
           subdb       = idb
           strict_kind = nil
           orig_kind   = kind
