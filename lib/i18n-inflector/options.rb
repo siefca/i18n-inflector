@@ -55,8 +55,8 @@ module I18n
       # errors are raised in case of unknown or empty tokens present in a pattern
       # or in options. This switch is by default set to +false+.
       # 
-      # @note Local option +:raises+ passed to the {I18n::Backend::Inflector#translate}
-      #   overrides this setting.
+      # @note Local option +:inflector_raises+ or I18n's +:raise+ passed
+      #   to the {I18n::Backend::Inflector#translate} overrides this setting.
       # 
       # @api public
       # @return [Boolean] state of the switch
@@ -68,7 +68,7 @@ module I18n
       # may make your translation data a bit messy if you're not alert.
       # That's why this switch is by default set to +false+.
       # 
-      # @note Local option +:aliased_patterns+ passed to the {I18n::Backend::Inflector#translate}
+      # @note Local option +:inflector_aliased_patterns+ passed to the {I18n::Backend::Inflector#translate}
       #   overrides this setting.
       # 
       # @api public
@@ -82,7 +82,7 @@ module I18n
       # interpolated only when this token is present in a pattern. This switch
       # is by default set to +true+.
       # 
-      # @note Local option +:unknown_defaults+ passed to the {I18n::Backend::Inflector#translate}
+      # @note Local option +:inflector_unknown_defaults+ passed to the {I18n::Backend::Inflector#translate}
       #   overrides this setting.
       # 
       # @api public
@@ -180,7 +180,7 @@ module I18n
       # 
       # This switch is by default set to +false+.
       # 
-      # @note Local option +:excluded_defaults+ passed to the {I18n::Backend::Inflector#translate}
+      # @note Local option +:inflector_excluded_defaults+ passed to the {I18n::Backend::Inflector#translate}
       #   overrides this setting.
       # 
       # @api public
@@ -233,6 +233,9 @@ module I18n
       # @param [Hash] options the options
       # @return [Hash] the given options
       def prepare_options!(options)
+        if (!options.has_key?(:inflector_raises) && options[:raise])
+          options[:inflector_raises] = true
+        end
         @known.
         reject { |name,long| options.has_key?(long) }.
         each   { |name,long| options[long] = instance_variable_get(name) }

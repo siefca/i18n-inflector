@@ -47,12 +47,10 @@ module I18n
       # @param [Symbol] locale locale
       # @param [Symbol,String] key translation key
       # @param [Hash] options a set of options to pass to the translation routines.
-      # @note Inflector requires at least one of the +options+ to have a value that
-      #   corresponds with token present in a pattern (or its alias). The name of that
-      #   particular option should be the same as the name of a kind of tokens from a pattern.
-      #   All +options+ along with a +string+ and +locale+ are passed to
+      # @note The given +options+ along with a translated string and the given
+      #   +locale+ are passed to
       #   {I18n::Backend::Simple#translate I18n::Backend::Simple#translate}
-      #   and the result is processed by {I18n::Inflector::API#interpolate}
+      #   and then the result is processed by {I18n::Inflector::API#interpolate}
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
         inflector_try_init
@@ -105,6 +103,7 @@ module I18n
       # @raise [I18n::InvalidLocale] if the given +locale+ is invalid
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
+      # @raise [I18n::BadInflectionKind] if a loaded kind identifier is invalid
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
       # @note If inflections are changed it will regenerate proper internal
       #   structures.
@@ -143,6 +142,7 @@ module I18n
       # @note It calls {I18n::Backend::Simple#init_translations I18n::Backend::Simple#init_translations}
       # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
+      # @raise [I18n::BadInflectionKind] if a loaded kind identifier is invalid
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
       # @return [Boolean] +true+ if everything went fine
       def init_translations
@@ -209,9 +209,10 @@ module I18n
           orig_token = token
           token = value[1..-1]
 
-          if (token.nil? || token.to_s.empty?)
+          if I18n::Inflector::Config::Reserved::Tokens.contained?(token, :DB)
             raise I18n::BadInflectionToken.new(locale, token, kind)
           end
+
           token = token.to_sym
           if kind_subtree[token].nil?
             raise BadInflectionAlias.new(locale, orig_token, kind, token)
@@ -226,7 +227,8 @@ module I18n
       # to resolve kinds assigned to inflection tokens and aliases, including defaults.
       # @return [I18n::Inflector::InflectionData,nil] the database containing inflections tokens
       #   or +nil+ if something went wrong
-      # @raise [I18n::BadInflectionToken] if a name of some loaded token is invalid
+      # @raise [I18n::BadInflectionToken] if a token identifier is invalid
+      # @raise [I18n::BadInflectionKind] if a kind identifier is invalid
       # @raise [I18n::BadInflectionAlias] if a loaded alias points to a token that does not exists
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
       # @overload load_inflection_tokens(locale)

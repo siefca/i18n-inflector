@@ -29,6 +29,9 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#unknown_defaults})
       # @option options [Boolean] :inflector_raises (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#raises})
+      # @option options [Boolean] :raise (false) local switch from I18n that sets
+      #   <tt>:inflector_raises</tt> though also overrides global setting
+      #   (see: {I18n::Inflector::InflectionOptions#raises})
       # @option options [Boolean] :inflector_aliased_patterns (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @option options [Boolean] :inflector_cache_aware (false) local switch

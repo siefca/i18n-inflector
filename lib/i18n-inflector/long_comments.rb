@@ -230,7 +230,7 @@ module I18n
   #     welcome:    "Dear @{n:You|All}"
   # 
   # ===== Code:
-  #   I18n.translate('welcome', :gender => :o, :raises => true)
+  #   I18n.translate('welcome', :gender => :o, :inflector_raises => true)
   #   # => "Dear All"
   #   # since the token :o was configured but not used in the pattern
   # 
@@ -551,23 +551,27 @@ module I18n
   # == Operator precedence
   # symbol - meaning - defined in
   # == Errors
-  # By default the module will silently ignore any interpolation errors.
-  # You can turn off this default behavior by passing +:raises+ option.
+  # By default the module will silently ignore non-critical interpolation
+  # errors. You can turn off this default behavior by passing +:inflector_raises+
+  # option set to +true+ or by passing I18n's +:raise+ option. The second one
+  # will automatically set +:inflector_raises+ to +true+ if it's present and
+  # is +true+. Note, that the second way will also enable raising exceptions
+  # in I18n itself, which might not be something that you would expect.
   #
-  # === Usage of +:raises+ option
+  # === Usage of +:inflector_raises+ option
   # 
   # ===== YAML
   # Note: <em>Uses inflection configuration given in the first example.</em> 
   #   en:
   #     welcome:  "Dear @{m:Sir|f:Madam|Fallback}"
   # ===== Code:
-  #   I18n.t('welcome', :raises => true)   
-  #   # => I18n::InvalidOptionForKind: option :gender required by the pattern
+  #   I18n.t('welcome', :inflector_raises => true)   
+  #   # => I18n::InflectionOptionNotFound: option :gender required by the pattern
   #   #                                "@{m:Sir|f:Madam|Fallback}" was not found
   # 
   # === Exception meanings
-  # Here are the exceptions that may be raised when option +:raises+
-  # is set to +true+:
+  # Here are the exceptions that may be raised when the option +:inflector_raises+
+  # (or +:raise+) is set to +true+:
   # 
   # * {I18n::InvalidInflectionToken I18n::InvalidInflectionToken}
   # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
