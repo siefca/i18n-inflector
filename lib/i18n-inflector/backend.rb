@@ -257,7 +257,8 @@ module I18n
 
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
 
-          if I18n::Inflector::Config::Reserved::Kinds.contained?(orig_kind, :DB)
+          # validate token's kind
+          if (kind.to_s.empty? || I18n::Inflector::Config::Reserved::Kinds.contained?(orig_kind, :DB))
             raise I18n::BadInflectionKind.new(locale, orig_kind)
           end
 

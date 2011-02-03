@@ -35,13 +35,10 @@ module I18n
       module_function :all_consts
 
       # @private
-      def invalid?(v, root)
-        return true if v.nil?
-        v = v.to_s
-        return true if (v.empty? || root =~ v)
-        false
+      def gen_regexp(ary)
+        ::Regexp.new '[' + ary.join + ']'
       end
-      module_function :invalid?
+      module_function :gen_regexp
 
       # This module contains characters that are markers
       # giving the shape for a pattern and its elements.
@@ -100,7 +97,7 @@ module I18n
           OR      = '|'
 
           # A character used to assign value to a token
-          # or a group of tokens.    
+          # or a group of tokens.
           ASSIGN  = ':'
 
           # All token groups operators.
@@ -140,10 +137,10 @@ module I18n
         module Tokens
 
           # Reserved characters in token identifiers placed in configuration.
-          DB  = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
+          DB        = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
 
           # Reserved characters in token identifiers passed as options.
-          OPTION  = DB
+          OPTION    = DB
 
           # Reserved characters in token identifiers placed in patterns.
           PATTERN   = OPTION
@@ -154,20 +151,28 @@ module I18n
           module Regexp
 
             # Reserved characters in token identifiers placed in configuration.
-            DB  = ::Regexp.new '[' + Tokens::DB.join + ']'
+            DB      = Config.gen_regexp Tokens::DB
 
             # Reserved characters in token identifiers passed as options.
-            OPTION  = ::Regexp.new '[' + Tokens::OPTION.join + ']'
+            OPTION  = Config.gen_regexp Tokens::OPTION
 
             # Reserved characters in token identifiers placed in patterns.
-            PATTERN   = ::Regexp.new '[' + Tokens::PATTERN.join + ']'
+            PATTERN = Config.gen_regexp Tokens::PATTERN
 
           end # module Regexp
 
+          # This method checks if the given +token+ is invalid,
+          # that means it's either +nil+ or empty or it matches
+          # the refular expression given as +root+.
+          # 
+          # @api public
+          # @param [Symbol,String] token the identifier of a token
+          # @param [Regexp] root the regular expression used to test
+          # @return [Boolean] +true+ if the given +token+ is
+          #   invalid, +false+ otherwise
           def contained?(token, root)
             token = token.to_s
-            return true if (token.empty? || Regexp.const_get(root) =~ token)
-            false
+            token.empty? || Regexp.const_get(root) =~ token
           end
           module_function :contained?
 
@@ -192,20 +197,28 @@ module I18n
           module Regexp
 
             # Reserved characters in kind identifiers placed in configuration.
-            DB        = ::Regexp.new '[' + Kinds::DB.join + ']'
+            DB      = Config.gen_regexp Kinds::DB
 
             # Reserved characters in kind identifiers passed as options.
-            OPTION    = ::Regexp.new '[' + Kinds::OPTION.join + ']'
+            OPTION  = Config.gen_regexp Kinds::OPTION
 
             # Reserved characters in kind identifiers placed in patterns.
-            PATTERN   = ::Regexp.new '[' + Kinds::PATTERN.join + ']'
+            PATTERN = Config.gen_regexp Kinds::PATTERN
 
           end # module Regexp
 
+          # This method checks if the given +kind+ is invalid,
+          # that means it's either +nil+ or empty or it matches
+          # the refular expression given as +root+.
+          # 
+          # @api public
+          # @param [Symbol,String] kind the identifier of a kind
+          # @param [Regexp] root the regular expression used to test
+          # @return [Boolean] +true+ if the given +kind+ is
+          #   invalid, +false+ otherwise
           def contained?(kind, root)
             kind = kind.to_s
-            return true if (kind.empty? || Regexp.const_get(root) =~ kind)
-            false
+            kind.empty? || Regexp.const_get(root) =~ kind
           end
           module_function :contained?
 
@@ -218,13 +231,17 @@ module I18n
       DEFAULT_TOKEN = :default
 
       # A regular expression that catches patterns.
-      #PATTERN         = /(.?)@([^\{]*)\{([^\}]+)\}/
-      PATTERN_REGEXP = Regexp.new '(.?)' + Markers::PATTERN       + '([^' + Markers::PATTERN_BEGIN + ']*)' +
-                                           Markers::PATTERN_BEGIN + '([^' + Markers::PATTERN_END   + ']+)' +
-                                           Markers::PATTERN_END
+      PATTERN_REGEXP  = Regexp.new  '(.?)'  +
+                                    Markers::PATTERN       + '([^' + Markers::PATTERN_BEGIN + ']*)' +
+                                    Markers::PATTERN_BEGIN + '([^' + Markers::PATTERN_END   + ']+)' +
+                                    Markers::PATTERN_END
 
       # A regular expression that catches token groups or single tokens.
-      TOKENS_REGEXP = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/
+      TOKENS_REGEXP   = Regexp.new  '(?:' +
+                                    '([^' +  Operators::Tokens::ASSIGN + Operators::Tokens::OR + ']+)' +
+                                             Operators::Tokens::ASSIGN +
+                                    '+([^' + Operators::Tokens::OR     + ']+)\1?)' +
+                                    '|([^' + Operators::Tokens::ASSIGN + Operators::Tokens::OR + ']+)'
 
     end # module Config
 
