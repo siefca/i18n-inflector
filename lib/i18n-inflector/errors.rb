@@ -75,7 +75,7 @@ module I18n
     def message
       kind = @kind.to_s
       unless kind.empty?
-        if kind[0..0] == I18n::Inflector::NAMED_MARKER
+        if kind[0..0] == I18n::Inflector::Config::Markers::PATTERN
           kindmsg = ":#{kind} (or :#{kind[1..-1]})"
         else
           kindmsg = kind.to_sym.inspect
@@ -135,8 +135,8 @@ module I18n
   class ComplexPatternMalformed < InflectionPatternException
 
     def initialize(locale, pattern, token, complex_kind)
-      unless pattern.include?(I18n::Inflector::PATTERN_MARKER)
-        pattern = I18n::Inflector::PATTERN_MARKER + "#{complex_kind}{#{pattern}}"
+      unless pattern.include?(I18n::Inflector::Config::Markers::PATTERN)
+        pattern = I18n::Inflector::Config::Markers::PATTERN + "#{complex_kind}{#{pattern}}"
       end
       super(locale, pattern, token, complex_kind)
     end

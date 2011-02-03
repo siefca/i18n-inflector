@@ -1,6 +1,9 @@
 == Near future
 
-* validate reserved symbols (some tests)
+* add missing raises to documentation (interpolation, loading)
+* ban reserved keys while processing kinds (including :default)
+* update documentation
+* add validation checks to interpolation (options, tokens in options) and to API (arguments)
 
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
 

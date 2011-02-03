@@ -55,6 +55,7 @@ module I18n
       #   and the result is processed by {I18n::Inflector::API#interpolate}
       # @return [String] the translated string with interpolated patterns
       def translate(locale, key, options = {})
+        inflector_try_init
 
         # take care about cache-awareness
         cached = options.has_key?(:inflector_cache_aware) ?
@@ -76,11 +77,11 @@ module I18n
 
         # locale is not inflected - return string cleaned from pattern
         unless @inflector.inflected_locale?(locale)
-          return translated_string.gsub(I18n::Inflector::PATTERN,'')
+          return translated_string.gsub(I18n::Inflector::Config::PATTERN_REGEXP,'')
         end
 
         # no pattern in a string - return string as is
-        unless translated_string.include?(I18n::Inflector::PATTERN_MARKER)
+        unless translated_string.include?(I18n::Inflector::Config::Markers::PATTERN)
           return translated_string
         end
 
@@ -198,7 +199,7 @@ module I18n
         kind_subtree  = inflections_tree[kind]
         value         = kind_subtree[token].to_s
 
-        if value[0..0] != I18n::Inflector::ALIAS_MARKER
+        if value[0..0] != I18n::Inflector::Config::Markers::ALIAS
           if kind_subtree.has_key?(token)
             return token
           else
@@ -253,6 +254,11 @@ module I18n
         inflections = prepare_inflections(locale, inflections_tree, idb, idb_strict)
 
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
+
+          if I18n::Inflector::Config::Reserved::Kinds.contained?(orig_kind, :DB)
+            raise I18n::BadInflectionKind.new(locale, orig_kind)
+          end
+
           tokens.each_pair do |token, description|
 
             # test for duplicate
@@ -261,12 +267,14 @@ module I18n
             end
 
             # validate token's name
-            raise I18n::BadInflectionToken.new(locale, token, orig_kind) if (token.nil? || token.to_s.empty?)
+            if I18n::Inflector::Config::Reserved::Tokens.contained?(token, :DB)
+              raise I18n::BadInflectionToken.new(locale, token, orig_kind)
+            end
 
             # validate token's description
             if description.nil?
               raise I18n::BadInflectionToken.new(locale, token, orig_kind, description)
-            elsif description[0..0] == I18n::Inflector::ALIAS_MARKER
+            elsif description[0..0] == I18n::Inflector::Config::Markers::ALIAS
               next
             end
 
@@ -281,7 +289,7 @@ module I18n
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
             next if token == :default
-            next if description[0..0] != I18n::Inflector::ALIAS_MARKER
+            next if description[0..0] != I18n::Inflector::Config::Markers::ALIAS
             real_token = shorten_inflection_alias(token, orig_kind, locale, inflections_tree)
             subdb.add_alias(token, real_token, kind) unless real_token.nil?
           end
@@ -295,7 +303,7 @@ module I18n
           end
           orig_target = tokens[:default]
           target = orig_target.to_s
-          target = target[1..-1] if target[0..0] == I18n::Inflector::ALIAS_MARKER
+          target = target[1..-1] if target[0..0] == I18n::Inflector::Config::Markers::ALIAS
           if target.empty?
             raise I18n::BadInflectionToken.new(locale, token, orig_kind, orig_target)
           end
@@ -322,7 +330,7 @@ module I18n
           subdb       = idb
           strict_kind = nil
           orig_kind   = kind
-          if kind.to_s[0..0] == I18n::Inflector::NAMED_MARKER
+          if kind.to_s[0..0] == I18n::Inflector::Config::Markers::PATTERN
             kind        = kind.to_s[1..-1]
             next if kind.empty?
             kind        = kind.to_sym

@@ -186,7 +186,7 @@ module I18n
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
       #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#inflected_locales})
       def inflected_locales(kind=nil)
-        if kind.to_s[0..0] == NAMED_MARKER
+        if kind.to_s[0..0] == Markers::PATTERN
           strict.inflected_locales(kind.to_s[1..-1])
         else
           (super + strict.inflected_locales(kind)).uniq
@@ -211,7 +211,7 @@ module I18n
       #   @param [Symbol] locale the locale identifier
       #   @return [Boolean] +true+ if the given +kind+ exists, +false+ otherwise
       def has_kind?(kind, locale=nil)
-        if kind.to_s[0..0] == NAMED_MARKER
+        if kind.to_s[0..0] == Markers::PATTERN
           return strict.has_kind?(kind.to_s[1..-1], locale)
         end
         super
@@ -237,7 +237,7 @@ module I18n
       #     there is no default token
       def default_token(kind, locale=nil)
         return nil if (kind.nil? || kind.to_s.empty?)
-        if kind.to_s[0..0] == NAMED_MARKER
+        if kind.to_s[0..0] == Markers::PATTERN
           return strict.default_token(kind.to_s[1..-1], locale)
         end
         super
@@ -280,7 +280,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           reutrn false if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.has_alias?(token, kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -326,7 +326,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return false if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.has_true_token?(token, kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -372,7 +372,7 @@ module I18n
          unless kind.nil?
            kind = kind.to_s
            return false if kind.empty?
-           if kind[0..0] == NAMED_MARKER
+           if kind[0..0] == Markers::PATTERN
              return strict.has_token?(token, kind[1..-1], locale)
            end
            kind = kind.to_sym
@@ -422,7 +422,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return nil if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.true_token(token, kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -467,7 +467,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return nil if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.kind(token, kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -509,7 +509,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return {} if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.tokens(kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -550,7 +550,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return {} if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.tokens_raw(kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -588,7 +588,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return {} if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.tokens_true(kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -622,7 +622,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return nil if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.aliases(kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -674,7 +674,7 @@ module I18n
         unless kind.nil?
           kind = kind.to_s
           return nil if kind.empty?
-          if kind[0..0] == NAMED_MARKER
+          if kind[0..0] == Markers::PATTERN
             return strict.token_description(token, kind[1..-1], locale)
           end
           kind = kind.to_sym
@@ -730,9 +730,9 @@ module I18n
       def tkl_args(args)
         token, kind, locale = case args.count
         when 1 then [args[0], nil, nil]
-        when 2 then args[1].to_s[0..0] == NAMED_MARKER ? [args[0], args[1], nil] : [args[0], nil, args[1]]
+        when 2 then args[1].to_s[0..0] == Markers::PATTERN ? [args[0], args[1], nil] : [args[0], nil, args[1]]
         when 3 then args
-        else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
+        else raise I18n::ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
         end
         [token,kind,locale]
       end

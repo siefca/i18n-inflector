@@ -14,6 +14,8 @@ module I18n
     # inflection patterns.
     module Interpolate
 
+      include I18n::Inflector::Config
+
       # Interpolates inflection values in the given +string+
       # using kinds given in +options+ and a matching tokens.
       # 
@@ -40,7 +42,7 @@ module I18n
 
       # @private
       def interpolate_core(string, locale, options)
-        used_kinds        = options.except(*INFLECTOR_RESERVED_KEYS)
+        used_kinds        = options.except(*Reserved::KEYS)
         raises            = options[:inflector_raises]
         aliased_patterns  = options[:inflector_aliased_patterns]
         unknown_defaults  = options[:inflector_unknown_defaults]
@@ -49,7 +51,7 @@ module I18n
         idb               = @idb[locale]
         idb_strict        = @idb_strict[locale]
 
-        string.gsub(PATTERN) do
+        string.gsub(PATTERN_REGEXP) do
           pattern_fix     = $1
           strict_kind     = $2
           pattern_content = $3
@@ -62,7 +64,7 @@ module I18n
           # leave escaped pattern as-is
           unless pattern_fix.empty?
             ext_pattern = ext_pattern[1..-1]
-            next ext_pattern if ESCAPES[pattern_fix]
+            next ext_pattern if Escapes::PATTERN[pattern_fix]
           end
 
           # set parsed kind if strict kind is given (named pattern is parsed) 
@@ -73,10 +75,10 @@ module I18n
             default_token = nil
             subdb         = idb
           else
-            parsed_symbol = (NAMED_MARKER + strict_kind).to_sym
+            parsed_symbol = (Markers::PATTERN + strict_kind).to_sym
 
             # Complex markers processing
-            if strict_kind.include?(OPERATOR_COMPLEX)
+            if strict_kind.include?(Operators::Tokens::AND)
               begin
                 ext_value = interpolate_complex(strict_kind,
                                                 pattern_content,
@@ -95,7 +97,7 @@ module I18n
           end
 
           # process pattern content's
-          pattern_content.scan(TOKENS) do
+          pattern_content.scan(TOKENS_REGEXP) do
             ext_token     = $1.to_s
             ext_value     = $2.to_s
             ext_freetext  = $3.to_s
@@ -113,16 +115,16 @@ module I18n
               next
             end
 
-            # split tokens if comma is present and put into fast list
-            ext_token.split(OPERATOR_MULTI).each do |t|
+            # split tokens from group if comma is present and put into fast list
+            ext_token.split(Operators::Token::OR).each do |t|
               # token name corrupted
               if t.empty?
                 raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
                 next
               end
 
-              # mark negative-matching tokens and put them to negatives fast list
-              if t[0..0] == OPERATOR_NOT
+              # mark negative-matching token and put it onto negatives fast list
+              if t[0..0] == Operators::Token::NOT
                 t = t[1..-1]
                 if t.empty?
                   raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
@@ -242,10 +244,10 @@ module I18n
             ext_value = (excluded_defaults && !parsed_kind.nil? &&
                          subdb.has_token?(used_kinds[parsed_kind], parsed_kind)) ?
                          parsed_default_v : nil
-          elsif ext_value == LOUD_MARKER  # interpolate loud tokens
+          elsif ext_value == Markers::LOUD_VALUE  # interpolate loud tokens
             ext_value = subdb.get_description(found, parsed_kind)
-          elsif ext_value[0..0] == ESCAPE
-            ext_value.sub!(ESCAPE_R, '\1')
+          elsif ext_value[0..0] == Escapes::ESCAPE
+            ext_value.sub!(Escapes::ESCAPE_R, '\1')
           end
 
           pattern_fix + (ext_value || ext_freetext)
@@ -259,7 +261,7 @@ module I18n
       # by interpolating them using {#interpolate} method.
       # 
       # @param [String] complex_kind the complex kind (many kinds separated
-      #   by the {OPERATOR_COMPLEX})
+      #   by the {Operators::Tokens::AND})
       # @param [String] content the content of the processed pattern
       # @param [Symbol] locale the locale to use
       # @param [Hash] options the options
@@ -267,12 +269,12 @@ module I18n
       def interpolate_complex(complex_kind, content, locale, options)
         result      = nil
         free_text   = ""
-        kinds       = complex_kind.split(OPERATOR_COMPLEX).
+        kinds       = complex_kind.split(Operators::Tokens::AND).
                       reject{ |k| k.nil? || k.empty? }.each
 
         begin
 
-          content.scan(TOKENS) do |tokens, value, free|
+          content.scan(TOKENS_REGEXP) do |tokens, value, free|
             if tokens.nil?
               raise IndexError.new if free.empty?
               free_text = free
@@ -282,13 +284,13 @@ module I18n
             kinds.rewind
 
             # process each token from set
-            results = tokens.split(OPERATOR_COMPLEX).map do |token|
+            results = tokens.split(Operators::Tokens::AND).map do |token|
               raise IndexError.new if token.empty?
-              if value == LOUD_MARKER
-                r = interpolate_core("#{PATTERN_MARKER}#{kinds.next}{#{token}:#{value}|@}", locale, options)
-                break if r == PATTERN_MARKER
+              if value == Markers::LOUD_VALUE
+                r = interpolate_core("#{Markers::PATTERN}#{kinds.next}{#{token}:#{value}|@}", locale, options)
+                break if r == Markers::PATTERN
               else
-                r = interpolate_core("#{PATTERN_MARKER}#{kinds.next}{#{token}:#{value}}", locale, options)
+                r = interpolate_core("#{Markers::PATTERN}#{kinds.next}{#{token}:#{value}}", locale, options)
                 break if r != value # stop with this set, because something is not matching
               end
               r
@@ -299,7 +301,7 @@ module I18n
 
             # generate result for set or raise error
             if results.size == kinds.count
-              result = value == LOUD_MARKER ? results.join(' ') : value
+              result = value == Markers::LOUD_VALUE ? results.join(' ') : value
               break
             else
               raise IndexError.new

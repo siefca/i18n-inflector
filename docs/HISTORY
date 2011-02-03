@@ -5,6 +5,7 @@
   * Added loud tokens support
   * Added complex patterns support
   * Added :cache_aware switch
+  * Improved validation of token and kind identifiers
 
 * minor enhancements
 

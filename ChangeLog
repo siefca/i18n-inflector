@@ -1,3 +1,147 @@
+commit aefb526f9251c48e0270615d8ae8e8eb31a7b946
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 03:48:50 2011 +0100
+
+    Kind validation and I18n::BadInflectionKind implemented in Backend#prepare_inflection_tokens
+
+commit 72699c8d3b075515c7bb005ae284798044880a21
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 03:47:39 2011 +0100
+
+    Interpolation routine for complex kinds simplified
+
+commit dbaf3062790c3290fbd738ba2c2176decf7f4c4f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 03:47:15 2011 +0100
+
+    I18n::BadInflectionKind documented
+
+commit 5d287872bea57aaf8ef42f82b3a00bebefebab42
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 03:46:53 2011 +0100
+
+    Added I18n::BadInflectionKind exception class
+
+commit 5e887376c1de71b5100d12bac9aac3d3f56836ae
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 00:52:19 2011 +0100
+
+    Added some tests for complex patterns
+
+commit d7b371087665ba02b248aa259169877aea33b9df
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 00:52:00 2011 +0100
+
+    Documentation updated
+
+commit 584986b39d77fa212cafcce6c7473205f4ede6c1
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 2 00:51:39 2011 +0100
+
+    Complex pattern interpolation simplified a lot.
+
+commit bdbeea5e539f6e690d03f4de253fbaa72f23fa32
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 04:55:31 2011 +0100
+
+    Workarounds in complex pattern processing method for Ruby 1.8 (symbols, erronous enumerators)
+
+commit ff0379e4eea9cafe1d4da9cb8b5df1284b710bf0
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 02:21:43 2011 +0100
+
+    Interpolation method fixed and improved (now it sends all subpatterns at once)
+
+commit fc4ece4637a00003156e1cdf3742c6b9649bc211
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 02:20:21 2011 +0100
+
+    Key reporting in error reporting methods fixed and improved
+
+commit 74194159094b59e87899d3b6f231181912a2f6b0
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 02:19:36 2011 +0100
+
+    Reserved keys updated
+
+commit aa374a3e84a45ac69e7c79e8d12596932a44604e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 02:19:05 2011 +0100
+
+    Documentation updated, removed debugging switch from backend method
+
+commit c133c73b5260d44bcbc2a765c5b46a82a14151e9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Jan 31 02:18:27 2011 +0100
+
+    Documentation fixed
+
+commit 3eca748793ac7e1ac4adb5501ffad69d96485e2c
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 23:49:06 2011 +0100
+
+    Added :inflector_cache_aware switch that causes inflector to pass all options to translate call
+
+commit 0a9efaedff51caecd1741dfe39152c9a0dbc387f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 22:58:11 2011 +0100
+
+    Reading of known kinds improved a bit; one intermediate array on each call
+
+commit 09d5358f6f829cea2eb42543270c2a0097fe9472
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 20:38:08 2011 +0100
+
+    Updated HISTORY and TODO
+
+commit ac2331d4f72b7cbe9a0c2b1c1860a374210800f6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 20:37:42 2011 +0100
+
+    Removed cache-related stuff. A cache should be other backend for I18n, not a class for Inflector
+
+commit a8c48bf13f8856d48195ca40b4e4110339de2d82
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 20:36:18 2011 +0100
+
+    Options preparing methods moved to I18n::Inflector::InflectionOptions, @known is now a lazy hash
+
+commit 9cce55b6dfedf0a1720dd8fd7dbe821f7a666d32
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 20:32:52 2011 +0100
+
+    All inflection related exceptions are now aware of translation key
+
+commit abee72cce5f552aa0a217a2ef4ed977d7f251cd5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 17:43:53 2011 +0100
+
+    Added some test for complex patterns mixed with aliased patterns and loud tokens
+
+commit d38d9fdb5e4cea7cd2add52d94a1262d3d54cd9a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 17:40:55 2011 +0100
+
+    Documentation updated
+
+commit 67edeef3557064af60de255f2a0778aa9df5d3e6
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 17:40:44 2011 +0100
+
+    Typo removed
+
+commit 0fbcc31ab7ada438dc209d49569daf5d44267b02
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 17:40:34 2011 +0100
+
+    Complex patterns now support loud tokens
+
+commit d2cd5d76a457f4865c330b7d22d32e27ae903fc7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Jan 30 06:09:19 2011 +0100
+
+    Updated TODO, ChangeLog and HISTORY
+
 commit 0c77a0c49f32b3a20d1ad6fd6c16ff441e12d8d3
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sun Jan 30 05:56:50 2011 +0100

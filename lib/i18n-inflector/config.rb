@@ -1,0 +1,233 @@
+# encoding: utf-8
+#
+# Author::    Paweł Wilk (mailto:pw@gnu.org)
+# Copyright:: (c) 2011 by Paweł Wilk
+# License::   This program is licensed under the terms of {file:LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# 
+# This file contains configuration of I18n::Inflector module.
+
+module I18n
+
+  module Inflector
+
+    # This module contains submodules and module
+    # methods for handling global configuration
+    # of the engine.
+    module Config
+
+      # @private
+      def get_i18n_reserved_keys
+        return I18n::RESERVED_KEYS                  if defined?(I18n::RESERVED_KEYS)
+        return I18n::Backend::Base::RESERVED_KEYS   if defined?(I18n::Backend::Base::RESERVED_KEYS)
+        return I18n::Backend::Simple::RESERVED_KEYS if defined?(I18n::Backend::Simple::RESERVED_KEYS)
+        return RESERVED_KEYS                        if defined?(RESERVED_KEYS)
+        []
+      end
+      module_function :get_i18n_reserved_keys
+
+      # @private
+      def all_consts(obj, f=String)
+        obj.constants.map do |c|
+          v = obj.const_get(c)
+          (v.is_a?(f) && c != 'ALL') ? v : nil
+        end.compact.uniq
+      end
+      module_function :all_consts
+
+      # @private
+      def invalid?(v, root)
+        return true if v.nil?
+        v = v.to_s
+        return true if (v.empty? || root =~ v)
+        false
+      end
+      module_function :invalid?
+
+      # This module contains characters that are markers
+      # giving the shape for a pattern and its elements.
+      module Markers
+
+        # A character that is used to mark pattern
+        # and a strict kind.
+        PATTERN       = '@'
+
+        # A character that is used to open a pattern.
+        PATTERN_BEGIN = '{'
+
+        # A character that ends a pattern.
+        PATTERN_END   = '}'
+
+        # A character that indicates an alias.
+        ALIAS         = '@'
+
+        # A character used to mark token value as loud.
+        LOUD_VALUE    = '~'
+
+        # All markers.
+        ALL = Config.all_consts(self)
+
+      end # module Markers
+
+      module Escapes
+
+        # A general esape symbol.
+        ESCAPE    = '\\'
+
+        # A regular expression that catches escape symbols.
+        ESCAPE_R  = /\\([^\\])/
+
+        # A list of escape symbols that cause a pattern to be escaped.
+        PATTERN   = HSet[Markers::PATTERN, Escapes::ESCAPE]
+
+      end # module Escapes
+
+      # This module contains constants that define
+      # operators in patterns.
+      module Operators
+
+        # This module contains constants that define
+        # operators in patterns that handle token
+        # groups or tokens.
+        module Tokens
+
+          # A character used to mark patterns as complex
+          # and to separate token groups assigned to different
+          # strict kinds.
+          AND     = '+'
+
+          # A character that is used to separate tokens
+          # or token groups within a pattern. 
+          OR      = '|'
+
+          # A character used to assign value to a token
+          # or a group of tokens.    
+          ASSIGN  = ':'
+
+          # All token groups operators.
+          ALL     = Config.all_consts(self)
+
+        end # module Tokens
+
+        # This module contains constants that are operators
+        # in patterns that handle token groups or tokens.
+        module Token
+
+          # A character used to separate multiple tokens.
+          OR      = ','
+
+          # A character used to mark tokens as negative.
+          NOT     = '!'
+
+          # All token operators.
+          ALL     = Config.all_consts(self)
+
+        end # module Token
+
+        # All operators.
+        ALL = (Tokens::ALL + Token::ALL).uniq
+
+      end # module Operators
+
+      # This module contains constants defining
+      # reserved characters in tokens and kinds.
+      module Reserved
+
+        # Reserved keys.
+        KEYS = HSet.new(Config.get_i18n_reserved_keys)
+
+        # This module contains constants defining
+        # reserved characters in token identifiers.
+        module Tokens
+
+          # Reserved characters in token identifiers placed in configuration.
+          DB  = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
+
+          # Reserved characters in token identifiers passed as options.
+          OPTION  = DB
+
+          # Reserved characters in token identifiers placed in patterns.
+          PATTERN   = OPTION
+
+          # This module contains constants defining
+          # regular expressions for reserved characters
+          # in token identifiers.
+          module Regexp
+
+            # Reserved characters in token identifiers placed in configuration.
+            DB  = ::Regexp.new '[' + Tokens::DB.join + ']'
+
+            # Reserved characters in token identifiers passed as options.
+            OPTION  = ::Regexp.new '[' + Tokens::OPTION.join + ']'
+
+            # Reserved characters in token identifiers placed in patterns.
+            PATTERN   = ::Regexp.new '[' + Tokens::PATTERN.join + ']'
+
+          end # module Regexp
+
+          def contained?(token, root)
+            token = token.to_s
+            return true if (token.empty? || Regexp.const_get(root) =~ token)
+            false
+          end
+          module_function :contained?
+
+        end # module Tokens
+
+        # This module contains constants defining
+        # reserved characters in kind identifiers.
+        module Kinds
+
+          # Reserved characters in kind identifiers placed in configuration.
+          DB        = (Operators::ALL + Markers::ALL - [Markers::ALIAS, Markers::LOUD_VALUE]).uniq
+
+          # Reserved characters in kind identifiers passed as options.
+          OPTION    = DB
+
+          # Reserved characters in kind identifiers placed in patterns.
+          PATTERN   = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
+
+          # This module contains constants defining
+          # regular expressions for reserved characters
+          # in kind identifiers.
+          module Regexp
+
+            # Reserved characters in kind identifiers placed in configuration.
+            DB        = ::Regexp.new '[' + Kinds::DB.join + ']'
+
+            # Reserved characters in kind identifiers passed as options.
+            OPTION    = ::Regexp.new '[' + Kinds::OPTION.join + ']'
+
+            # Reserved characters in kind identifiers placed in patterns.
+            PATTERN   = ::Regexp.new '[' + Kinds::PATTERN.join + ']'
+
+          end # module Regexp
+
+          def contained?(kind, root)
+            kind = kind.to_s
+            return true if (kind.empty? || Regexp.const_get(root) =~ kind)
+            false
+          end
+          module_function :contained?
+
+        end # module Kinds
+
+      end # module Reserved
+
+      # A Symbol that is used to mark default token
+      # in configuration and in options.
+      DEFAULT_TOKEN = :default
+
+      # A regular expression that catches patterns.
+      #PATTERN         = /(.?)@([^\{]*)\{([^\}]+)\}/
+      PATTERN_REGEXP = Regexp.new '(.?)' + Markers::PATTERN       + '([^' + Markers::PATTERN_BEGIN + ']*)' +
+                                           Markers::PATTERN_BEGIN + '([^' + Markers::PATTERN_END   + ']+)' +
+                                           Markers::PATTERN_END
+
+      # A regular expression that catches token groups or single tokens.
+      TOKENS_REGEXP = /(?:([^\:\|]+):+([^\|]+)\1?)|([^:\|]+)/
+
+    end # module Config
+
+  end # module Inflector
+
+end # module I18n

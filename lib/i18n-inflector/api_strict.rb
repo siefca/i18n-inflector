@@ -491,7 +491,7 @@ module I18n
         when 1 then [args[0], nil, nil]
         when 2 then [args[0], args[1], nil]
         when 3 then args
-        else raise ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
+        else raise I18n::ArgumentError.new("wrong number of arguments: #{args.count} for (1..3)")
         end
         token = token.nil? || token.to_s.empty? ? nil : token.to_sym
         kind  = kind.nil?  || kind.to_s.empty?  ? nil : kind.to_sym

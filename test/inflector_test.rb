@@ -366,7 +366,49 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear You!',   I18n.t('hi', :gender => :s, :@gender => :unknown, :locale => :xx)
     assert_equal 'Dear You!',   I18n.t('hi', :gender => :s, :@gender => nil,      :locale => :xx)
     assert_equal 'Dear Sir!',   I18n.t('hi', :gender => :s, :@gender => :s,       :locale => :xx)
+  end
 
+  test "backend inflector translate: is immune to reserved or bad content" do
+    store_translations(:xx, :i18n => { :inflections => { :@gender => { :s => 'sir', :o => 'other', :s => 'a', :n => 'n', :default => 'n' }}})
+    store_translations(:xx, :i18n => { :inflections => { :@tense => { :now => ''}}})
+    store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => '@', :@gender => '+',  :locale => :xx)
+    assert_equal 'Dear You!',   I18n.t('hi', :gender => '',  :@gender => '',   :locale => :xx)
+    store_translations(:xx, 'hi' => '@gender+tense{m+now:~|f+past:she was}')
+    assert_equal 'male ', I18n.t('hi', :gender => :m, :tense => :now, :locale => :xx)
+    assert_raise I18n::ArgumentError do
+      I18n.t('', :gender => :s, :locale => :xx)
+    end
+    I18n.backend = Backend.new
+    assert_raise I18n::BadInflectionKind do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => 'something' }})
+    end
+    I18n.backend = Backend.new
+    store_translations(:xx, 'hi' => '@gender+tense{m+now:~|f+past:she was}')
+    assert_equal '',   I18n.t('hi', :gender => :s, :@gender => :s, :locale => :xx)
+    assert_raise I18n::BadInflectionToken do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :sb => '@', :d=>'1'}}})
+    end
+    I18n.backend = Backend.new
+    assert_raise I18n::BadInflectionToken do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :sa => nil, :d=>'1'}}})
+    end
+    I18n.backend = Backend.new
+    assert_raise I18n::BadInflectionToken do
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { '' => 'a', :d=>'1'}}})
+    end
+    ['@',',','cos,cos','@cos+cos','+','cos!cos',':','cos:',':cos','cos:cos','!d'].each do |token|
+      I18n.backend = Backend.new
+      assert_raise I18n::BadInflectionToken do
+        store_translations(:xx, :i18n => { :inflections => { :@gender => { token.to_sym => 'a', :d=>'1' }}})
+      end
+    end
+    ['@',',','cos,cos','@cos+cos','+','cos!cos',':','cos:',':cos','cos:cos','!d'].each do |kind|
+      I18n.backend = Backend.new
+      assert_raise I18n::BadInflectionKind do
+        store_translations(:xx, :i18n => { :inflections => { kind.to_sym => { :s => 'a', :d=>'1' }}})
+      end
+    end
   end
 
   test "inflector inflected_locales: lists languages that support inflection" do

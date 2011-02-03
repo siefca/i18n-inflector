@@ -543,6 +543,13 @@ module I18n
   # simply use combined patterns with the given values instead
   # of loud tokens.
   # 
+  # == Reserved names
+  # Some strings cannot be used as names and/or identifiers of
+  # kinds and tokens. There are also some reserved characters
+  # that cannot be used within them.
+  # 
+  # == Operator precedence
+  # symbol - meaning - defined in
   # == Errors
   # By default the module will silently ignore any interpolation errors.
   # You can turn off this default behavior by passing +:raises+ option.
