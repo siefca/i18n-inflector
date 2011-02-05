@@ -53,7 +53,7 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "backend inflector store_translations: regenerates inflection structures when translations are loaded" do
     store_translations(:xx, :i18n => { :inflections => { :gender => { :o => 'other' }}})
     store_translations(:xx, 'hi' => 'Dear @{f:Lady|o:Others|n:You|All}!')
-    assert_equal 'Dear Others!',  I18n.t('hi', :gender => :o,       :locale => :xx, :inflector_raises => true)
+    assert_equal 'Dear Others!',  I18n.t('hi', :gender => :o,       :locale => :xx)
     assert_equal 'Dear Lady!',    I18n.t('hi', :gender => :f,       :locale => :xx)
     assert_equal 'Dear You!',     I18n.t('hi', :gender => :unknown, :locale => :xx)
     assert_equal 'Dear All!',     I18n.t('hi', :gender => :m,       :locale => :xx)
@@ -74,25 +74,25 @@ class I18nInflectorTest < Test::Unit::TestCase
 
   test "backend inflector store_translations: raises I18n::BadInflectionAlias when bad alias is given" do
     assert_raise I18n::BadInflectionAlias do
-      store_translations(:xx, :i18n => { :inflections => { :gender => { :o => '@nonexistant' }}})
+      store_translations(:xx, :i18n => { :inflections => { :gender => { :o => '@xnonexistant' }}})
     end
   end
 
   test "backend inflector store_translations: raises I18n::BadInflectionAlias when bad default is given" do
     assert_raise I18n::BadInflectionAlias do
-      store_translations(:xx, :i18n => { :inflections => { :gender => { :default => '@nonexistant' }}})
+      store_translations(:xx, :i18n => { :inflections => { :gender => { :default => '@ynonexistant' }}})
     end
   end
 
   test "backend inflector strict store_translations: raises I18n::BadInflectionAlias when bad alias is given" do
     assert_raise I18n::BadInflectionAlias do
-      store_translations(:xx, :i18n => { :inflections => { :@gender => { :oh => '@nonex' }}})
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :oh => '@znonex' }}})
     end
   end
 
   test "backend inflector strict store_translations: raises I18n::BadInflectionAlias when bad default is given" do
     assert_raise I18n::BadInflectionAlias do
-      store_translations(:xx, :i18n => { :inflections => { :@gender => { :default => '@nonex' }}})
+      store_translations(:xx, :i18n => { :inflections => { :@gender => { :default => '@cnonex' }}})
     end
   end
 
@@ -171,6 +171,11 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear All!', I18n.t('welcome', :gender => nil,       :locale => :xx, :inflector_unknown_defaults => false)
   end
 
+  test "backend inflector translate: uses default token when inflection option is set to :default" do
+    assert_equal 'Dear You!', I18n.t('welcome', :gender => :default,  :locale => :xx, :inflector_unknown_defaults => true)
+    assert_equal 'Dear You!', I18n.t('welcome', :gender => :default,  :locale => :xx, :inflector_unknown_defaults => false)
+  end
+
   test "backend inflector translate: falls back to default for no gender option when :inflector_unknown_defaults is false" do
     assert_equal 'Dear You!', I18n.t('welcome', :locale => :xx, :inflector_unknown_defaults => false)
   end
@@ -213,10 +218,10 @@ class I18nInflectorTest < Test::Unit::TestCase
     end
   end
 
-  test "backend inflector translate: raises I18n::InvalidInflectionToken when bad token is given and inflector_raises is true" do
-    store_translations(:xx, 'hi' => 'Dear @{f:Lady|o:BAD_TOKEN|n:You|First}!')
-    assert_raise(I18n::InvalidInflectionToken) { I18n.t('hi', :locale => :xx, :inflector_raises => true) }
-    assert_raise I18n::InvalidInflectionToken do
+  test "backend inflector translate: raises I18n::MisplacedInflectionToken when misplaced token is given and inflector_raises is true" do
+    store_translations(:xx, 'hi' => 'Dear @{f:Lady|i:BAD_TOKEN|n:You|First}!')
+    assert_raise(I18n::MisplacedInflectionToken) { I18n.t('hi', :locale => :xx, :inflector_raises => true) }
+    assert_raise I18n::MisplacedInflectionToken do
       I18n.inflector.options.raises = true
       I18n.t('hi', :locale => :xx)
     end
@@ -371,6 +376,8 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "backend inflector translate: is immune to reserved or bad content" do
     store_translations(:xx, :i18n => { :inflections => { :@gender => { :s => 'sir', :o => 'other', :s => 'a', :n => 'n', :default => 'n' }}})
     store_translations(:xx, :i18n => { :inflections => { :@tense => { :now => ''}}})
+    store_translations(:xx, 'hi'  => 'Dear @nonexistant{s:Sir|o:Other|n:You|All}!')
+    assert_equal 'Dear All!',   I18n.t('hi', :gender => 'm',  :locale => :xx)
     store_translations(:xx, 'hi'  => 'Dear @gender{s:Sir|o:Other|n:You|All}!')
     assert_equal 'Dear You!',   I18n.t('hi', :gender => '@', :@gender => '+',  :locale => :xx)
     assert_equal 'Dear You!',   I18n.t('hi', :gender => '',  :@gender => '',   :locale => :xx)
@@ -379,6 +386,23 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_raise I18n::ArgumentError do
       I18n.t('', :gender => :s, :locale => :xx)
     end
+    assert_raise I18n::InvalidInflectionKind do
+      store_translations(:xx, 'hop' => '@gen,der{m+now:~|f+past:she was}')
+      I18n.t('hop', :gender => :s, :locale => :xx, :inflector_raises => true)
+    end
+    assert_raise I18n::InvalidInflectionToken do
+      I18n.backend.store_translations(:xx, 'hop' => '@{m+now:~|f+past:she was}')
+      I18n.t('hop', :gender => :s, :locale => :xx, :inflector_raises => true)
+    end
+    assert_raise I18n::InvalidInflectionKind do
+      store_translations(:xx, 'hi'  => 'Dear @uuuuuuuu{s:Sir|o:Other|n:You|All}!')
+      I18n.t('hi', :gender => 'm',  :locale => :xx, :inflector_raises => true)
+    end
+    assert_raise I18n::MisplacedInflectionToken do
+      store_translations(:xx, 'hi'  => 'Dear @tense{s:Sir|o:Other|n:You|All}!')
+      I18n.t('hi', :gender => 'm',  :locale => :xx, :inflector_raises => true)
+    end
+
     I18n.backend = Backend.new
     assert_raise I18n::BadInflectionKind do
       store_translations(:xx, :i18n => { :inflections => { :@gender => 'something' }})
@@ -403,7 +427,7 @@ class I18nInflectorTest < Test::Unit::TestCase
         store_translations(:xx, :i18n => { :inflections => { :@gender => { token.to_sym => 'a', :d=>'1' }}})
       end
     end
-    ['@',',','cos,cos','@cos+cos','+','cos!cos',':','cos:',':cos','cos:cos','!d'].each do |kind|
+    ['@',',','inflector_something','default','cos,cos','@cos+cos','+','cos!cos',':','cos:',':cos','cos:cos','!d'].each do |kind|
       I18n.backend = Backend.new
       assert_raise I18n::BadInflectionKind do
         store_translations(:xx, :i18n => { :inflections => { kind.to_sym => { :s => 'a', :d=>'1' }}})
@@ -758,7 +782,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal "male",    I18n.inflector.token_description(:m, :xx)
     I18n.locale = :xx
     assert_equal "male",    I18n.inflector.token_description(:m)
-    assert_equal nil,       I18n.inflector.token_description(:nonexistent,  :xx)
+    assert_equal nil,       I18n.inflector.token_description(:vnonexistent,  :xx)
     assert_equal "neuter",  I18n.inflector.token_description(:neutral,      :xx)
   end
 
@@ -766,7 +790,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal "male",    I18n.inflector.strict.token_description(:m, :gender, :xx)
     I18n.locale = :xx
     assert_equal "male",    I18n.inflector.strict.token_description(:m,            :gender)
-    assert_equal nil,       I18n.inflector.strict.token_description(:nonexistent,  :gender, :xx)
+    assert_equal nil,       I18n.inflector.strict.token_description(:bnonexistent,  :gender, :xx)
     assert_equal "neuter",  I18n.inflector.strict.token_description(:neutral,      :gender, :xx)
   end
 
