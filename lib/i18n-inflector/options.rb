@@ -22,7 +22,36 @@ module I18n
     # the translation method. Such option should have the name of a
     # global option but prefixed with +inflector_+:
     #   translate('welcome', :inflector_<option_name> => value)
+    # @note This class uses modified version of +attr_accessor+ that
+    #   memorizes any added method name as an option name. These options
+    #   (with +inflector_+ prefix added) are accessible through
+    #   {#known} method. The last method is used by options preparing
+    #   routine when the interpolation is performed.
     class InflectionOptions
+
+      # Prefix used to mark option as a controlling option.
+      OPTION_PREFIX = 'inflector_'
+
+      class <<self
+
+        # @private
+        def known
+          @known
+        end
+
+        # @private
+        alias old_attr_accessor attr_accessor
+        def attr_accessor(*args)
+          r = old_attr_accessor(*args)
+          @known ||= Hash.new
+          args.each do |arg|
+            key = '@' + arg.to_s
+            @known[key.to_sym] = (OPTION_PREFIX + arg.to_s).to_sym
+          end
+          r
+        end
+
+      end
 
       # This switch enables cache-aware mode. In that mode inflection
       # options and flags are evaluated before calling original translate
@@ -55,7 +84,7 @@ module I18n
       # errors are raised in case of unknown or empty tokens present in a pattern
       # or in options. This switch is by default set to +false+.
       # 
-      # @note Local option +:inflector_raises+ or I18n's +:raise+ passed
+      # @note Local option +:inflector_raises+ passed
       #   to the {I18n::Backend::Inflector#translate} overrides this setting.
       # 
       # @api public
@@ -112,7 +141,7 @@ module I18n
       #   # :gender option is not present,
       #   # unknown tokens from options are not falling back to default
       #   
-      #   I18n.t('welcome', :unknown_defaults => false)
+      #   I18n.t('welcome', :inflector_unknown_defaults => false)
       #   # => "Dear You"
       # 
       #   # other way of setting an option – globally
@@ -124,7 +153,7 @@ module I18n
       #   # :gender option is not present, free text is present,
       #   # unknown tokens from options are not falling back to default
       #   
-      #   I18n.t('welcome_free', :unknown_defaults => false)
+      #   I18n.t('welcome_free', :inflector_unknown_defaults => false)
       #   # => "Dear You"
       #   
       # @example Example 2
@@ -138,13 +167,13 @@ module I18n
       #   # :gender option is nil
       #   # unknown tokens from options are not falling back to default token for a kind
       #   
-      #   I18n.t('welcome', :gender => nil, :unknown_defaults => false)
+      #   I18n.t('welcome', :gender => nil, :inflector_unknown_defaults => false)
       #   # => "Dear "
       #   
       #   # :gender option is nil, free text is present
       #   # unknown tokens from options are not falling back to default token for a kind
       #   
-      #   I18n.t('welcome_free', :gender => nil, :unknown_defaults => false)
+      #   I18n.t('welcome_free', :gender => nil, :inflector_unknown_defaults => false)
       #   # => "Dear Free"
       # 
       # @example Example 3
@@ -158,13 +187,13 @@ module I18n
       #   # :gender option is unknown,
       #   # unknown tokens from options are not falling back to default token for a kind
       #   
-      #   I18n.t('welcome', :gender => :unknown_blabla, :unknown_defaults => false)
+      #   I18n.t('welcome', :gender => :unknown_blabla, :inflector_unknown_defaults => false)
       #   # => "Dear "
       #   
       #   # :gender option is unknown, free text is present
       #   # unknown tokens from options are not falling back to default token for a kind
       #   
-      #   I18n.t('welcome_free', :gender => :unknown_blabla, :unknown_defaults => false)
+      #   I18n.t('welcome_free', :gender => :unknown_blabla, :inflector_unknown_defaults => false)
       #   # => "Dear Free"
       attr_accessor :unknown_defaults
 
@@ -198,18 +227,17 @@ module I18n
       #           default: n
       #   
       #     welcome:  'Dear @{n:You|m:Sir}'
-      # @example Usage of +:excluded_defaults+ option
+      # @example Usage of +:inflector_excluded_defaults+ option
       #   I18n.t('welcome', :gender => :o)
       #   # => "Dear "
       #   
-      #   I18n.t('welcome', :gender => :o, :excluded_defaults => true)
+      #   I18n.t('welcome', :gender => :o, :inflector_excluded_defaults => true)
       #   # => "Dear You"
       attr_accessor :excluded_defaults
 
       # This method initializes all internal structures.
       def initialize
         reset
-        generate_known_options
       end
 
       # This method resets all options to their default values.
@@ -233,10 +261,7 @@ module I18n
       # @param [Hash] options the options
       # @return [Hash] the given options
       def prepare_options!(options)
-        if (!options.has_key?(:inflector_raises) && options[:raise])
-          options[:inflector_raises] = true
-        end
-        @known.
+        self.class.known.
         reject { |name,long| options.has_key?(long) }.
         each   { |name,long| options[long] = instance_variable_get(name) }
         options
@@ -251,7 +276,7 @@ module I18n
       # @param [Hash] options the given options
       # @return [Hash] the given options
       def clean_for_translate!(options)
-        @known.each { |name,long| options.delete long }
+        self.class.known.each { |name,long| options.delete long }
         options
       end
 
@@ -261,24 +286,7 @@ module I18n
       # @api public
       # @return [Array<Symbol>] the known options
       def known
-        @known.values
-      end
-
-      protected
-
-      # This method generates known options map
-      # so their names are easy to access.
-      # 
-      # @return [void]
-      def generate_known_options
-        k = Hash.new
-        instance_variables.map do |opt|
-          sopt = opt.to_sym
-          next if sopt == :@known
-          k[sopt] = ('inflector_' + opt[1..-1]).to_sym
-        end
-        @known = LazyHashEnumerator.new(k)
-        nil
+        self.class.known.values
       end
 
     end
