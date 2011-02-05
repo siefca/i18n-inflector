@@ -22,6 +22,9 @@ module I18n
     # Usually you don't have to know what's here to use it.
     module Inflector
 
+      # Shortcut to configuration module.
+      InflectorCfg = I18n::Inflector::Config
+
       # This accessor allows to reach API methods of the
       # inflector object associated with this class.
       def inflector
@@ -75,11 +78,11 @@ module I18n
 
         # locale is not inflected - return string cleaned from pattern
         unless @inflector.inflected_locale?(locale)
-          return translated_string.gsub(I18n::Inflector::Config::PATTERN_REGEXP,'')
+          return translated_string.gsub(InflectorCfg::PATTERN_REGEXP,'')
         end
 
         # no pattern in a string - return string as is
-        unless translated_string.include?(I18n::Inflector::Config::Markers::PATTERN)
+        unless translated_string.include?(InflectorCfg::Markers::PATTERN)
           return translated_string
         end
 
@@ -199,7 +202,7 @@ module I18n
         kind_subtree  = inflections_tree[kind]
         value         = kind_subtree[token].to_s
 
-        if value[0..0] != I18n::Inflector::Config::Markers::ALIAS
+        if value[0..0] != InflectorCfg::Markers::ALIAS
           if kind_subtree.has_key?(token)
             return token
           else
@@ -209,7 +212,7 @@ module I18n
           orig_token = token
           token = value[1..-1]
 
-          if I18n::Inflector::Config::Reserved::Tokens.contained?(token, :DB)
+          if InflectorCfg::Reserved::Tokens.invalid?(token, :DB)
             raise I18n::BadInflectionToken.new(locale, token, kind)
           end
 
@@ -258,7 +261,7 @@ module I18n
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
 
           # validate token's kind
-          if (kind.to_s.empty? || I18n::Inflector::Config::Reserved::Kinds.contained?(orig_kind, :DB))
+          if (kind.to_s.empty? || InflectorCfg::Reserved::Kinds.invalid?(orig_kind, :DB))
             raise I18n::BadInflectionKind.new(locale, orig_kind)
           end
 
@@ -266,18 +269,19 @@ module I18n
 
             # test for duplicate
             if subdb.has_token?(token, strict_kind)
-              raise I18n::DuplicatedInflectionToken.new(locale, token, orig_kind, subdb.get_kind(token, strict_kind))
+              raise I18n::DuplicatedInflectionToken.new(locale, token, orig_kind,
+                                                        subdb.get_kind(token, strict_kind))
             end
 
             # validate token's name
-            if I18n::Inflector::Config::Reserved::Tokens.contained?(token, :DB)
+            if InflectorCfg::Reserved::Tokens.invalid?(token, :DB)
               raise I18n::BadInflectionToken.new(locale, token, orig_kind)
             end
 
             # validate token's description
             if description.nil?
               raise I18n::BadInflectionToken.new(locale, token, orig_kind, description)
-            elsif description[0..0] == I18n::Inflector::Config::Markers::ALIAS
+            elsif description[0..0] == InflectorCfg::Markers::ALIAS
               next
             end
 
@@ -292,7 +296,7 @@ module I18n
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
             next if token == :default
-            next if description[0..0] != I18n::Inflector::Config::Markers::ALIAS
+            next if description[0..0] != InflectorCfg::Markers::ALIAS
             real_token = shorten_inflection_alias(token, orig_kind, locale, inflections_tree)
             subdb.add_alias(token, real_token, kind) unless real_token.nil?
           end
@@ -306,7 +310,7 @@ module I18n
           end
           orig_target = tokens[:default]
           target = orig_target.to_s
-          target = target[1..-1] if target[0..0] == I18n::Inflector::Config::Markers::ALIAS
+          target = target[1..-1] if target[0..0] == InflectorCfg::Markers::ALIAS
           if target.empty?
             raise I18n::BadInflectionToken.new(locale, token, orig_kind, orig_target)
           end
@@ -333,7 +337,7 @@ module I18n
           subdb       = idb
           strict_kind = nil
           orig_kind   = kind
-          if kind.to_s[0..0] == I18n::Inflector::Config::Markers::PATTERN
+          if kind.to_s[0..0] == InflectorCfg::Markers::PATTERN
             kind        = kind.to_s[1..-1]
             next if kind.empty?
             kind        = kind.to_sym

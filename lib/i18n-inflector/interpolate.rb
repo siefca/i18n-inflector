@@ -29,9 +29,6 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#unknown_defaults})
       # @option options [Boolean] :inflector_raises (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#raises})
-      # @option options [Boolean] :raise (false) local switch from I18n that sets
-      #   <tt>:inflector_raises</tt> though also overrides global setting
-      #   (see: {I18n::Inflector::InflectionOptions#raises})
       # @option options [Boolean] :inflector_aliased_patterns (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @option options [Boolean] :inflector_cache_aware (false) local switch
@@ -45,7 +42,7 @@ module I18n
 
       # @private
       def interpolate_core(string, locale, options)
-        used_kinds        = options.except(*Reserved::KEYS)
+        option_kinds      = options.except(*Reserved::KEYS)
         raises            = options[:inflector_raises]
         aliased_patterns  = options[:inflector_aliased_patterns]
         unknown_defaults  = options[:inflector_unknown_defaults]
@@ -72,16 +69,16 @@ module I18n
 
           # set parsed kind if strict kind is given (named pattern is parsed) 
           if strict_kind.empty?
-            parsed_symbol = nil
-            strict_kind   = nil
-            parsed_kind   = nil
-            default_token = nil
-            subdb         = idb
+            sym_parsed_kind = nil
+            strict_kind     = nil
+            parsed_kind     = nil
+            default_token   = nil
+            subdb           = idb
           else
-            parsed_symbol = (Markers::PATTERN + strict_kind).to_sym
-
-            # Complex markers processing
+            sym_parsed_kind = (Markers::PATTERN + strict_kind).to_sym
             if strict_kind.include?(Operators::Tokens::AND)
+
+              # Complex markers processing
               begin
                 ext_value = interpolate_complex(strict_kind,
                                                 pattern_content,
@@ -91,11 +88,27 @@ module I18n
                 raise
               end
               found = pattern_content = "" # disable further processing
+
             else
-              strict_kind   = strict_kind.to_sym
-              parsed_kind   = strict_kind
-              subdb         = idb_strict
-              default_token = subdb.get_default_token(parsed_kind)
+
+              # Strict kinds preparing
+              subdb = idb_strict
+
+              # validate strict kind and set needed variables
+              if (Reserved::Kinds.invalid?(strict_kind, :PATTERN) ||
+                  !idb_strict.has_kind?(strict_kind.to_sym))
+                raise I18n::InvalidInflectionKind.new(locale, ext_pattern, sym_parsed_kind) if raises
+                # Take a free text for invalid kind and return it
+                next pattern_fix + pattern_content.scan(TOKENS_REGEXP).reverse.
+                                   select { |t,v,f| t.nil? && !f.nil? }.
+                                   map    { |t,v,f| f.to_s            }.
+                                   first.to_s
+              else
+                strict_kind   = strict_kind.to_sym
+                parsed_kind   = strict_kind
+                default_token = subdb.get_default_token(parsed_kind)
+              end
+
             end
           end
 
@@ -121,43 +134,52 @@ module I18n
             # split tokens from group if comma is present and put into fast list
             ext_token.split(Operators::Token::OR).each do |t|
               # token name corrupted
-              if t.empty?
+              if t.to_s.empty?
                 raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
                 next
               end
 
-              # mark negative-matching token and put it onto negatives fast list
+              # mark negative-matching token and put it on the negatives fast list
               if t[0..0] == Operators::Token::NOT
                 t = t[1..-1]
-                if t.empty?
-                  raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
-                  next
-                end
-                t = t.to_sym
-                t = subdb.get_true_token(t, strict_kind) if aliased_patterns
-                negatives[t] = true
+                negative = true
+              else
+                negative = false
+              end
+
+              # is token name corrupted?
+              if Reserved::Tokens.invalid?(t, :PATTERN)
+                raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
+                next
               end
 
               t = t.to_sym
               t = subdb.get_true_token(t, strict_kind) if aliased_patterns
+              negatives[t] = true if negative
 
-              # get kind for that token
+              # get a kind for that token
               kind  = subdb.get_kind(t, strict_kind)
               if kind.nil?
-                raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises
+                if raises
+                  # regular pattern and token that has a bad kind
+                  if strict_kind.nil? # fixme - retest when it's raised
+                    raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t, sym_parsed_kind)
+                  else
+                    # named pattern (kind validated before, so the only error is misplaced token)
+                    raise I18n::MisplacedInflectionToken.new(locale, ext_pattern, t, sym_parsed_kind)
+                  end
+                end
                 next
               end
 
               # set processed kind after matching first token in a pattern
               if parsed_kind.nil?
                 parsed_kind   = kind
-                parsed_symbol = kind.to_sym
+                sym_parsed_kind = kind.to_sym
                 default_token = subdb.get_default_token(parsed_kind)
               elsif parsed_kind != kind
                 # tokens of different kinds in one regular (not named) pattern are prohibited
-                if raises
-                  raise I18n::MisplacedInflectionToken.new(locale, ext_pattern, t, parsed_symbol)
-                end
+                raise I18n::MisplacedInflectionToken.new(locale, ext_pattern, t, sym_parsed_kind) if raises
                 next
               end
 
@@ -171,18 +193,20 @@ module I18n
             end
 
             # try @-style option for strict kind, fallback to regular if not found
-            # and memorize option name for error reporting
-            oname = !strict_kind.nil? && used_kinds.has_key?(parsed_symbol) ?
-                    parsed_symbol : (used_kinds.has_key?(kind) ? kind : nil)
+            # and memorize option name
+            oname = !strict_kind.nil? && option_kinds.has_key?(sym_parsed_kind) ?
+                    sym_parsed_kind : (option_kinds.has_key?(kind) ? kind : nil)
 
             # Get option if possible and memorize for error reporting;
             # fallback to default token if option still not found
+            # orig_option is for error reporting
             if oname.nil?
               option      = default_token
               orig_option = nil
             else
-              option      = used_kinds[oname]
+              option      = option_kinds[oname]
               orig_option = option
+              option      = default_token if option == Keys::DEFAULT_TOKEN
             end
 
             if (option.nil? || option.to_s.empty?)
@@ -190,8 +214,14 @@ module I18n
               # then use default option for a kind if unknown_defaults is switched on
               option = unknown_defaults ? default_token : nil
             else
-              # validate option and if it's unknown try in aliases
-              option = subdb.get_true_token(option.to_sym, strict_kind)
+              # validate option's name
+              if Reserved::Kinds.invalid?(option, :OPTION)
+                raise I18n::InvalidInflectionOption.new(locale, ext_pattern, option) if raises
+                option = nil
+              else
+                # validate option and if it's unknown try in aliases
+                option = subdb.get_true_token(option.to_sym, strict_kind)
+              end
 
               # if still nothing then fall back to default value
               # for a kind if unknown_defaults switch is on
@@ -206,7 +236,7 @@ module I18n
               if raises
                 if oname.nil?
                   ex          = InflectionOptionNotFound
-                  oname       = parsed_symbol
+                  oname       = sym_parsed_kind
                   orig_option = nil
                 else
                   ex          = InflectionOptionIncorrect
@@ -245,7 +275,7 @@ module I18n
             # token for that kind if a default token was present
             # in a pattern
             ext_value = (excluded_defaults && !parsed_kind.nil? &&
-                         subdb.has_token?(used_kinds[parsed_kind], parsed_kind)) ?
+                         subdb.has_token?(option_kinds[parsed_kind], parsed_kind)) ?
                          parsed_default_v : nil
           elsif ext_value == Markers::LOUD_VALUE  # interpolate loud tokens
             ext_value = subdb.get_description(found, parsed_kind)
@@ -314,7 +344,9 @@ module I18n
 
         rescue IndexError, StopIteration
 
-          raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind)
+          if options[:inflector_raises]
+            raise I18n::ComplexPatternMalformed.new(locale, content, nil, complex_kind)
+          end
           result = nil
 
         end

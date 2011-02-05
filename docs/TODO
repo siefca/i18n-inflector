@@ -1,14 +1,35 @@
 == Near future
 
-* ban reserved keys while processing kinds (including :default)
-* update documentation
-* add validation checks to interpolation (options, tokens in options) and to API (arguments)
+* update error descriptions and names in long_comments
+* add validation checks to interpolation (options[done], tokens in options[done]) and to API (arguments)
 * backward compatible constants
 * add missing raises to documentation (interpolation, loading[done])
+* update documentation (long_comments)
+
+
+* move complexpatternmalformed to the errors that are raised when flag is present [done]
+* test complex pattern content without a proper strict kind in front [done]
+* allow :default as gender name (that will trigger default value if any) - write test for it [done]
+* review options documentation and add inflector_ [done]
+* ban reserved keys while processing kinds (including :default) [done]
+* ban all :inflector_ named keys [done]
+* check if all errors are really in use [done]
+
+
+== Distant future
 
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
 
-== Distant future
+* split interpolate_core and make it more reusable for raw data
+
+* inflected keys - the whole key is treated as a pattern:
+
+  @welcome:
+    f:  Dear Lady
+    m:  Dear Sir
+    n:  Dear You
+    @free:  Dear All
+    @kinds: gender
 
 * scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance) - do we need it at all?
 

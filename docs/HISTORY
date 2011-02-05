@@ -16,13 +16,13 @@
   * Added I18n::Inflector::HSet class for keeping collections of data
   * Interpolation method moved to I18n::Inflector::Interpolate module
   * All inflection related exceptions now have the attribute "key" containing key name
-  * Passing :raises option to the translate automatically sets :inflector_raises
 
 * minor bugfixes
 
   * Fixed interpolation routine when :excluded_defaults is on and a kind is strict
   * Enabled filtering of reserved names in options
   * Enabled filtering of inflection options for options that go to original translate method
+  * Updated documentation in a section describing options
 
 === 2.1.0 / 2011-01-27
 

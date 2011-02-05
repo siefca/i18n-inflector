@@ -553,10 +553,7 @@ module I18n
   # == Errors
   # By default the module will silently ignore non-critical interpolation
   # errors. You can turn off this default behavior by passing +:inflector_raises+
-  # option set to +true+ or by passing I18n's +:raise+ option. The second one
-  # will automatically set +:inflector_raises+ to +true+ if it's present and
-  # is +true+. Note, that the second way will also enable raising exceptions
-  # in I18n itself, which might not be something that you would expect.
+  # option set to +true+.
   #
   # === Usage of +:inflector_raises+ option
   # 
@@ -577,16 +574,16 @@ module I18n
   # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
   # * {I18n::InflectionOptionNotFound I18n::InflectionOptionNotFound}
   # * {I18n::InflectionOptionIncorrect I18n::InflectionOptionIncorrect}
+  # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed}
   # 
   # There are also exceptions that are raised regardless of :+raises+
   # presence or value.
   # These are usually caused by critical errors encountered during processing
-  # inflection data, during operations on complex patterns or exceptions
-  # raised by I18n. Note that pure I18n exceptions are not described here.
+  # inflection data or exceptions raised by I18n. Note that the pure I18n's
+  # exceptions are not described here.
   # 
   # * {I18n::ArgumentError I18n::ArgumentError}
   # * {I18n::InvalidLocale I18n::InvalidLocale}
-  # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed}
   # * {I18n::DuplicatedInflectionToken I18n::DuplicatedInflectionToken}
   # * {I18n::BadInflectionKind I18n::BadInflectionKind}
   # * {I18n::BadInflectionToken I18n::BadInflectionToken}
@@ -627,6 +624,12 @@ module I18n
       # @return [I18n::Inflector::API_Strict] the object containing
       #   database and operations for named patterns (strict kinds)
       attr_reader :strict
+
+      # This reader allows to reach internal configuration
+      # of the engine. It is shared among all instances of
+      # the Inflector and also available as
+      # {I18n::Inflector::Config I18n::Inflector::Config}.
+      attr_reader :config
 
       # Gets known regular inflection kinds.
       # 
