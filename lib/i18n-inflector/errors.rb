@@ -108,8 +108,40 @@ module I18n
     end
 
     def message
-      badkind = !@token.to_s.empty? && kind.nil? ? " (kind mismatch)" : ""
-      super + "token #{@token.inspect} is invalid" + badkind
+      badkind = ""
+      if (!@token.to_s.empty? && !kind.nil?)
+        kind = @kind.to_s.empty? ? "" : @kind.to_sym
+        badkind = " (unexpected kind: #{kind.inspect})"
+      end
+      super + "token #{@token.to_s.inspect} is invalid" + badkind
+    end
+
+  end
+
+  # This is raised when an inflection option name is invalid (contains
+  # reserved symbols).
+  class InvalidInflectionOption < InflectionPatternException
+
+    def initialize(locale, pattern, option)
+      super(locale, pattern, nil, option)
+    end
+
+    def message
+      super + "inflection option #{@kind.inspect} is invalid"
+    end
+
+  end
+
+  # This is raised when a kind given in a pattern is invalid (empty, reserved
+  # or containing a reserved character).
+  class InvalidInflectionKind < InflectionPatternException
+
+    def initialize(locale, pattern, kind)
+      super(locale, pattern, nil, kind)
+    end
+
+    def message
+      super + "kind #{@kind.to_s.inspect} is invalid"
     end
 
   end
@@ -124,7 +156,7 @@ module I18n
 
     def message
       super +
-      "token #{@token.inspect} " \
+      "token #{@token.to_s.inspect} " \
       "is not of the expected kind #{@kind.inspect}"
     end
 
