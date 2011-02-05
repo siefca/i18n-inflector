@@ -67,6 +67,11 @@ module I18n
       attr_reader :options
 
       # @private
+      def config
+        I18n::Inflector::Config
+      end
+
+      # @private
       def strict
         @strict ||= I18n::Inflector::API_Strict.new(@idb_strict, @options)
       end
