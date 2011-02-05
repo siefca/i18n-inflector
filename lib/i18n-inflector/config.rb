@@ -40,6 +40,25 @@ module I18n
       end
       module_function :gen_regexp
 
+      # Prefix that makes option a controlling option.
+      OPTION_PREFIX = InflectionOptions::OPTION_PREFIX
+
+      # Regexp matching a prefix that makes option
+      # a controlling option.
+      OPTION_PREFIX_REGEXP = Regexp.new '^' + OPTION_PREFIX
+
+      # This module contains keys that have special
+      # meaning.
+      module Keys
+
+        # A Symbol that is used to mark default token
+        # in configuration and in options.
+        DEFAULT_TOKEN = :default
+
+        # All keys
+        ALL = HSet.new Config.all_consts(self, Symbol)
+      end
+
       # This module contains characters that are markers
       # giving the shape for a pattern and its elements.
       module Markers
@@ -130,7 +149,9 @@ module I18n
       module Reserved
 
         # Reserved keys.
-        KEYS = HSet.new(Config.get_i18n_reserved_keys)
+        KEYS = HSet.new  Config.get_i18n_reserved_keys  +
+                         Config::Keys::ALL.to_a         +
+                         InflectionOptions.known.values
 
         # This module contains constants defining
         # reserved characters in token identifiers.
@@ -170,11 +191,13 @@ module I18n
           # @param [Regexp] root the regular expression used to test
           # @return [Boolean] +true+ if the given +token+ is
           #   invalid, +false+ otherwise
-          def contained?(token, root)
+          def invalid?(token, root)
             token = token.to_s
-            token.empty? || Regexp.const_get(root) =~ token
+            token.empty?                                          ||
+            (root == Regexp::PATTERN && Keys::ALL[token.to_sym])  ||
+            Regexp.const_get(root) =~ token
           end
-          module_function :contained?
+          module_function :invalid?
 
         end # module Tokens
 
@@ -185,7 +208,7 @@ module I18n
           # Reserved characters in kind identifiers placed in configuration.
           DB        = (Operators::ALL + Markers::ALL - [Markers::ALIAS, Markers::LOUD_VALUE]).uniq
 
-          # Reserved characters in kind identifiers passed as options.
+          # Reserved characters in kind identifiers passed as option values.
           OPTION    = DB
 
           # Reserved characters in kind identifiers placed in patterns.
@@ -199,7 +222,7 @@ module I18n
             # Reserved characters in kind identifiers placed in configuration.
             DB      = Config.gen_regexp Kinds::DB
 
-            # Reserved characters in kind identifiers passed as options.
+            # Reserved characters in kind identifiers passed as option values.
             OPTION  = Config.gen_regexp Kinds::OPTION
 
             # Reserved characters in kind identifiers placed in patterns.
@@ -216,19 +239,18 @@ module I18n
           # @param [Regexp] root the regular expression used to test
           # @return [Boolean] +true+ if the given +kind+ is
           #   invalid, +false+ otherwise
-          def contained?(kind, root)
+          def invalid?(kind, root)
             kind = kind.to_s
-            kind.empty? || Regexp.const_get(root) =~ kind
+            kind.empty?                                           ||
+             root != Regexp::OPTION &&
+             (KEYS[kind.to_sym] || OPTION_PREFIX_REGEXP =~ kind)  ||
+            Regexp.const_get(root) =~ kind
           end
-          module_function :contained?
+          module_function :invalid?
 
         end # module Kinds
 
       end # module Reserved
-
-      # A Symbol that is used to mark default token
-      # in configuration and in options.
-      DEFAULT_TOKEN = :default
 
       # A regular expression that catches patterns.
       PATTERN_REGEXP  = Regexp.new  '(.?)'  +
@@ -238,10 +260,10 @@ module I18n
 
       # A regular expression that catches token groups or single tokens.
       TOKENS_REGEXP   = Regexp.new  '(?:' +
-                                    '([^' +  Operators::Tokens::ASSIGN + Operators::Tokens::OR + ']+)' +
-                                             Operators::Tokens::ASSIGN +
-                                    '+([^' + Operators::Tokens::OR     + ']+)\1?)' +
-                                    '|([^' + Operators::Tokens::ASSIGN + Operators::Tokens::OR + ']+)'
+                                    '([^' +   Operators::Tokens::ASSIGN + '\\' + Operators::Tokens::OR + ']+)' +
+                                              Operators::Tokens::ASSIGN + '+'  +
+                                    '([^\\' + Operators::Tokens::OR     + ']+)\1?)' +
+                                    '|([^'  + Operators::Tokens::ASSIGN + '\\' + Operators::Tokens::OR + ']+)'
 
     end # module Config
 
