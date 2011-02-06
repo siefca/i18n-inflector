@@ -88,7 +88,7 @@ module I18n
   end
 
   # This exception will be raised when a required option, describing token selected
-  # for a kind, is +nil+, empty or doesn't match any acceptable tokens.
+  # for a kind contains a token that is not of the given kind.
   class InflectionOptionIncorrect < InvalidOptionForKind
 
     def message

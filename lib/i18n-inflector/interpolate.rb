@@ -42,7 +42,7 @@ module I18n
 
       # @private
       def interpolate_core(string, locale, options)
-        option_kinds      = options.except(*Reserved::KEYS)
+        passed_kinds      = options.except(*Reserved::KEYS)
         raises            = options[:inflector_raises]
         aliased_patterns  = options[:inflector_aliased_patterns]
         unknown_defaults  = options[:inflector_unknown_defaults]
@@ -56,10 +56,10 @@ module I18n
           strict_kind     = $2
           pattern_content = $3
           ext_pattern     = $&
-          ext_value       = nil
           ext_freetext    = ''
           found           = nil
-          parsed_default_v= nil
+          default_value   = nil
+          tb_raised       = nil
 
           # leave escaped pattern as-is
           unless pattern_fix.empty?
@@ -76,11 +76,12 @@ module I18n
             subdb           = idb
           else
             sym_parsed_kind = (Markers::PATTERN + strict_kind).to_sym
+
             if strict_kind.include?(Operators::Tokens::AND)
 
               # Complex markers processing
               begin
-                ext_value = interpolate_complex(strict_kind,
+                result = interpolate_complex(strict_kind,
                                                 pattern_content,
                                                 locale, options)
               rescue I18n::InflectionPatternException => e
@@ -106,6 +107,7 @@ module I18n
               else
                 strict_kind   = strict_kind.to_sym
                 parsed_kind   = strict_kind
+                # inject default token
                 default_token = subdb.get_default_token(parsed_kind)
               end
 
@@ -120,7 +122,10 @@ module I18n
             tokens        = Hash.new(false)
             negatives     = Hash.new(false)
             kind          = nil
-            option        = nil
+            passed_token  = nil
+            result        = nil
+
+            # TOKEN GROUP PROCESSING
 
             # token not found?
             if ext_token.empty?
@@ -159,6 +164,7 @@ module I18n
 
               # get a kind for that token
               kind  = subdb.get_kind(t, strict_kind)
+
               if kind.nil?
                 if raises
                   # regular pattern and token that has a bad kind
@@ -174,9 +180,9 @@ module I18n
 
               # set processed kind after matching first token in a pattern
               if parsed_kind.nil?
-                parsed_kind   = kind
+                parsed_kind     = kind
                 sym_parsed_kind = kind.to_sym
-                default_token = subdb.get_default_token(parsed_kind)
+                default_token   = subdb.get_default_token(parsed_kind)
               elsif parsed_kind != kind
                 # tokens of different kinds in one regular (not named) pattern are prohibited
                 raise I18n::MisplacedInflectionToken.new(locale, ext_pattern, t, sym_parsed_kind) if raises
@@ -184,7 +190,10 @@ module I18n
               end
 
               # use that token
-              tokens[t] = true unless negatives[t]
+              unless negatives[t]
+                tokens[t]     = true
+                default_value = ext_value if t == default_token
+              end
             end
 
             # self-explanatory
@@ -192,98 +201,91 @@ module I18n
               raise I18n::InvalidInflectionToken.new(locale, ext_pattern, ext_token) if raises
             end
 
-            # try @-style option for strict kind, fallback to regular if not found
-            # and memorize option name
-            oname = !strict_kind.nil? && option_kinds.has_key?(sym_parsed_kind) ?
-                    sym_parsed_kind : (option_kinds.has_key?(kind) ? kind : nil)
+            # INFLECTION OPTION PROCESSING
 
-            # Get option if possible and memorize for error reporting;
-            # fallback to default token if option still not found
-            # orig_option is for error reporting
-            if oname.nil?
-              option      = default_token
-              orig_option = nil
+            # set up expected_kind depending on type of a kind
+            if strict_kind.nil?
+              expected_kind = parsed_kind
             else
-              option      = option_kinds[oname]
-              orig_option = option
-              option      = default_token if option == Keys::DEFAULT_TOKEN
+              expected_kind = sym_parsed_kind
+              expected_kind = parsed_kind unless passed_kinds.has_key?(expected_kind)
             end
 
-            if (option.nil? || option.to_s.empty?)
-              # if option is given but is unknown, empty or nil
-              # then use default option for a kind if unknown_defaults is switched on
-              option = unknown_defaults ? default_token : nil
+            # get passed token from options or from a default token
+            if passed_kinds.has_key?(expected_kind)
+              passed_token      = passed_kinds[expected_kind]
+              orig_passed_token = passed_token
+              # validate passed token's name
+              if Reserved::Tokens.invalid?(passed_token, :OPTION)
+                raise I18n::InvalidInflectionOption.new(locale, ext_pattern, orig_passed_token) if raises
+                passed_token = default_token if unknown_defaults
+              end
             else
-              # validate option's name
-              if Reserved::Kinds.invalid?(option, :OPTION)
-                raise I18n::InvalidInflectionOption.new(locale, ext_pattern, option) if raises
-                option = nil
-              else
-                # validate option and if it's unknown try in aliases
-                option = subdb.get_true_token(option.to_sym, strict_kind)
-              end
-
-              # if still nothing then fall back to default value
-              # for a kind if unknown_defaults switch is on
-              if option.nil?
-                option = unknown_defaults ? default_token : nil
-              end
+              # current inflection option wasn't found
+              # but delay this exception because we might use
+              # the default token if found somewhere in a pattern
+              tb_raised = InflectionOptionNotFound.new(locale, ext_pattern, ext_token,
+                                                       expected_kind, orig_passed_token) if raises
+              passed_token      = default_token
+              orig_passed_token = nil
             end
 
-            # if the option is still unknown or bad
-            # then raise an exception
-            if option.nil?
-              if raises
-                if oname.nil?
-                  ex          = InflectionOptionNotFound
-                  oname       = sym_parsed_kind
-                  orig_option = nil
-                else
-                  ex          = InflectionOptionIncorrect
-                end
-                raise ex.new(locale, ext_pattern, ext_token, oname, orig_option)
-              end
-              next
-            end
+            # explicit default
+            passed_token = default_token if passed_token == Keys::DEFAULT_TOKEN
 
-            # memorize default value for further processing
-            # outside this block if excluded_defaults switch is on
-            parsed_default_v = ext_value if (excluded_defaults && !default_token.nil?)
+            # resolve token from options and check if it's known
+            unless passed_token.nil?
+              passed_token = subdb.get_true_token(passed_token.to_sym, parsed_kind)
+              passed_token = default_token if passed_token.nil? && unknown_defaults
+            end
 
             # throw the value if the given option matches one of the tokens from group
             # or negatively matches one of the negated tokens
             case negatives.count
-            when 0 then next unless tokens[option]
-            when 1 then next if  negatives[option]
+            when 0 then next unless tokens[passed_token]
+            when 1 then next if  negatives[passed_token]
             end
 
             # skip further evaluation of the pattern
             # since the right token has been found
-            found = option
+            found   = passed_token
+            result  = ext_value
             break
 
           end # single token (or a group) processing
 
-          # return value of a token that matches option's value
-          # given for a kind or try to return a free text
-          # if it's present
-          if found.nil?
+          # RESULTS PROCESSING
+
+          # if there was no hit for that option
+          if result.nil?
+            raise tb_raised unless tb_raised.nil?
+
+            # try to extract default token's value
+
             # if there is excluded_defaults switch turned on
             # and a correct token was found in an inflection option but
             # has not been found in a pattern then interpolate
             # the pattern with a value picked for the default
             # token for that kind if a default token was present
             # in a pattern
-            ext_value = (excluded_defaults && !parsed_kind.nil? &&
-                         subdb.has_token?(option_kinds[parsed_kind], parsed_kind)) ?
-                         parsed_default_v : nil
-          elsif ext_value == Markers::LOUD_VALUE  # interpolate loud tokens
-            ext_value = subdb.get_description(found, parsed_kind)
-          elsif ext_value[0..0] == Escapes::ESCAPE
-            ext_value.sub!(Escapes::ESCAPE_R, '\1')
+            result = (excluded_defaults &&
+                      !parsed_kind.nil? &&
+                      subdb.has_token?(passed_kinds[parsed_kind], parsed_kind)) ?
+                        default_value : nil
+
+          # interpolate loud tokens
+          elsif result == Markers::LOUD_VALUE
+
+            result = subdb.get_description(found, parsed_kind)
+
+          # interpolate escaped loud tokens or other escaped strings
+          elsif result[0..0] == Escapes::ESCAPE
+
+            result.sub!(Escapes::ESCAPE_R, '\1')
+
           end
 
-          pattern_fix + (ext_value || ext_freetext)
+          pattern_fix + (result || ext_freetext)
 
         end # single pattern processing
 
