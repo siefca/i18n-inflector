@@ -92,7 +92,7 @@ you need Rails integration.
 
 == Installation
 
-* <tt>sudo gem install i18n-inflector</tt>
+* <tt>gem install i18n-inflector</tt>
 
 == Synopsis
 
