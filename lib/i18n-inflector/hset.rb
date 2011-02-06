@@ -15,7 +15,8 @@ module I18n
     class HSet < Set
 
       # This method performs a fast check
-      # if an element exists in a set
+      # if an element exists in a set.
+      # 
       # @return [Boolean]
       def [](k)
         @hash[k] == true

@@ -56,7 +56,7 @@ module I18n
       # This switch enables cache-aware mode. In that mode inflection
       # options and flags are evaluated before calling original translate
       # method and all options are passed to that method. Because options
-      # preparation for inflection methods is explicite (any missing switches
+      # preparation for inflection methods is explicit (any missing switches
       # and their default values are added to options) then original
       # translate (or proxy caching method) will receive even those options
       # that might have been changed globally.
@@ -97,8 +97,8 @@ module I18n
       # may make your translation data a bit messy if you're not alert.
       # That's why this switch is by default set to +false+.
       # 
-      # @note Local option +:inflector_aliased_patterns+ passed to the {I18n::Backend::Inflector#translate}
-      #   overrides this setting.
+      # @note Local option +:inflector_aliased_patterns+ passed to the
+      #   {I18n::Backend::Inflector#translate} overrides this setting.
       # 
       # @api public
       # @return [Boolean] state of the switch
@@ -106,13 +106,14 @@ module I18n
       attr_accessor :aliased_patterns
 
       # When this switch is set to +true+ then inflector falls back to the default
-      # token for a kind if an inflection option passed to the {I18n::Backend::Inflector#translate} is unknown
-      # or +nil+. Note that the value of the default token will be
+      # token for a kind if an inflection option passed to the
+      # {I18n::Backend::Inflector#translate} is unknown or +nil+.
+      # Note that the value of the default token will be
       # interpolated only when this token is present in a pattern. This switch
       # is by default set to +true+.
       # 
-      # @note Local option +:inflector_unknown_defaults+ passed to the {I18n::Backend::Inflector#translate}
-      #   overrides this setting.
+      # @note Local option +:inflector_unknown_defaults+ passed
+      #   to the {I18n::Backend::Inflector#translate} overrides this setting.
       # 
       # @api public
       # @return [Boolean] state of the switch
@@ -198,7 +199,8 @@ module I18n
       attr_accessor :unknown_defaults
 
       # When this switch is set to +true+ then inflector falls back to the default
-      # token for a kind if the given inflection option is correct but doesn't exist in a pattern.
+      # token for a kind if the given inflection option is correct but doesn't exist
+      # in a pattern.
       # 
       # There might happen that the inflection option
       # given to {#translate} method will contain some proper token, but that token

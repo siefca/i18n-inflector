@@ -234,24 +234,35 @@ module I18n
   #   # => "Dear All"
   #   # since the token :o was configured but not used in the pattern
   # 
-  # === Unknown and empty tokens in options
+  # === Unknown, malformed and empty tokens in options
   # If an option containing token is not present at all then the interpolation
   # routine will try the default token for a processed kind if the default
   # token is present in a pattern. The same thing will happend if the option
-  # is present but its value is unknown, empty or +nil+.
+  # is present but its value is malformed, unknown, empty or +nil+.
   # If the default token is not present in a pattern or is not defined in
-  # a configuration data then the processed pattern will result in an empty
-  # string or in a local fallback value if there is a free text placed
-  # in a pattern.
+  # a configuration data then the processing of a pattern will result
+  # in an empty string or in a local fallback value if there is
+  # a free text placed in a pattern.
   # 
   # You can change this default behavior and force inflector
-  # not to use a default token when a value of an option for a kind is unknown,
-  # empty or +nil+ but only when it's not present.
-  # To do that you should set option +:unknown_defaults+ to
-  # +false+ and pass it to I18n.translate method. Other way is to set this
-  # globally by using the method called unknown_defaults.
-  # See #unknown_defaults for examples showing how the
-  # translation results are changing when that switch is applied.
+  # not to use a default token when a value of an option for
+  # a kind is malformed, unknown, empty or +nil+ but only when
+  # it's not present. To do that you should set option +:inflector_unknown_defaults+
+  # to +false+ and pass it to I18n.translate method. Other way is to set this
+  # switch globally using the {I18n::Inflector::InflectionOptions#unknown_defaults}.
+  # 
+  # === Unmatched tokens in options
+  # It might happend that there is a default token present in a pattern
+  # but the inflection option causes other token to be picked up
+  # which however is not present in this pattern although it's
+  # correct and assigned to the currently processed kind. In such
+  # situation the free text or an empty string will be generated.
+  # You may change that behavior by passing +:inflector_excluded_defaults+
+  # option set to +true+ or by setting the global option called
+  # {I18n::Inflector::InflectionOptions#excluded_defaults}. If this
+  # option is set then any unmatched (excluded) but correct token
+  # given in an inflection option will cause the default token
+  # to be picked up (if present in a pattern of course).
   # 
   # === Mixing inflection and standard interpolation patterns
   # The Inflector module allows you to include standard <tt>%{}</tt>
@@ -329,7 +340,7 @@ module I18n
   # Normally it is possible to use only true tokens in patterns, not aliases.
   # However, if you feel lucky and you're not affraid of messy patterns
   # you can use the switch {I18n::Inflector::InflectionOptions#aliased_patterns}
-  # or corresponding <tt>:inflector_aliased_patterns</tt> option passed to translation
+  # or corresponding +:inflector_aliased_patterns+ option passed to translation
   # method.
   # 
   # It may seem very easy and attractive to use aliased patterns, especially
@@ -341,7 +352,7 @@ module I18n
   # the aliases would be used. Note hovewer, that you can make use of
   # <tt>I18n.inflector.true_token</tt> method (see {I18n::Inflector::API#true_token}
   # that will resolve any alias and then use that data to feed some inflection option
-  # (e.g. <tt>:gender</tt>). In such scenario you don't have to rely on aliases
+  # (e.g. +:gender+). In such scenario you don't have to rely on aliases
   # in patterns and you will gain some speed since resolving will occur just once,
   # not each time translated text is interpolated.
   # 
@@ -459,7 +470,7 @@ module I18n
   # 
   #   welcome: "Dear @gender{f:Madam|m:Sir|n:You|All}"
   # 
-  # Note that for regular kinds the option named <tt>:@gender</tt>
+  # Note that for regular kinds the option named +:@gender+
   # will have no meaning.
   # 
   # ==== Note for developers
@@ -537,8 +548,8 @@ module I18n
   #   I18n.translate('welcome', :person => :you, :tense => :past)
   #   # => "You were"
   # 
-  # This example is abstract, since the combination of <tt>:i</tt>
-  # and <tt>:past</tt> will result in <tt>i were</tt> string, which is
+  # This example is abstract, since the combination of +:i+
+  # and +:past+ will result in <tt>i were</tt> string, which is
   # probably something unexpected. To achieve that kind of logic
   # simply use combined patterns with the given values instead
   # of loud tokens.
@@ -562,15 +573,17 @@ module I18n
   #   en:
   #     welcome:  "Dear @{m:Sir|f:Madam|Fallback}"
   # ===== Code:
-  #   I18n.t('welcome', :inflector_raises => true)   
-  #   # => I18n::InflectionOptionNotFound: option :gender required by the pattern
-  #   #                                "@{m:Sir|f:Madam|Fallback}" was not found
+  #   I18n.t('welcome', :inflector_raises => true)
+  #   # => I18n::InflectionOptionNotFound: en.welcome:
+  #   #      @{m:Sir|f:Madam|Fallback}" - required option :gender was not found
   # 
   # === Exception meanings
   # Here are the exceptions that may be raised when the option +:inflector_raises+
-  # (or +:raise+) is set to +true+:
+  # is set to +true+:
   # 
   # * {I18n::InvalidInflectionToken I18n::InvalidInflectionToken}
+  # * {I18n::InvalidInflectionKind I18n::InvalidInflectionKind}
+  # * {I18n::InvalidInflectionOption I18n::InvalidInflectionOption}
   # * {I18n::MisplacedInflectionToken I18n::MisplacedInflectionToken}
   # * {I18n::InflectionOptionNotFound I18n::InflectionOptionNotFound}
   # * {I18n::InflectionOptionIncorrect I18n::InflectionOptionIncorrect}
@@ -599,6 +612,7 @@ module I18n
   #       `-- I18n::InflectionPatternException
   #       |   |
   #       |   |-- I18n::InvalidInflectionToken
+  #       |   |-- I18n::InvalidInflectionKind
   #       |   |-- I18n::MisplacedInflectionToken
   #       |   |-- I18n::ComplexPatternMalformed
   #       |   `-- I18n::InvalidOptionForKind
