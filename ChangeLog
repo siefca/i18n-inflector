@@ -1,3 +1,93 @@
+commit 2f917d62b456abe8b54f2e82a2441b35d6b25821
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:22:41 2011 +0100
+
+    Updated TODO and HISTORY
+
+commit 10e98a1c7fc7d426f437ed0b25ff0c969ff1b2f9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:22:06 2011 +0100
+
+    Tests fixed according to strict specification keeping while paring inflection options
+
+commit be4f1f6cb53949166894529ec2a8433098909f43
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:21:00 2011 +0100
+
+    Documentation updated to reflect the changes
+
+commit 1ea80871cbb114939d8e645b33a91272e72fab78
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:20:24 2011 +0100
+
+    Interpolation method refactored; cleaned options parsing code
+
+commit 7e4bf4e2bbb21958971c354615c2077e44e66dd9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:17:46 2011 +0100
+
+    Removed 'sudo' from installation instruction
+
+commit 47e3b4ee161985f0457b19e9d475f17aa87c8c1e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:46:56 2011 +0100
+
+    Tests updated
+
+commit f32e334d04c66a9e7e24e5d9bce3c637ab312c62
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:46:39 2011 +0100
+
+    Added validations to interpolation and tokens loading routines
+
+commit 83020be4362c615b8191632fc8c7a4f9d03690f5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:44:29 2011 +0100
+
+    Known options generation and keeping moved to attr_accessor and class-level instance variable
+
+commit bb09d160ec99b41d26bb6ddcd97f667fc28c21f2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:43:03 2011 +0100
+
+    Added new error classes: I18n::InvalidInflectionOption and I18n::InvalidInflectionKind
+
+commit dd702ebff0a0204affd5623bce3df86a1a0f171b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:41:58 2011 +0100
+
+    I18n::Inflector::Config updated
+
+commit 7855e234e01be5a4e44a539a01c5730919b5f87d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:40:48 2011 +0100
+
+    Added config proxy to API
+
+commit e4500dbfa83371052f4f1fdeaebbb7574bb343b9
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Feb 5 17:40:10 2011 +0100
+
+    Backend module loading moved after config module loading
+
+commit c63d0b50f5492387eafdf6b83fb169f9c9c9feea
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Feb 3 19:56:55 2011 +0100
+
+    I18n::Inflector::Config optimized
+
+commit 39826057121142674a8e366d487f4f1509f03cfb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Feb 3 19:56:25 2011 +0100
+
+    Documentation updated
+
+commit c2954fb3480b43953ba044ff3826b0ca909ba187
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Feb 3 03:06:30 2011 +0100
+
+    Refactored configuration constants handling and started working on validation routines
+
 commit aefb526f9251c48e0270615d8ae8e8eb31a7b946
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Feb 2 03:48:50 2011 +0100
