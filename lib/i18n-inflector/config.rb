@@ -267,6 +267,25 @@ module I18n
 
     end # module Config
 
+    # @private
+    PATTERN_MARKER  = Config::Markers::PATTERN
+    # @private
+    NAMED_MARKER    = Config::Markers::PATTERN
+    # @private
+    ALIAS_MARKER    = Config::Markers::ALIAS
+    # @private
+    ESCAPE          = Config::Escapes::ESCAPE
+    # @private
+    ESCAPE_R        = Config::Escapes::ESCAPE_R
+    # @private
+    ESCAPES         = Config::Escapes::PATTERN
+    # @private
+    PATTERN         = Config::PATTERN_REGEXP
+    # @private
+    TOKENS          = Config::TOKENS_REGEXP
+    # @private
+    INFLECTOR_RESERVED_KEYS = Config::Reserved::KEYS
+
   end # module Inflector
 
 end # module I18n

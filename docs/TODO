@@ -1,7 +1,6 @@
 == Near future
 
 * add validation checks to interpolation (options[done], tokens in options[done]) and to API (arguments)
-* backward compatible constants
 * add missing raises to documentation (interpolation, loading[done])
 * update documentation (long_comments)
 
@@ -14,7 +13,7 @@
 * ban all :inflector_ named keys [done]
 * check if all errors are really in use [done]
 * fixit: when a default token in present then I18n::InflectionOptionNotFound is not raised [done]
-
+* backward compatible constants [done]
 
 == Distant future
 
