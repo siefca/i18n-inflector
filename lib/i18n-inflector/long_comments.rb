@@ -517,7 +517,7 @@ module I18n
   # of kinds that are used. Otherwise the interpolation routine will
   # interpolate a free text (if given) or an empty string. If the switch
   # {InflectionOptions#raises} is on then the {I18n::ComplexPatternMalformed}
-  # exception will be raised in such a case.
+  # exception will be raised.
   # 
   # The inflection tokens used in sets may make use of any features mentioned
   # before (defaults, excluded defaults, negative matching, token groups,
