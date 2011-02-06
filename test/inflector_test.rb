@@ -176,7 +176,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear You!', I18n.t('welcome', :gender => :default,  :locale => :xx, :inflector_unknown_defaults => false)
   end
 
-  test "backend inflector translate: falls back to default for no gender option when :inflector_unknown_defaults is false" do
+  test "backend inflector translate: falls back to default for no inflection option when :inflector_unknown_defaults is false" do
     assert_equal 'Dear You!', I18n.t('welcome', :locale => :xx, :inflector_unknown_defaults => false)
   end
 
@@ -210,8 +210,8 @@ class I18nInflectorTest < Test::Unit::TestCase
     tr[:xx][:i18n][:inflections][:gender].delete(:default)
     store_translations(:xx, :i18n => { :inflections => { :gender => { :o => 'other' }}})
     assert_raise(I18n::InflectionOptionNotFound)  { I18n.t('welcome', :locale => :xx, :inflector_raises => true) }
-    assert_raise(I18n::InflectionOptionIncorrect) { I18n.t('welcome', :locale => :xx, :gender => "", :inflector_raises => true) }
-    assert_raise(I18n::InflectionOptionIncorrect) { I18n.t('welcome', :locale => :xx, :gender => nil, :inflector_raises => true) }
+    assert_raise(I18n::InvalidInflectionOption) { I18n.t('welcome', :locale => :xx, :gender => "", :inflector_raises => true) }
+    assert_raise(I18n::InvalidInflectionOption) { I18n.t('welcome', :locale => :xx, :gender => nil, :inflector_raises => true) }
     assert_raise I18n::InflectionOptionNotFound do
      I18n.inflector.options.raises = true
      I18n.t('welcome', :locale => :xx)
@@ -325,7 +325,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Hello ',        I18n.t('hi', :gender => :m, :locale => :xx)
     assert_equal 'Hello Ladies',  I18n.t('hi', :locale => :xx)
     store_translations(:xx, 'hi' => 'Hello @{!n:Ladies|m,f:You}')
-    assert_equal 'Hello ',  I18n.t('hi', :locale => :xx, :inflector_raises => true)
+    assert_equal 'Hello ',  I18n.t('hi', :locale => :xx, :inflector_raises => false)
   end
 
   test "backend inflector translate: works with tokens separated by commas and negative tokens" do
