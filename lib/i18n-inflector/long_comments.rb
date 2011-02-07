@@ -554,13 +554,6 @@ module I18n
   # simply use combined patterns with the given values instead
   # of loud tokens.
   # 
-  # == Reserved names
-  # Some strings cannot be used as names and/or identifiers of
-  # kinds and tokens. There are also some reserved characters
-  # that cannot be used within them.
-  # 
-  # == Operator precedence
-  # symbol - meaning - defined in
   # == Errors
   # By default the module will silently ignore non-critical interpolation
   # errors. You can turn off this default behavior by passing +:inflector_raises+
@@ -589,7 +582,7 @@ module I18n
   # * {I18n::InflectionOptionIncorrect I18n::InflectionOptionIncorrect}
   # * {I18n::ComplexPatternMalformed I18n::ComplexPatternMalformed}
   # 
-  # There are also exceptions that are raised regardless of :+raises+
+  # There are also exceptions that are raised regardless of :+inflector_raises+
   # presence or value.
   # These are usually caused by critical errors encountered during processing
   # inflection data or exceptions raised by I18n. Note that the pure I18n's
@@ -626,6 +619,107 @@ module I18n
   #           |-- I18n::BadInflectionToken
   #           `-- I18n::BadInflectionKind
   # 
+  # == Reserved names and characters
+  # Some strings cannot be used as names and/or identifiers of
+  # kinds and tokens. There are also some reserved characters
+  # that cannot be used within them.
+  # 
+  # === Reserved keys
+  # Reserved keys, that cannot be used as names of inflection
+  # options and as names of kinds in the configuration
+  # are available after issuing:
+  # 
+  #   puts I18n.inflector.config::Reserved::KEYS.to_a
+  # 
+  # Here is the current list: <tt>:scope, :default, :separator,
+  # :resolve, :object, :fallback, :format, :cascade,
+  # :raise, :rescue_format, :inflector_cache_aware,
+  # :inflector_raises, :inflector_aliased_patterns,
+  # :inflector_unknown_defaults, :inflector_excluded_defaults</tt>.
+  # 
+  # Additionally all Symbols or Strings beginning with
+  # +inflector_+ are prohibited, since they are reserved as
+  # controlling options.
+  # 
+  # === Reserved characters
+  # All characters that have special meaning (operators and
+  # markers) are not allowed in patterns, in configuration
+  # and in options.
+  # 
+  # ==== Reserved characters in kinds
+  # ===== Passed as inflection options
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Kinds::OPTION
+  # ====== List
+  # <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
+  # 
+  # ===== Given in a configuration
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Kinds::DB
+  # ====== List
+  # <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
+  # 
+  # ===== Placed in patterns
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Kinds::PATTERN
+  # ====== List
+  # <tt>+ | : , ! @ { }</tt> and <tt>,</tt> (comma).
+  # 
+  # ==== Reserved characters in tokens
+  # ===== Passed as values of inflection options
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Tokens::OPTION
+  # ====== List
+  # <tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+  # 
+  # ===== Given in a configuration
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Tokens::DB
+  # ====== List
+  # <tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+  # 
+  # ===== Placed in patterns
+  # ====== Code
+  #   puts I18n.inflector.config::Reserved::Tokens::PATTERN
+  # ====== List
+  # <tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+  # 
+  # == Operators and markers
+  # Here is more formal definition of operators and markers used in patterns.
+  # 
+  # === Pattern
+  #   @[kind][+kind ...]{token_set[|token_set ...][|free_text]}
+  #
+  # * +@+ is the pattern marker
+  # * +{+ and +}+ are pattern delimiters
+  # * +free_text+ is an optional free text value
+  # ==== +kind+
+  #   kind[+kind ...]
+  #
+  # * +kind+ is a kind identifier
+  # * <tt>+</tt> is the +AND+ operator that joins kinds (produces complex kinds)
+  # ==== +token_set+
+  #   token_group[+token_group ...]:value
+  #
+  # * +:+ is the +ASSIGNMENT+ operator
+  # * +value+ is a value to be picked up then a token set matches; value may also
+  #   be the loud marker (+~+)
+  # * <tt>+</tt> is the +AND+ operator that joins many token groups into a set
+  # ===== +token_group+
+  #   [!]token[,[!]token ...]
+  #
+  # * +token+ is a token identifier
+  # * +!+ is the +NOT+ operator
+  # * +,+ is the +OR+ operator
+  # 
+  # === Operator precedence
+  # * +NOT+ operators for inversed matching of tokens (<tt>!</tt>)
+  # * +OR+ operators for joining tokens into token groups (<tt>,</tt>)
+  # * +AND+ operators for joining token groups into sets (<tt>+</tt>)
+  # * +ASSIGNMENT+ operator for assigning values to token sets (<tt>:</tt>)
+  # * +OR+ operators for token sets or for free texts (<tt>|</tt>)
+  # * +AND+ operators for kind identifiers (<tt>+</tt>)
+  # * Pattern marker and pattern delimiters
   module Inflector
 
     class API

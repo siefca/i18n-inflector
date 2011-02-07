@@ -147,7 +147,8 @@ module I18n
   end
 
   # This is raised when an inflection token used in a pattern does not match
-  # an assumed kind determined by reading previous tokens from that pattern.
+  # an assumed kind determined by reading previous tokens from that pattern
+  # or by the given strict kind of a named pattern.
   class MisplacedInflectionToken < InflectionPatternException
 
     def initialize(locale, pattern, token, kind)

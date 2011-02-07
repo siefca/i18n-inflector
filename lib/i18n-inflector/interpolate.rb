@@ -23,6 +23,11 @@ module I18n
       #  containing patterns to interpolate
       # @param [String,Symbol] locale the locale identifier 
       # @param [Hash] options the options
+      # ComplexPatternMalformed.new
+      # @raise {I18n::InvalidInflectionKind}
+      # @raise {I18n::InvalidInflectionOption}
+      # @raise {I18n::InvalidInflectionToken}
+      # @raise {I18n::MisplacedInflectionToken}
       # @option options [Boolean] :inflector_excluded_defaults (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#excluded_defaults})
       # @option options [Boolean] :inflector_unknown_defaults (true) local switch
@@ -168,7 +173,7 @@ module I18n
               if kind.nil?
                 if raises
                   # regular pattern and token that has a bad kind
-                  if strict_kind.nil? # fixme - retest when it's raised
+                  if strict_kind.nil?
                     raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t, sym_parsed_kind)
                   else
                     # named pattern (kind validated before, so the only error is misplaced token)

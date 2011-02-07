@@ -1,9 +1,5 @@
 == Near future
 
-* add validation checks to interpolation (options[done], tokens in options[done]) and to API (arguments)
-* add missing raises to documentation (interpolation, loading[done])
-* update documentation (long_comments)
-
 * update error descriptions and names in long_comments [done]
 * move complexpatternmalformed to the errors that are raised when flag is present [done]
 * test complex pattern content without a proper strict kind in front [done]
@@ -14,6 +10,9 @@
 * check if all errors are really in use [done]
 * fixit: when a default token in present then I18n::InflectionOptionNotFound is not raised [done]
 * backward compatible constants [done]
+* add missing raises to documentation (interpolation[done], loading[done])
+* add validation checks to interpolation (options[done], tokens in options[done]) and to API (arguments) [rejected]
+* update documentation (long_comments) [done]
 
 == Distant future
 

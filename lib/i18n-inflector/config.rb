@@ -242,8 +242,8 @@ module I18n
           def invalid?(kind, root)
             kind = kind.to_s
             kind.empty?                                           ||
-             root != Regexp::OPTION &&
-             (KEYS[kind.to_sym] || OPTION_PREFIX_REGEXP =~ kind)  ||
+             (root != Regexp::OPTION &&
+             (KEYS[kind.to_sym] || OPTION_PREFIX_REGEXP =~ kind)) ||
             Regexp.const_get(root) =~ kind
           end
           module_function :invalid?
