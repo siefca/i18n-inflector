@@ -73,11 +73,14 @@ module I18n
         # translate string using original translate
         translated_string = super
 
-        # return immediatelly if something is wrong with locale (preventive)
-        return translated_string if (locale.nil? || locale.to_s.empty?)
+        # generate a pattern from key-based inflection object
+        if (translated_string.is_a?(Hash) && key.to_s[0..0] == InflectorCfg::Markers::PATTERN)
+          translated_string = @inflector.key_to_pattern(translated_string)
+        end
 
-        # locale is not inflected - return string cleaned from pattern
-        unless @inflector.inflected_locale?(locale)
+        # return immediatelly if something is wrong with locale (preventive)
+        # return if locale is not inflected - return string cleaned from pattern
+        if (locale.nil? || !@inflector.inflected_locale?(locale))
           return translated_string.gsub(InflectorCfg::PATTERN_REGEXP,'')
         end
 
@@ -94,8 +97,10 @@ module I18n
 
         # complete the exception by adding translation key
         rescue I18n::InflectionException => e
+
           e.key = key
           raise
+
         end
 
       end

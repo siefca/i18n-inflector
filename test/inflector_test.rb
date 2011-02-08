@@ -273,6 +273,26 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'male now', I18n.t('hi', :gender => :m, :tense => :now, :locale => :xx)
   end
 
+  test "backend inflector translate: works with multiple patterns" do
+    store_translations(:xx, 'hi'  => '@gender{m:Sir|f:Lady}{m: Lancelot|f: Morgana}')
+    assert_equal 'Sir Lancelot', I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Lady Morgana', I18n.t('hi', :gender => :f, :locale => :xx)
+    store_translations(:xx, 'hi'  => '@{m:Sir|f:Lady}{m: Lancelot|f: Morgana}')
+    assert_equal 'Sir Lancelot', I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Lady Morgana', I18n.t('hi', :gender => :f, :locale => :xx)
+    store_translations(:xx, 'hi'  => 'Hi @{m:Sir|f:Lady}{m: Lancelot|f: Morgana}!')
+    assert_equal 'Hi Sir Lancelot!', I18n.t('hi', :gender => :m, :locale => :xx)
+  end
+
+  test "backend inflector translate: works with key-based inflections" do
+    I18n.backend.store_translations(:xx, '@hi'  => { :m => 'Sir', :f => 'Lady', :n => 'You',
+                                                     :@free => 'TEST', :@prefix => 'Dear ', :@suffix => '!' })
+    assert_equal 'Dear Sir!',  I18n.t('@hi', :gender => :m, :locale => :xx, :inflector_raises=>true)
+    assert_equal 'Dear Lady!', I18n.t('@hi', :gender => :f, :locale => :xx, :inflector_raises=>true)
+    assert_equal 'Dear TEST!', I18n.t('@hi', :gender => :x, :locale => :xx, :inflector_unknown_defaults => false)
+    assert_equal 'Dear TEST!', I18n.t('@hi', :gender => :x, :locale => :xx, :inflector_unknown_defaults => false)
+  end
+
   test "backend inflector translate: raises I18n::ComplexPatternMalformed for malformed complex patterns" do
     store_translations(:xx, :i18n => { :inflections => { :@tense => { :now => 'now', :past => 'later', :default => 'now' }}})
     store_translations(:xx, 'hi' => '@gender+tense{m+now+cos:he is|f+past:she was} here!')

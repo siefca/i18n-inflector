@@ -43,6 +43,25 @@ module I18n
         interpolate_core(string, locale, options)
       end
 
+      # This method creates an inflection pattern
+      # by collecting information contained in a key-based
+      # inflection data.
+      # 
+      # @param [Hash] key the given key
+      # @return [String] the inflection pattern
+      def key_to_pattern(key)
+        key  = key.dup
+        pref = key.delete(:@prefix).to_s
+        suff = key.delete(:@suffix).to_s
+        kind = key.delete(:@kind).to_s
+        free = key.delete(:@free)
+        free = free.nil? ? "" : (Operators::Tokens::OR + free.to_s)
+
+        pref + Markers::PATTERN + kind + Markers::PATTERN_BEGIN  +
+        key.map { |k,v| k.to_s + Operators::Tokens::ASSIGN + v.to_s }.
+        join(Operators::Tokens::OR) + free + Markers::PATTERN_END + suff
+      end
+
       private
 
       # @private
@@ -60,7 +79,10 @@ module I18n
           pattern_fix     = $1
           strict_kind     = $2
           pattern_content = $3
+          multipattern    = $4
           ext_pattern     = $&
+
+          # initialize some defaults
           ext_freetext    = ''
           found           = nil
           default_value   = nil
@@ -70,6 +92,18 @@ module I18n
           unless pattern_fix.empty?
             ext_pattern = ext_pattern[1..-1]
             next ext_pattern if Escapes::PATTERN[pattern_fix]
+          end
+
+          # handle multiple patterns
+          unless multipattern.empty?
+            patterns = []
+            patterns << pattern_content
+            patterns += multipattern.scan(MULTI_REGEXP).flatten
+            next pattern_fix + patterns.map do |content|
+              interpolate_core(Markers::PATTERN       + strict_kind   +
+                               Markers::PATTERN_BEGIN + content       +
+                               Markers::PATTERN_END, locale, options)
+            end.join
           end
 
           # set parsed kind if strict kind is given (named pattern is parsed) 

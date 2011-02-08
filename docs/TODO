@@ -1,26 +1,8 @@
 == Near future
 
-* update error descriptions and names in long_comments [done]
-* move complexpatternmalformed to the errors that are raised when flag is present [done]
-* test complex pattern content without a proper strict kind in front [done]
-* allow :default as gender name (that will trigger default value if any) - write test for it [done]
-* review options documentation and add inflector_ [done]
-* ban reserved keys while processing kinds (including :default) [done]
-* ban all :inflector_ named keys [done]
-* check if all errors are really in use [done]
-* fixit: when a default token in present then I18n::InflectionOptionNotFound is not raised [done]
-* backward compatible constants [done]
-* add missing raises to documentation (interpolation[done], loading[done])
-* add validation checks to interpolation (options[done], tokens in options[done]) and to API (arguments) [rejected]
-* update documentation (long_comments) [done]
-
-== Distant future
-
-* allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
-
-* split interpolate_core and make it more reusable for raw data
-
-* sytactic sugar: @kind{something}{something_for_that_kind_too}
+* document multiple patterns
+* document inflection keys (key-based inflection) - add note about ordered hashes
+* add some examples about complex and multiple patterns
 
 * inflected keys - the whole key is treated as a pattern:
 
@@ -29,6 +11,14 @@
     m:  Dear Sir
     n:  Dear You
     @free:  Dear All
-    @kinds: gender
+    @kind: gender
+    
+ in translate() jump to method from Interpolate that will transform that into pattern
 
-* scoped kinds (e.g: person.singular, person.plural) and fallbacks (tokens and kinds inheritance) - do we need it at all?
+* check & fix: bad locale or locale not inflected and commented pattern..
+
+== Distant future
+
+* split interpolate_core and make it more reusable by raw data (e.g. pattern content)
+
+* allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"

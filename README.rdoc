@@ -8,6 +8,16 @@
 * https://github.com/siefca/i18n-inflector/tree
 * mailto:pw@gnu.org
 
+
+== Features
+
+* Allows inline inflection using patterns.
+* Allows key-based inflection using inflection keys.
+* Allows one to define own inflection kinds.
+* Keeps its configuration within one scope of translation data.
+* Supports complex patterns to inflect by more than one kind at a time.
+* Supports negative matching, aliases, default tokens, token groups and more…
+
 == Description
 
 This library contains a backend module for I18n that adds some extra
