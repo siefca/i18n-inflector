@@ -11,12 +11,12 @@
 
 == Features
 
-* Allows inline inflection using patterns.
-* Allows key-based inflection using inflection keys.
-* Allows one to define own inflection kinds.
-* Keeps its configuration within one scope of translation data.
-* Supports complex patterns to inflect by more than one kind at a time.
-* Supports negative matching, aliases, default tokens, token groups and more…
+* Inline inflection using patterns.
+* Key-based inflection using inflection keys.
+* Definable inflection kinds and tokens.
+* Configurable using special scope of translation data.
+* Complex patterns support; inflection by more than one kind at a time.
+* Negative matching, aliases, default tokens, token groups and more…
 
 == Description
 
@@ -51,15 +51,23 @@ Example translation data:
           default:  neuter          
         
       
-    welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
+    welcome:  "Dear @{f:Lady|m:Sir|n:You|All}!"
+    
+    @same_but_as_key:
+      f:        "Lady"
+      m:        "Sir"
+      n:        "You"
+      @prefix:  "Dear "
+      @suffix:  "!"
+      @free:    "All"
 
-From version 2.1.0 Inflector supports so called named patterns,
+From version 2.1.0 the Inflector supports so called named patterns,
 which can be used if there is a need to be strict and/or to
 use the same token names but assigned to different kinds. Example:
 
    welcome:  "Dear @gender{f:Lady|m:Sir|n:You|All}"
 
-From version 2.2.0 Inflector supports complex patterns,
+From version 2.2.0 the Inflector supports complex patterns,
 which can be used to inflect some sentence or a word by more
 than a one kind. That might be very helpful for highly inflected
 languages. An example pattern:
@@ -74,7 +82,7 @@ substitute fragments of text depending on user's gender, person or
 other data.
 
 To achieve similar functionality lambdas can be used but including
-proc objects in translations may be considered as unsafe.
+proc objects in translations may be considered unsafe.
 
 If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
@@ -158,11 +166,6 @@ You can run tests both with
 
 * <tt>rake test</tt> or just <tt>rake</tt>
 * run a test file directly, e.g. <tt>ruby -Ilib -Itest test/inflector_test.rb</tt>
-
-== See also
-
-See {i18n-inflector-rails}[https://rubygems.org/gems/i18n-inflector-rails/] if you need
-the Rails plug-in that integrates this module with ActionController.
 
 == Credits
 
