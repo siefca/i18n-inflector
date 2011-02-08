@@ -28,7 +28,8 @@
 
 * minor bugfixes
 
-  * Fixed interpolation routine when :excluded_defaults is on and a kind is strict
+  * Fixed interpolation when :excluded_defaults is on and a kind is strict
+  * Fixed interpolation when pattern is escaped and locale is not inflected
   * Enabled filtering of reserved names in options
   * Enabled filtering of inflection options for options that go to original translate method
   * Updated documentation in a section describing options

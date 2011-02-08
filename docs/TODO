@@ -4,18 +4,7 @@
 * document inflection keys (key-based inflection) - add note about ordered hashes
 * add some examples about complex and multiple patterns
 
-* inflected keys - the whole key is treated as a pattern:
-
-  @welcome:
-    f:  Dear Lady
-    m:  Dear Sir
-    n:  Dear You
-    @free:  Dear All
-    @kind: gender
-    
- in translate() jump to method from Interpolate that will transform that into pattern
-
-* check & fix: bad locale or locale not inflected and commented pattern..
+* check & fix: bad locale or locale not inflected and commented pattern.. [done]
 
 == Distant future
 

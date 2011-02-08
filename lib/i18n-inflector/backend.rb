@@ -81,7 +81,9 @@ module I18n
         # return immediatelly if something is wrong with locale (preventive)
         # return if locale is not inflected - return string cleaned from pattern
         if (locale.nil? || !@inflector.inflected_locale?(locale))
-          return translated_string.gsub(InflectorCfg::PATTERN_REGEXP,'')
+          return translated_string.gsub(InflectorCfg::PATTERN_REGEXP) do
+            InflectorCfg::Escapes::PATTERN[$1] ? $& : ''
+          end
         end
 
         # no pattern in a string - return string as is

@@ -117,6 +117,9 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal '@{f:AAAAA|m:BBBBB}', I18n.t('escaped_welcome', :gender => 'f', :locale => :xx)
     store_translations(:xx, 'escaped_welcome' => '\@{f:AAAAA|m:BBBBB}')
     assert_equal '@{f:AAAAA|m:BBBBB}', I18n.t('escaped_welcome', :gender => 'f', :locale => :xx)
+    assert_equal 'Dear All!', I18n.t('welcome', :gender => nil, :locale => :xx, :inflector_unknown_defaults => false)
+    store_translations(:xx, 'escaped_welcome' => 'Dear \@{f:Lady|m:Sir|n:You|All}!');
+    assert_equal 'Dear @{f:Lady|m:Sir|n:You|All}!', I18n.t('escaped_welcome', :locale => :xx, :inflector_unknown_defaults => false)
   end
 
   test "backend inflector translate: picks Lady for :f gender option" do
