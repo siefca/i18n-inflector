@@ -12,7 +12,9 @@
 
   * Refactored error reporting code
   * Refactored options gathering code
+  * Removed magic symbols and strings
   * Removed intermediate array from LazyHashEnumerator#to_h
+  * Added multiple patterns support (syntactic sugar)
   * Added I18n::Inflector::Config module
   * Added I18n::Inflector::LazyArrayEnumerator class
   * Added I18n::Inflector::HSet class for keeping collections of data

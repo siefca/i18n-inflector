@@ -361,10 +361,13 @@ module I18n
             results = tokens.split(Operators::Tokens::AND).map do |token|
               raise IndexError.new if token.empty?
               if value == Markers::LOUD_VALUE
-                r = interpolate_core("#{Markers::PATTERN}#{kinds.next}{#{token}:#{value}|@}", locale, options)
+                r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
+                                     Operators::Tokens::ASSIGN + value.to_s + Operators::Tokens::OR +
+                                     Markers::PATTERN + Markers::PATTERN_END, locale, options)
                 break if r == Markers::PATTERN
               else
-                r = interpolate_core("#{Markers::PATTERN}#{kinds.next}{#{token}:#{value}}", locale, options)
+                r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
+                                     Operators::Tokens::ASSIGN + value.to_s + Markers::PATTERN_END, locale, options)
                 break if r != value # stop with this set, because something is not matching
               end
               r
@@ -394,7 +397,7 @@ module I18n
 
         result || free_text
 
-      end
+      end # def interpolate_complex
 
     end # module Interpolate
   end # module Inflector
