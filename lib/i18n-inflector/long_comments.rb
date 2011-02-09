@@ -495,8 +495,21 @@ module I18n
   # 
   #   I18n.inflector.strict
   # 
-  # == Complex patterns
+  # == Multiple patterns
+  # You can make use of some syntactic sugar when having more than
+  # one pattern (regular or named) in your string. To not repeat
+  # a kind identifier(s) you may join pattern contents as in the
+  # following example:
   # 
+  #   welcome: "You are @gender{f:pretty|m,n:handsome}{ }{f:lady|m:sir|n:human}"
+  # 
+  # As you can see there should be no spaces or any other characters
+  # between successive patterns. That's why in this example an
+  # empty pattern's content is used. This is in fact a pattern
+  # containing no tokens but just a free text consisting
+  # of single space character.
+  # 
+  # == Complex patterns
   # A <bb>complex pattern</bb> is a named pattern that uses more than
   # one inflection kind and sets of a respective tokens. The given identifiers
   # of kinds should be separated by the plus sign and instead of single
@@ -553,6 +566,60 @@ module I18n
   # probably something unexpected. To achieve that kind of logic
   # simply use combined patterns with the given values instead
   # of loud tokens.
+  # 
+  # == Inflection keys
+  # There is a way of storing inflected strings in keys instead
+  # of patterns. To use it you should simply assign subkeys to
+  # some translation key instead of string containing a pattern.
+  # The key-based inflection group is contained within a key
+  # which name begins with the +@+ symbol.
+  # 
+  # The translation key containing a pattern:
+  # 
+  #   welcome:  "Dear @{f:Lady|m:Sir|n:You|All}!"
+  # 
+  # Can be easily written as:
+  # 
+  #   @welcome:
+  #     f:        "Lady"
+  #     m:        "Sir"
+  #     n:        "You"
+  #     @free:    "All"
+  #     @prefix:  "Dear "
+  #     @suffix:  "!"
+  #  
+  # You can also use strict kind or even the inflection sets, token
+  # groups, etc.:
+  # 
+  #   welcome:  "@gender+tense{f+past:She was|m+present:He is|n+future:You will be}"
+  # 
+  # Can be written as:
+  # 
+  #   @welcome:
+  #     f+past:     "She was"
+  #     m+present:  "He is"
+  #     n+future:   "You will be"
+  #     @kind:      "gender+tense"
+  # 
+  # There are special, optional subkeys that may give you
+  # more control over inflection process. These are:
+  # 
+  # * +@kind+: a kind or kinds in case of strict kinds
+  # * +@prefix+: a prefix to be put before the interpolated data
+  # * +@suffix+: a suffix to be put after the interpolated data
+  # * +@free+: a free text that is to be used when no token will match
+  # 
+  # === Limitations
+  # 
+  # Inflection keys look compact and clean but obviously
+  # you cannot use the key-based inflection to simply replace
+  # a string containing more than one inflection pattern.
+  # 
+  # Also, <b>you have to be very careful when using this method
+  # with Ruby 1.8</b> because the order of processed token sets
+  # may change. That may break the logic in case of inflection
+  # sets where order has meaning (e.g. tokens with inverted
+  # matching).
   # 
   # == Errors
   # By default the module will silently ignore non-critical interpolation
