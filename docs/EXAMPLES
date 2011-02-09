@@ -11,21 +11,21 @@ This data will be used in any further example:
         
         @person:
           i:          "i"
-          you:        "you"
+          u:          "you"
           he:         "he"
           she:        "she"
           it:         "it"
-          u:          @you
+          you:        @u
         
         gender:
           m:          "male"
           f:          "female"
           n:          "neuter"
-          default:    neuter
+          default:    n
         
       
     welcome: "Dear @{f:Lady|m:Sir|n:You|All}!"  
-    sayit:   "@person{i:I|u:You|he:He|she:She|it:It} @person{i:am|u:are|he,she,it:is}"
+    sayit:   "@person{i:I|u:You|he:He|she:She|it:It}{ }{i:am|u:are|he,she,it:is}"
     tobe:    "%{person} @person{i:am|u:are|he,she,it:is}"
   
 
@@ -49,7 +49,7 @@ This data will be used in any further example:
   }})
   
   I18n.backend.store_translations(:en, 'welcome' => 'Dear @{f:Lady|m:Sir|n:You|All}!')
-  I18n.backend.store_translations(:en, 'sayit'   => '@person{i:I|u:You|he:He|she:She|it:It} @person{i:am|u:are|he,she,it:is}')
+  I18n.backend.store_translations(:en, 'sayit'   => '@person{i:I|u:You|he:He|she:She|it:It}{ }{i:am|u:are|he,she,it:is}')
   I18n.backend.store_translations(:en, 'tobe'    => '%{person} @person{i:am|u:are|he,she,it:is}')
   I18n.locale = :en
 
@@ -141,13 +141,17 @@ Getting all known strict kinds:
 
   I18n.inflector.strict.kinds
   #=> [:person]
-  
+
 Getting all known kinds for language 'pl':
 
   I18n.inflector.kinds(:pl)
   #=> []
-  
-<i>to be continued…</i>
+
+=== Listing all known options
+
+  I18n.inflector.options.known
+  #=> [:inflector_cache_aware, :inflector_raises, :inflector_aliased_patterns,
+  #    :inflector_unknown_defaults, :inflector_excluded_defaults]
 
 == Real-life example for Polish language
 
@@ -163,7 +167,7 @@ prefixes and suffixes of words we're able make our patterns compact.
 === YAML
 
   pl:
-    are_you_sure: "@{m,f:Jesteś pew}@{m:ien|f:na}@{n:Na pewno}?"
+    are_you_sure: "@{m,f:Jesteś pew}{m:ien|f:na}{n:Na pewno}?"
     
     i18n:
       inflections:
@@ -173,27 +177,18 @@ prefixes and suffixes of words we're able make our patterns compact.
           n:          "forma bezosobowa"
           masculine:  @m
           facet:      @m
-          chłop:      @m
           chłopak:    @m
-          chłopiec:   @m
-          mąż:        @m
           feminine:   @f
           pani:       @f
           kobieta:    @f
           k:          @f
           dziewczyna: @f
-          baba:       @f
-          babka:      @f
-          facetka:    @f
           impersonal: @n
           default:    n
-        
-      
-    
-  
+
 === Code
 
-  # Using shorter form than YAML-listed
+  # Using shorter form than listed as YAML
   
   I18n.backend.store_translations(:pl, :i18n => { :inflections => { :gender =>
                                   { :f => 'f', :m=>'m', :n=>'n', :kobieta=>:@f, :facet => :@m, :default=>:n }}})
@@ -219,4 +214,98 @@ prefixes and suffixes of words we're able make our patterns compact.
 
   # That would also work but it's less readable.
   # PS: Have you ever configured Sendmail? ;-)
-  I18n.backend.store_translations(:pl, :are_you_sure => "@{n:Na|m,f:Jesteś} pew@{m:ie}n@{f:a|n:o}?")
+  I18n.backend.store_translations(:pl, :are_you_sure => "@{n:Na|m,f:Jesteś}{ pew}{m:ie}{n}{f:a|n:o}?")
+
+=== Complex pattern usage
+
+  # Store needed translations
+  I18n.backend.store_translations(:pl,
+    :i18n => { :inflections => {
+      :@gender =>
+          { :f       => 'f', :m     => 'm', :n       => 'n',
+            :kobieta => :@f, :facet => :@m, :default => :n },
+      :@tense =>
+          { :t     => 'teraz', :w       => 'przeszły', :j     => 'przyszły',
+            :teraz => :@t,     :wczoraj => :@w,        :jutro => :@j,
+            :default => :t }
+      }})
+  
+  I18n.backend.store_translations(:pl,
+    :msg_receive => "@gender+tense{n+w:Otrzymano|Dosta}{m,f,n+t:jesz|m,f,n+j:niesz|f+w:łaś|m+w:łeś} wiadomość")
+
+  I18n.locale = :pl
+
+  p I18n.translate('msg_receive', :gender => :kobieta)
+  #=> "Dostajesz wiadomość"
+
+  p I18n.translate('msg_receive', :gender => :facet)
+  #=> "Dostajesz wiadomość"
+
+  p I18n.translate('msg_receive')
+  #=> "Dostajesz wiadomość"
+
+  p I18n.translate('msg_receive', :gender => :kobieta, :tense => :wczoraj)
+  #=> "Dostałaś wiadomość"
+
+  p I18n.translate('msg_receive', :gender => :facet, :tense => :wczoraj)
+  #=> "Dostałeś wiadomość"
+  
+  p I18n.translate('msg_receive', :tense => :jutro)
+  #=> "Dostaniesz wiadomość"
+  
+  p I18n.translate('msg_receive', :tense => :wczoraj)
+  #=> "Otrzymano wiadomość"
+
+==== YAML for the example above
+
+The example above may use this YAML content instead of +store_translations+:
+
+  pl:
+    msg_receive: "@gender+tense{n+w:Otrzymano|Dosta}{m,f,n+t:jesz|m,f,n+j:niesz|f+w:łaś|m+w:łeś} wiadomość"
+    
+    i18n:
+      inflections:
+        @gender:
+          m:  'male'
+          f:  'female'
+          n:  'neuter'
+          kobieta:  @f
+          facet:    @m
+          default:  n
+        @tense:
+          t:        'teraźniejszy'
+          w:        'przeszły'
+          j:        'przyszły'
+          teraz:    @t
+          wczoraj:  @w
+          jutro:    @j
+          default:  @t
+
+===== Alternative for +msg_receive+ key
+
+The +msg_receive+ might also be expressed using two infleciton keys:
+
+  pl:
+    @msg_receive_1:
+      @kind:    gender+tense
+      @free:    'Dosta'
+      n+w:      'Otrzymano'
+  
+    @msg_receive_2:
+      @kind:    gender+tense
+      @suffix:  " wiadomość"
+      m,f,n+t:  "jesz"
+      m,f,n+j:  "niesz"
+      f+w:      "łaś"
+      m+w:      "łeś"
+
+But then you have to change the translation call too, e.g.:
+
+  p I18n.translate(['@msg_receive_1','@msg_receive_2'], :gender => :kobieta).join
+  #=> "Dostajesz wiadomość"
+
+The split is necessary because we have two patterns here and no way to express them
+as one inflection key.
+
+<i>to be continued…</i>
+
