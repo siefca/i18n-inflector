@@ -624,7 +624,11 @@ module I18n
   # == Errors
   # By default the module will silently ignore non-critical interpolation
   # errors. You can turn off this default behavior by passing +:inflector_raises+
-  # option set to +true+.
+  # option set to +true+. Note that most errors is reported because of
+  # wrong data in patterns or in configuration. In case of inflection
+  # options only malformed, empty or +nil+ values are reported
+  # when the mentioned switch is turned on. For inflection options
+  # containing unknown tokens no errors are generated.
   #
   # === Usage of +:inflector_raises+ option
   # 
