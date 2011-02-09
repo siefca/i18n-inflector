@@ -1,8 +1,5 @@
 == Near future
 
-* test with full-stacked Rails, test with i18n-inflector-rails
-* remove unneeded files
-
 == Distant future
 
 * add "any token" operator - will make it easier to create complex patterns - (use negative matching to non-existant, reserved value)
