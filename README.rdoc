@@ -29,13 +29,13 @@ within <tt>@{</tt> and <tt>}</tt> symbols. Configuration is stored
 also in translation data, in a scope <tt><locale>.i18n.inflections</tt>,
 where <tt>locale</tt> is a locale subtree.
 
-You can choose different kinds (gender, title, person, time, author, etc.)
+You can create your own inflection kinds (gender, title, person, time, author, etc.)
 of tokens to group them in a meaningful, semantical sets. That means you can
 apply Inflector to do simple inflection by a gender or a person, when some
 language requires it.
 
 It adds the +inflector+ object to the default backend so you can use many
-methods for accessing loaded inflection data at runtime, or set up global
+methods for accessing loaded inflection data at runtime, or to set up global
 switches that are controlling the engine.
 
 Example translation data:
@@ -79,15 +79,15 @@ languages. An example pattern:
 
 It's intended to be used in a web projects or other projects where
 translations are performed by many people, yet there is a need to
-substitute fragments of text depending on user's gender, person or
-other data.
+inflect sentences with some external variables.
 
 To achieve similar functionality lambdas can be used but including
-proc objects in translations may be considered unsafe.
+Proc objects in translations might be considered unsafe or memory
+consuming.
 
 If you have a troop of happy translators that shouldn't have the
 ability to execute any code yet you need some simple inflection
-then you should use this module.
+then this module might help you.
 
 See i18n-inflector-rails[https://rubygems.org/gems/i18n-inflector-rails] if
 you need Rails integration.
