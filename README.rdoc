@@ -49,7 +49,7 @@ Example translation data:
           n:        "neuter"
           male:     @m
           female:   @f
-          default:  neuter          
+          default:  n
         
       
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}!"
