@@ -1,13 +1,8 @@
 == Near future
 
-* document multiple patterns
-* document inflection keys (key-based inflection) - add note about ordered hashes
 * add some examples about complex and multiple patterns
-
-* check & fix: bad locale or locale not inflected and commented pattern.. [done]
 
 == Distant future
 
 * split interpolate_core and make it more reusable by raw data (e.g. pattern content)
-
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"

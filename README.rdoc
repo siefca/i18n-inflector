@@ -14,6 +14,7 @@
 * Inline inflection using patterns.
 * Key-based inflection using inflection keys.
 * Definable inflection kinds and tokens.
+* Easy to use public API for inflection data.
 * Configurable using special scope of translation data.
 * Complex patterns support; inflection by more than one kind at a time.
 * Negative matching, aliases, default tokens, token groups and more…

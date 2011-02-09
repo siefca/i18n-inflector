@@ -760,9 +760,6 @@ module I18n
   # * +@+ is the pattern marker
   # * +{+ and +}+ are pattern delimiters
   # * +free_text+ is an optional free text value
-  # ==== +kind+
-  #   kind[+kind ...]
-  #
   # * +kind+ is a kind identifier
   # * <tt>+</tt> is the +AND+ operator that joins kinds (produces complex kinds)
   # ==== +token_set+

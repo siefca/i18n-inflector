@@ -111,7 +111,7 @@ module I18n
       badkind = ""
       if (!@token.to_s.empty? && !kind.nil?)
         kind = @kind.to_s.empty? ? "" : @kind.to_sym
-        badkind = " (unexpected kind: #{kind.inspect})"
+        badkind = " (processed kind: #{kind.inspect})"
       end
       super + "token #{@token.to_s.inspect} is invalid" + badkind
     end
@@ -256,7 +256,7 @@ module I18n
 
     def message
         super +
-        "inflection kind has bad name or type"
+        "inflection kind #{@kind.inspect} has bad name or type"
     end
 
   end
