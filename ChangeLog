@@ -1,3 +1,87 @@
+commit 38416442533f9c4b44f51ee13f676460ad23fbbc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 18:47:22 2011 +0100
+
+    Tested with Ruby 1.8, Ruby 1.9, i18n-inflector-rails, full-stacked Rails app, I18n v0.4.1 & v0.5.0
+
+commit 732260142ca0ce727b9690c0374c7e5043e95130
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 18:17:32 2011 +0100
+
+    README updated
+
+commit ffe39ffe0a4cc26b76c720507c5a46eb7d10b57e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 18:17:10 2011 +0100
+
+    Documentation updated
+
+commit c81ed66f010b350f6db6d21d6194ceb0ba0d8167
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 18:16:22 2011 +0100
+
+    EXAMPLES updated
+
+commit 4c09e2c3c5f549eca7a2024cea0e2bb5f3bc5078
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 03:45:10 2011 +0100
+
+    Documentation fixes, error messages fixes
+
+commit 3917807f00ff9ec0d641557c29eee15878914b67
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 01:21:15 2011 +0100
+
+    Documentation updated
+
+commit 924f84f57d19ff8d1f8a9c18764f40a2f9ccea49
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 8 23:57:57 2011 +0100
+
+    README updated
+
+commit cec22a1422f6b8e4213d8ce435ed0c3fa5390cad
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 8 23:57:36 2011 +0100
+
+    Fixed pattern escaping when locale is not inflected
+
+commit 9649c6b292c169a8d4f7aaa9daa929c61388b9d5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 8 18:00:58 2011 +0100
+
+    Removed magic symbols from code and fixed regular expression generators to be Ruby 1.8 compliant
+
+commit a41dd59db76910c5a1eb0baa2bc8c818224187bc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 8 17:59:45 2011 +0100
+
+    Added key-based inflection and multiple patterns support and some tests
+
+commit 3c7f5ae5acf8f0061944fab46dc020b46fa7dd32
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 17:16:22 2011 +0100
+
+    Documentation updated
+
+commit aa278841eb957a6ccc858ec6cb86832f59677587
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:46:41 2011 +0100
+
+    Documentation fix.
+
+commit 90b55fd784818b0456aec01416195b5267fba3ff
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:46:20 2011 +0100
+
+    Added some old constants in case someone uses them.
+
+commit b083527e545701a1c5fbe39d010618e148db6904
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 7 00:24:11 2011 +0100
+
+    Added config.rb to Manifest.txt
+
 commit 2f917d62b456abe8b54f2e82a2441b35d6b25821
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Feb 7 00:22:41 2011 +0100

@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.1</tt></b> (<b><tt>Anand</tt></b>)
+<b>i18n-inflector version <tt>2.2</tt></b> (<b><tt>Dea</tt></b>)
 
 
 
