@@ -194,9 +194,11 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector translate: falls back to default token for ommited gender option when :inflector_excluded_defaults is true" do
-    assert_equal 'Dear You!', I18n.t('welcome', :gender => :s, :locale => :xx, :inflector_excluded_defaults => true)
+    assert_equal 'Dear You!', I18n.t('welcome',       :gender => :s, :locale => :xx, :inflector_excluded_defaults => true)
+    assert_equal 'Dear You!', I18n.t('named_welcome', :@gender => :s, :locale => :xx, :inflector_excluded_defaults => true)
     I18n.inflector.options.excluded_defaults = true
-    assert_equal 'Dear You!', I18n.t('welcome', :gender => :s, :locale => :xx)
+    assert_equal 'Dear You!', I18n.t('welcome',       :gender => :s, :locale => :xx)
+    assert_equal 'Dear You!', I18n.t('named_welcome', :gender => :s, :locale => :xx)
   end
 
   test "backend inflector translate: falls back to free text for ommited gender option when :inflector_excluded_defaults is false" do
@@ -374,6 +376,22 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear You!',   I18n.t('hi', :locale => :xx, :inflector_aliased_patterns => true)
     I18n.inflector.options.aliased_patterns = true
     assert_equal 'Dear Sir!', I18n.t('hi', :gender => :masculine, :locale => :xx)
+  end
+
+  test "backend inflector translate: works with Proc object given as inflection options" do
+    def femme(locale, kind)
+      (locale == :xx && kind == :gender) ? :f : :m
+    end
+    def excluded(locale, kind)
+      :s
+    end
+    procek = method(:femme)
+    procun = method(:excluded)
+    assert_equal 'Dear Lady!',  I18n.t('welcome',       :gender => procek, :locale => :xx,  :inflector_raises  => true)
+    assert_equal 'Dear Lady!',  I18n.t('named_welcome', :gender => procek, :locale => :xx,  :inflector_raises  => true)
+    assert_equal 'Dear Sir!',   I18n.t('named_welcome', :@gender => procek, :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear You!',   I18n.t('named_welcome', :@gender => procun, :locale => :xx, :inflector_excluded_defaults => true)
+    assert_equal 'Dear All!',   I18n.t('named_welcome', :@gender => procun, :locale => :xx, :inflector_excluded_defaults => false)
   end
 
   test "backend inflector translate: recognizes named patterns and strict kinds" do

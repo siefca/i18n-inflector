@@ -253,6 +253,9 @@ module I18n
             # get passed token from options or from a default token
             if passed_kinds.has_key?(expected_kind)
               passed_token      = passed_kinds[expected_kind]
+              if (passed_token.is_a?(Proc) || passed_token.is_a?(Method))
+                passed_token    = passed_token.call(locale, expected_kind)
+              end
               orig_passed_token = passed_token
               # validate passed token's name
               if Reserved::Tokens.invalid?(passed_token, :OPTION)
@@ -307,10 +310,13 @@ module I18n
             # the pattern with a value picked for the default
             # token for that kind if a default token was present
             # in a pattern
-            result = (excluded_defaults &&
-                      !parsed_kind.nil? &&
-                      subdb.has_token?(passed_kinds[parsed_kind], parsed_kind)) ?
-                        default_value : nil
+            if (excluded_defaults && !parsed_kind.nil?)
+              expected_kind = sym_parsed_kind
+              expected_kind = parsed_kind unless passed_kinds.has_key?(expected_kind)
+              t = passed_kinds[expected_kind]
+              t = t.call(locale, expected_kind) if (t.is_a?(Proc) || t.is_a?(Method))
+              result = subdb.has_token?(t, parsed_kind) ? default_value : nil
+            end
 
           # interpolate loud tokens
           elsif result == Markers::LOUD_VALUE
