@@ -408,7 +408,7 @@ module I18n
   # tokens assigned to them may have the same names across a whole
   # configuration. (Note that tokens of the same strict kind should still
   # be unique.) That implies a requirement of passing the
-  # identifier of a kind when referring to such tokens.
+  # identifier of a kind when referring to such tokens in patterns.
   # 
   # Here is the example configuration using strict kinds:
   # 

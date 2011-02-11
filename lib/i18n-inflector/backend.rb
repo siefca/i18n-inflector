@@ -74,7 +74,7 @@ module I18n
         translated_string = super
 
         # generate a pattern from key-based inflection object
-        if (translated_string.is_a?(Hash) && key.to_s[0..0] == InflectorCfg::Markers::PATTERN)
+        if (translated_string.is_a?(Hash) && key.to_s[0..0] == InflectorCfg::Markers::STRICT_KIND)
           translated_string = @inflector.key_to_pattern(translated_string)
         end
 
@@ -344,7 +344,7 @@ module I18n
           subdb       = idb
           strict_kind = nil
           orig_kind   = kind
-          if kind.to_s[0..0] == InflectorCfg::Markers::PATTERN
+          if kind.to_s[0..0] == InflectorCfg::Markers::STRICT_KIND
             kind        = kind.to_s[1..-1]
             next if kind.empty?
             kind        = kind.to_sym

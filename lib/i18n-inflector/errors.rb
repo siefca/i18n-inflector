@@ -75,7 +75,7 @@ module I18n
     def message
       kind = @kind.to_s
       unless kind.empty?
-        if kind[0..0] == I18n::Inflector::Config::Markers::PATTERN
+        if kind[0..0] == I18n::Inflector::Config::Markers::STRICT_KIND
           kindmsg = ":#{kind} (or :#{kind[1..-1]})"
         else
           kindmsg = kind.to_sym.inspect
@@ -164,7 +164,7 @@ module I18n
   end
 
   # This is raised when a complex inflection pattern is malformed
-  # and cannot be reduced to regular patterns.
+  # and cannot be reduced to set of regular patterns.
   class ComplexPatternMalformed < InflectionPatternException
 
     def initialize(locale, pattern, token, complex_kind)

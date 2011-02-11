@@ -63,9 +63,11 @@ module I18n
       # giving the shape for a pattern and its elements.
       module Markers
 
-        # A character that is used to mark pattern
-        # and a strict kind.
+        # A character that is used to mark pattern.
         PATTERN       = '@'
+
+        # A character that is used to mark a strict kind.
+        STRICT_KIND   = '@'
 
         # A character that is used to open a pattern.
         PATTERN_BEGIN = '{'
@@ -109,18 +111,22 @@ module I18n
           # A character used to mark patterns as complex
           # and to separate token groups assigned to different
           # strict kinds.
-          AND     = '+'
+          AND       = '+'
 
           # A character that is used to separate tokens
           # or token groups within a pattern. 
-          OR      = '|'
+          OR        = '|'
 
           # A character used to assign value to a token
           # or a group of tokens.
-          ASSIGN  = ':'
+          ASSIGN    = ':'
+
+          # A character used to create a virtual token
+          # that always matches.
+          WILDCARD  = '*'
 
           # All token groups operators.
-          ALL     = Config.all_consts(self)
+          ALL       = Config.all_consts(self)
 
         end # module Tokens
 
@@ -129,13 +135,13 @@ module I18n
         module Token
 
           # A character used to separate multiple tokens.
-          OR      = ','
+          OR        = ','
 
           # A character used to mark tokens as negative.
-          NOT     = '!'
+          NOT       = '!'
 
           # All token operators.
-          ALL     = Config.all_consts(self)
+          ALL       = Config.all_consts(self)
 
         end # module Token
 
@@ -276,7 +282,7 @@ module I18n
     # @private
     PATTERN_MARKER  = Config::Markers::PATTERN
     # @private
-    NAMED_MARKER    = Config::Markers::PATTERN
+    NAMED_MARKER    = Config::Markers::STRICT_KIND
     # @private
     ALIAS_MARKER    = Config::Markers::ALIAS
     # @private

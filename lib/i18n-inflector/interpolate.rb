@@ -114,15 +114,15 @@ module I18n
             default_token   = nil
             subdb           = idb
           else
-            sym_parsed_kind = (Markers::PATTERN + strict_kind).to_sym
+            sym_parsed_kind = (Markers::STRICT_KIND + strict_kind).to_sym
 
             if strict_kind.include?(Operators::Tokens::AND)
 
               # Complex markers processing
               begin
                 result = interpolate_complex(strict_kind,
-                                                pattern_content,
-                                                locale, options)
+                                             pattern_content,
+                                             locale, options)
               rescue I18n::InflectionPatternException => e
                 e.pattern = ext_pattern
                 raise
@@ -364,7 +364,7 @@ module I18n
                 r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
                                      Operators::Tokens::ASSIGN + value.to_s + Operators::Tokens::OR +
                                      Markers::PATTERN + Markers::PATTERN_END, locale, options)
-                break if r == Markers::PATTERN
+                break if r == Markers::PATTERN # using this marker only as a helper to indicate empty result!
               else
                 r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
                                      Operators::Tokens::ASSIGN + value.to_s + Markers::PATTERN_END, locale, options)
