@@ -254,7 +254,13 @@ module I18n
             if passed_kinds.has_key?(expected_kind)
               passed_token      = passed_kinds[expected_kind]
               if (passed_token.is_a?(Proc) || passed_token.is_a?(Method))
-                passed_token    = passed_token.call(locale, expected_kind)
+                passed_token = case passed_token.arity
+                when 0      then passed_token.call
+                when 1      then passed_token.call(expected_kind)
+                when -1, 2  then passed_token.call(expected_kind, locale)
+                else
+                  nil
+                end
               end
               orig_passed_token = passed_token
               # validate passed token's name
@@ -314,7 +320,15 @@ module I18n
               expected_kind = sym_parsed_kind
               expected_kind = parsed_kind unless passed_kinds.has_key?(expected_kind)
               t = passed_kinds[expected_kind]
-              t = t.call(locale, expected_kind) if (t.is_a?(Proc) || t.is_a?(Method))
+              if (t.is_a?(Proc) || t.is_a?(Method))
+                t = case t.arity
+                when 0      then t.call
+                when 1      then t.call(expected_kind)
+                when -1, 2  then t.call(expected_kind, locale)
+                else
+                  nil
+                end
+              end
               result = subdb.has_token?(t, parsed_kind) ? default_value : nil
             end
 

@@ -2,8 +2,7 @@
 
 * Review the documentation (especially aliased patterns)
 * add "any token" operator - will make it easier to create complex patterns - (use negative matching to non-existant, reserved value)
-
-* document changes (lazy inflection options, wildcard, )
+* document changes (lazy inflection options, wildcard)
 
 == Distant future
 

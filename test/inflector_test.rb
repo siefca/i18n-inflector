@@ -379,10 +379,10 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector translate: works with Proc object given as inflection options" do
-    def femme(locale, kind)
+    def femme(kind, locale)
       (locale == :xx && kind == :gender) ? :f : :m
     end
-    def excluded(locale, kind)
+    def excluded
       :s
     end
     procek = method(:femme)
