@@ -1,3 +1,17 @@
+=== 2.3.0 / 2011-02-
+
+* major enhancements
+
+  * Proc and Method kind of objects might be passed as inflection options
+
+* minor enhancements
+
+  * Added I18n::Inflector::Config::Markers::STRICT_KIND (character used when passing strict kinds)
+
+* major bugfixes
+
+  * Fixed parsing of named patterns when :inflector_excluded_defaults is used
+
 === 2.2.0 / 2011-02-09
 
 * major enhancements

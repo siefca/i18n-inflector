@@ -1,7 +1,11 @@
 == Near future
 
+* Review the documentation (especially aliased patterns)
+* add "any token" operator - will make it easier to create complex patterns - (use negative matching to non-existant, reserved value)
+
+* document changes (lazy inflection options, wildcard, )
+
 == Distant future
 
-* add "any token" operator - will make it easier to create complex patterns - (use negative matching to non-existant, reserved value)
 * split interpolate_core and make it more reusable by raw data (e.g. pattern content)
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
