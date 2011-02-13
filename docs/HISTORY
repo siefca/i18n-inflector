@@ -2,13 +2,14 @@
 
 * major enhancements
 
+  * Added wildcard tokens support
   * Proc and Method kind of objects might be passed as inflection options
 
 * minor enhancements
 
   * Added I18n::Inflector::Config::Markers::STRICT_KIND (character used when passing strict kinds)
 
-* major bugfixes
+* minor bugfixes
 
   * Fixed parsing of named patterns when :inflector_excluded_defaults is used
 
