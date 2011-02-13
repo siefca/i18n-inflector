@@ -231,7 +231,7 @@ prefixes and suffixes of words we're able make our patterns compact.
       }})
   
   I18n.backend.store_translations(:pl,
-    :msg_receive => "@gender+tense{n+w:Otrzymano|Dosta}{m,f,n+t:jesz|m,f,n+j:niesz|f+w:łaś|m+w:łeś} wiadomość")
+    :msg_receive => "@gender+tense{n+w:Otrzymano|Dosta}{*+t:jesz|*+j:niesz|f+w:łaś|m+w:łeś} wiadomość")
 
   I18n.locale = :pl
 
@@ -261,7 +261,7 @@ prefixes and suffixes of words we're able make our patterns compact.
 The example above may use this YAML content instead of +store_translations+:
 
   pl:
-    msg_receive: "@gender+tense{n+w:Otrzymano|Dosta}{m,f,n+t:jesz|m,f,n+j:niesz|f+w:łaś|m+w:łeś} wiadomość"
+    msg_receive: "@gender+tense{n+w:Otrzymano|Dosta}{*+t:jesz|*+j:niesz|f+w:łaś|m+w:łeś} wiadomość"
     
     i18n:
       inflections:
