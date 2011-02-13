@@ -170,7 +170,7 @@ module I18n
           OPTION    = DB
 
           # Reserved characters in token identifiers placed in patterns.
-          PATTERN   = OPTION
+          PATTERN   = OPTION - [Operators::Tokens::WILDCARD]
 
           # This module contains constants defining
           # regular expressions for reserved characters
