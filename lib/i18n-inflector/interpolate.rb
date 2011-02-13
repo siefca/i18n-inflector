@@ -240,7 +240,7 @@ module I18n
                 tokens[t]     = true
                 default_value = ext_value if t == default_token
               end
-            end
+            end # token group processing
 
             # self-explanatory
             if (tokens.empty? && negatives.empty?)
@@ -259,18 +259,20 @@ module I18n
 
             # get passed token from options or from a default token
             if passed_kinds.has_key?(expected_kind)
-              passed_token      = passed_kinds[expected_kind]
+              passed_token = passed_kinds[expected_kind]
               if (passed_token.is_a?(Proc) || passed_token.is_a?(Method))
                 begin
                   passed_token = case passed_token.arity
-                  when 0      then passed_token.call
-                  when 1      then passed_token.call(expected_kind)
+                  when 0 then passed_token.call
+                  when 1 then passed_token.call(expected_kind)
                   else
                     passed_token.call(expected_kind, locale)
                   end
                 rescue
-                  raises ? raise : nil
+                  raise if raises
+                  passed_token = nil
                 end
+                passed_kinds[expected_kind] = passed_token # cache the result
               end
               orig_passed_token = passed_token
               # validate passed token's name
@@ -339,8 +341,10 @@ module I18n
                     t.call(expected_kind, locale)
                   end
                 rescue
-                  raises ? raise : nil
+                  raise if raises
+                  t = nil
                 end
+                passed_kinds[expected_kind] = t # cache the result
               end
               result = subdb.has_token?(t, parsed_kind) ? default_value : nil
             end

@@ -389,7 +389,7 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Sir!', I18n.t('hi', :gender => :masculine, :locale => :xx)
   end
 
-  test "backend inflector translate: works with Proc object given as inflection options" do
+  test "backend inflector translate: works with Method and Proc object given as inflection options" do
     def femme(kind, locale)
       (locale == :xx && kind == :gender) ? :f : :m
     end
@@ -402,13 +402,14 @@ class I18nInflectorTest < Test::Unit::TestCase
     procek = method(:femme)
     procun = method(:excluded)
     badmet = method(:bad_method)
-    assert_equal 'Dear Lady!',    I18n.t('welcome',       :gender  => procek, :locale => :xx, :inflector_raises  => true)
-    assert_equal 'Dear Lady!',    I18n.t('named_welcome', :gender  => procek, :locale => :xx, :inflector_raises  => true)
-    assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => procek, :locale => :xx, :inflector_raises  => true)
-    assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => procun, :locale => :xx, :inflector_excluded_defaults => true)
-    assert_equal 'Dear All!',     I18n.t('named_welcome', :@gender => procun, :locale => :xx, :inflector_excluded_defaults => false)
-    assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => badmet, :locale => :xx)
-    assert_raise(ArgumentError) { I18n.t('named_welcome', :@gender => badmet, :locale => :xx, :inflector_raises => true) }
+    assert_equal 'Dear Lady!',    I18n.t('welcome',       :gender  => procek,     :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear Lady!',    I18n.t('named_welcome', :gender  => procek,     :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => procek,     :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => lambda{:m}, :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => true)
+    assert_equal 'Dear All!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => false)
+    assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => badmet,     :locale => :xx)
+    assert_raise(ArgumentError) { I18n.t('named_welcome', :@gender => badmet,     :locale => :xx, :inflector_raises => true) }
   end
 
   test "backend inflector translate: recognizes named patterns and strict kinds" do
