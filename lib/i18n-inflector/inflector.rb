@@ -22,6 +22,17 @@ module I18n
     end
   end
 
+  # @version 2.3
+  # @api public
+  # 
+  # This module contains inflection classes and modules for enabling
+  # the inflection support in I18n translations.
+  # It is used by the module called {I18n::Backend::Inflector}
+  # that overwrites the translate method from the Simple backend
+  # so it will interpolate additional inflection data present
+  # in translations.
+  # 
+  # @see {file:USAGE}
   module Inflector
 
   end # module Inflector

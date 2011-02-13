@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description  = I18n::Inflector::DESCRIPTION
 
   s.files        = Dir.glob("{ci,lib,spec,docs}/**/**") + %w(Gemfile .rspec .yardopts README.rdoc LGPL-LICENSE ChangeLog Manifest.txt)
-  s.extra_rdoc_files = ["README.rdoc", "docs/RELATIONS", "docs/EXAMPLES", "docs/TODO", "docs/HISTORY", "docs/LEGAL", "docs/LGPL", "docs/COPYING"]
+  s.extra_rdoc_files = ["README.rdoc", "docs/USAGE", "docs/RELATIONS", "docs/EXAMPLES", "docs/TODO", "docs/HISTORY", "docs/LEGAL", "docs/LGPL", "docs/COPYING"]
   s.rdoc_options = ["--main", "README.rdoc"]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
