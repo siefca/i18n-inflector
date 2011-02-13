@@ -318,6 +318,15 @@ class I18nInflectorTest < Test::Unit::TestCase
     end
   end
 
+  test "backend inflector translate: works with wildcard tokens" do
+    store_translations(:xx, 'hi' => 'Dear @{n:You|*:Any|All}!')
+    assert_equal 'Dear You!', I18n.t('hi', :gender => :n, :locale => :xx)
+    assert_equal 'Dear Any!', I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Dear Any!', I18n.t('hi', :gender => :f, :locale => :xx)
+    assert_equal 'Dear You!', I18n.t('hi', :gender => :xxxxxx, :locale => :xx)
+    assert_equal 'Dear You!', I18n.t('hi', :locale => :xx)
+  end
+
   test "backend inflector translate: works with loud tokens" do
     store_translations(:xx, 'hi' => 'Dear @{m:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
@@ -331,6 +340,8 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear ~!', I18n.t('hi', :gender => :m, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{!n:\\\\~|n:You|All}!')
     assert_equal 'Dear \\~!', I18n.t('hi', :gender => :m, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{*:~|n:You|All}!')
+    assert_equal 'Dear !', I18n.t('hi', :gender => :m, :locale => :xx)
   end
 
   test "backend inflector translate: works with tokens separated by commas" do

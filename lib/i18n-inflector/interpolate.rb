@@ -175,6 +175,13 @@ module I18n
               next
             end
 
+            # interpolate wildcard
+            if ext_token == Operators::Tokens::WILDCARD
+              ext_freetext = ""
+              result = ext_value
+              break
+            end
+
             # split tokens from group if comma is present and put into fast list
             ext_token.split(Operators::Token::OR).each do |t|
               # token name corrupted
