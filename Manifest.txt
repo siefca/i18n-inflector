@@ -12,7 +12,6 @@ docs/EXAMPLES
 docs/HISTORY
 docs/LEGAL
 docs/LGPL
-docs/RELATIONS
 docs/TODO
 docs/USAGE
 docs/rdoc.css

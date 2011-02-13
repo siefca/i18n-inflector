@@ -4,7 +4,7 @@
 --no-private
 --hide-void-return
 -
-docs/RELATIONS
+docs/USAGE
 docs/EXAMPLES
 docs/HISTORY
 ChangeLog
