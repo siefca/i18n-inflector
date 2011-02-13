@@ -32,7 +32,7 @@ module I18n
   # so it will interpolate additional inflection data present
   # in translations.
   # 
-  # @see {file:USAGE}
+  # @see file:USAGE
   module Inflector
 
   end # module Inflector
