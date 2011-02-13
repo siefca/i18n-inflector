@@ -14,6 +14,7 @@ docs/LEGAL
 docs/LGPL
 docs/RELATIONS
 docs/TODO
+docs/USAGE
 docs/rdoc.css
 lib/i18n-inflector.rb
 lib/i18n-inflector/api.rb
