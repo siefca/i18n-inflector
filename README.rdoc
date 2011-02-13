@@ -16,6 +16,7 @@
 * Definable inflection kinds and tokens.
 * Easy to use public API for inflection data.
 * Configurable using special scope of translation data.
+* Lazily evaluated Proc and Method objects as inflection options.
 * Complex patterns support; inflection by more than one kind at a time.
 * Negative matching, aliases, default tokens, token groups and more…
 
@@ -47,8 +48,8 @@ Example translation data:
           f:        "female"
           m:        "male"
           n:        "neuter"
-          male:     @m
           female:   @f
+          male:     @m
           default:  n
         
       
@@ -156,7 +157,7 @@ Detailed example:
 
 == More information
 
-* See {I18n::Inflector} module documentation for detailed information about the usage.
+* See {file:USAGE} for detailed information about the usage.
 * See {I18n::Inflector::API} class documentation for detailed information about the API.
 * See {I18n::Backend::Inflector} module documentation for detailed information about the internals.
 * See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
@@ -167,6 +168,16 @@ You can run tests both with
 
 * <tt>rake test</tt> or just <tt>rake</tt>
 * run a test file directly, e.g. <tt>ruby -Ilib -Itest test/inflector_test.rb</tt>
+* run <tt>rake testv4</tt> to test with version 4 of I18n
+
+== Common rake tasks
+
+* <tt>rake bundler:gemfile</tt> – regenerate the +Gemfile+
+* <tt>rake docs</tt> – render the documentation (output in the subdirectory directory +doc+)
+* <tt>rake gem</tt> – builds package (output in the subdirectory +pkg+)
+* <tt>rake test</tt>, <tt>rake testv4</tt> – performs tests
+* <tt>rake Manifest.txt</tt> – regenerates the +Manifest.txt+ file
+* <tt>rake ChangeLog</tt> – regenerates the +ChangeLog+ file
 
 == Credits
 

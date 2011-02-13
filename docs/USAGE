@@ -49,8 +49,8 @@ For instance (YAML format):
           f:      "female"
           m:      "male"
           n:      "neuter"
-          woman:  @f
           man:    @m
+          woman:  @f
           default: n
 
 Elements in the example above are:
@@ -177,7 +177,7 @@ different kind.
 
 === Examples:
 
-===== YAML:
+===== YAML
 Let's assume that the translation data in YAML format listed
 below is used in any later example, unless other inflections
 are given.
@@ -191,7 +191,7 @@ are given.
           default: n
   
     welcome:  "Dear @{f:Madam|m:Sir|n:You|All}"
-===== Code:
+===== Code
   I18n.translate('welcome', :gender => :m)
   # => "Dear Sir"
   
@@ -235,7 +235,7 @@ to use fallback values in most cases. Local fallbacks will then be
 applied only when the given option contains a proper value for some
 kind but it's just not present in a pattern, for example:
 
-===== YAML:
+===== YAML
   en:
     i18n:
       inflections:
@@ -245,12 +245,12 @@ kind but it's just not present in a pattern, for example:
       
     welcome:    "Dear @{n:You|All}"
 
-===== Code:
+===== Code
   I18n.translate('welcome', :gender => :o, :inflector_raises => true)
   # => "Dear All"
   # since the token :o was configured but not used in the pattern
 
-=== Unknown, malformed and empty tokens in options
+=== Bad and empty tokens in options
 If an option containing token is not present at all then the interpolation
 routine will try the default token for a processed kind, if the default
 token is present in a pattern. The same thing will happend if the option
@@ -287,11 +287,11 @@ patterns inside of inflection patterns. The value of a standard
 interpolation variable will be evaluated and interpolated *before*
 processing an inflection pattern. For example:
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     hi:   "Dear @{f:Lady|m:%{test}}!"
-===== Code:
+===== Code
   I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
   # => Dear Dude!
 
@@ -300,11 +300,11 @@ It is possible to assign some value to more than one token in a patterns.
 You can create group of tokens by separating them using commas.
 The comma has the meaning of logical OR.
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{m,f:Ladies and Gentlemen|n:You}!"
-===== Code:
+===== Code
   I18n.t('welcome', :gender => :f)
   # => Hello Ladies and Gentlemen!
 
@@ -316,12 +316,12 @@ You can use inversed matching of tokens in token groups but
 note that putting more than one inversed token to a group
 will cause the expression to mach every time.
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{!m:Ladies|n:You}!"
 
-===== Code:
+===== Code
   I18n.t('welcome', :gender => :n)
   # => Hello Ladies!
   
@@ -335,12 +335,12 @@ Note: <em>Uses inflection configuration given in the first example.</em>
 You may use the wildcard character, a star (+*+), in place of token
 group to create a virtual token that matches any time. Example:
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{n:you|*:ladies and gentlemen}!"
 
-===== Code:
+===== Code
   I18n.t('welcome', :gender => :n)
   # => Hello you!
   
@@ -369,12 +369,12 @@ to achieve that. Any matching token in a pattern that has tilde symbol (+~+)
 set as its value will be replaced by its description. In case of
 undescribed aliases, the description from a target token will be used.
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{m:~|n:~}!"
 
-===== Code:
+===== Code
   I18n.t('welcome', :gender => :n)
   # => Hello neuter!
   
@@ -401,11 +401,11 @@ disable the interpolation. These symbols are <tt>\\</tt> and +@+
 and they should be placed just before a pattern that should
 be left untouched. For instance:
 
-===== YAML:
+===== YAML
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "This is the @@{pattern}!"
-===== Code:
+===== Code
   I18n.t('welcome', :gender => :m, :locale => :xx)
   # => This is the @{pattern}!
 
@@ -473,8 +473,8 @@ Here is the example configuration using strict kinds:
           f:      "female"
           m:      "male"
           n:      "neuter"
-          woman:  @f
           man:    @m
+          woman:  @f
           default: n
         @title:
           s:      "sir"
@@ -703,7 +703,7 @@ containing unknown tokens no errors are generated.
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Dear @{m:Sir|f:Madam|Fallback}"
-===== Code:
+===== Code
   I18n.t('welcome', :inflector_raises => true)
   # => I18n::InflectionOptionNotFound: en.welcome:
   #      @{m:Sir|f:Madam|Fallback}" - required option :gender was not found
@@ -808,13 +808,13 @@ and in options.
 ====== Code
   puts I18n.inflector.config::Reserved::Tokens::OPTION
 ====== List
-<tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+<tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Given in a configuration
 ====== Code
   puts I18n.inflector.config::Reserved::Tokens::DB
 ====== List
-<tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+<tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Placed in patterns
 ====== Code
@@ -870,29 +870,29 @@ Here is more formal definition of operators and markers used in patterns.
 
 === Library contents
 
-  * Module {I18n::Inflector} containing everything
-  * Class {I18n::Inflector::API} used to create inflector object attached to I18n backend (handles regular and strict kinds)
-  * Class {I18n::Inflector::API_Strict} which instance is attached to {I18n::Inflector::API} and handles strict kinds
-  * Class {I18n::Inflector::InflectionData} used to store inflection data for regular kinds and tokens
-  * Class {I18n::Inflector::InflectionData_Strict} used to store inflection data for strict kinds and tokens
-  * Class {I18n::Inflector::InflectionOptions} used for keeping switches and options
-  * Class {I18n::Inflector::LazyHashEnumerator} used to manage lazy evaluation of internal data
-  * Module {I18n::Backend::Inflector} used to alter methods of {I18n::Backend::Simple}
-  * Several classes for error reporting
+* Module {I18n::Inflector} containing everything
+* Class {I18n::Inflector::API} used to create inflector object attached to I18n backend (handles regular and strict kinds)
+* Class {I18n::Inflector::API_Strict} which instance is attached to {I18n::Inflector::API} and handles strict kinds
+* Class {I18n::Inflector::InflectionData} used to store inflection data for regular kinds and tokens
+* Class {I18n::Inflector::InflectionData_Strict} used to store inflection data for strict kinds and tokens
+* Class {I18n::Inflector::InflectionOptions} used for keeping switches and options
+* Class {I18n::Inflector::LazyHashEnumerator} used to manage lazy evaluation of internal data
+* Module {I18n::Backend::Inflector} used to alter methods of {I18n::Backend::Simple}
+* Several classes for error reporting
 
 === Relations
 
-  * {I18n.backend} is the currently used backend and the instance of {I18n::Backend::Simple}
-  * {I18n.backend.inflector} is the instance of {I18n::Inflector::API} attached to backend
-  * {I18n.inflector} is the proxy module method that calls inflector for currently used backend {I18n.backend.inflector}
-  * {I18n.backend.inflector.options} is the instance of {I18n::Inflector::InflectionOptions} and
-    mainly it controls a behavior of interpolation method
-  * {I18n.backend.inflector.strict} is the instance of {I18n::Inflector::API_Strict} and handles strict kinds
-  * {I18n.backend.inflector} uses {I18n.backend.inflector.strict} to access strict kinds when it's needed
-  * {I18n::Inflector::API} has an instance variable @idb that contains database of inflections indexed by locale
-  * {I18n::Inflector::API_Strict} has an instance variable @idb that contains database of inflections indexed by locale
-  * Translation databases are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}
-  * When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
-    takes the loaded data, processes their <tt>i18n.inflections</tt> scope for each locale and creates database
-    objects which are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}. That
-    objects are then attached to instances of {I18n::Inflector::API} and {I18n::Inflector::API_Strict}.
+* {I18n.backend} is the currently used backend and the instance of {I18n::Backend::Simple}
+* {I18n.backend.inflector} is the instance of {I18n::Inflector::API} attached to backend
+* {I18n.inflector} is the proxy module method that calls inflector for currently used backend {I18n.backend.inflector}
+* {I18n.backend.inflector.options} is the instance of {I18n::Inflector::InflectionOptions} and
+  mainly it controls a behavior of interpolation method
+* {I18n.backend.inflector.strict} is the instance of {I18n::Inflector::API_Strict} and handles strict kinds
+* {I18n.backend.inflector} uses {I18n.backend.inflector.strict} to access strict kinds when it's needed
+* {I18n::Inflector::API} has an instance variable @idb that contains database of inflections indexed by locale
+* {I18n::Inflector::API_Strict} has an instance variable @idb that contains database of inflections indexed by locale
+* Translation databases are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}
+* When initializing translations a method from {I18n::Backend::Simple} (altered by {I18n::Backend::Inflector})
+  takes the loaded data, processes their <tt>i18n.inflections</tt> scope for each locale and creates database
+  objects which are kind of {I18n::Inflector::InflectionData} and {I18n::Inflector::InflectionData_Strict}. That
+  objects are then attached to instances of {I18n::Inflector::API} and {I18n::Inflector::API_Strict}.
