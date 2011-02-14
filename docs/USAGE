@@ -175,9 +175,10 @@ determines the kind of all tokens used in that pattern. You can pass
 many inflection options, each one designated for transporting a token of a
 different kind.
 
-=== Examples:
+=== Examples
 
-===== YAML
+*YAML:*
+
 Let's assume that the translation data in YAML format listed
 below is used in any later example, unless other inflections
 are given.
@@ -191,7 +192,9 @@ are given.
           default: n
   
     welcome:  "Dear @{f:Madam|m:Sir|n:You|All}"
-===== Code
+
+*Code:*
+
   I18n.translate('welcome', :gender => :m)
   # => "Dear Sir"
   
@@ -206,25 +209,27 @@ because the routine had been unable to find the token called +:unknown+.
 That differs from the latest example, in which there was no option given,
 so the default token for a kind had been applied (in this case +n+).
 
-The inflection option may contain Method or Proc kind of object.
-The token will be obtained by calling the given method or a block when
+The inflection option may contain an object that is the kind of Method or
+Proc. The token will be obtained by calling the given method or a block when
 interpolation routine will need it.
 
-The passed method or a block should return a Symbol kinf of object
-that will be used as an inflection token.
+The passed method or a block should return an object that is the kind of
+Symbol. It will be used as an inflection token.
 
 Optionally the inflection method or a passed code block may make use of
-one or two arguments. If a method or a block uses one argument then the
-currently parsed kind will be passed as Symbol. If the method or
-a Proc object requires two arguments or variable number of arguments
-then the currenty parsed kind locale will be passed; both as Symbols.
+a block that is passed to it. Currently two parameters can be obtained
+using the keyword +yield+. Fist is the currenty parsed kind (including
++@+ character in case of a strict kind) and second is the locale;
+both are the kind of Symbol. Example:
+
+  def get_gender
+    kind, locale = yield  # optional
+    :n                    # return token n
+  end
 
 Note that if there will be any error that causes exception to be
-raised by such a method or a block then it will be silently ignored
-and the interpolation routine will use an inflection option as if
-it contained +nil+ value. To change that behavior and cause exceptions
-to not be ignored you may use the +:inflector_raises+ option
-or the corresponding global switch.
+raised by such a method or a block then it will be raised regardless
+of +:inflector_raises+ option.
 
 === Local fallbacks (free text)
 The fallback value will be used when none of the tokens contained
@@ -235,7 +240,8 @@ to use fallback values in most cases. Local fallbacks will then be
 applied only when the given option contains a proper value for some
 kind but it's just not present in a pattern, for example:
 
-===== YAML
+*YAML:*
+
   en:
     i18n:
       inflections:
@@ -245,7 +251,8 @@ kind but it's just not present in a pattern, for example:
       
     welcome:    "Dear @{n:You|All}"
 
-===== Code
+*Code:*
+
   I18n.translate('welcome', :gender => :o, :inflector_raises => true)
   # => "Dear All"
   # since the token :o was configured but not used in the pattern
@@ -287,11 +294,13 @@ patterns inside of inflection patterns. The value of a standard
 interpolation variable will be evaluated and interpolated *before*
 processing an inflection pattern. For example:
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     hi:   "Dear @{f:Lady|m:%{test}}!"
-===== Code
+
+*Code:*
   I18n.t('hi', :gender => :m, :locale => :xx, :test => "Dude")
   # => Dear Dude!
 
@@ -300,11 +309,13 @@ It is possible to assign some value to more than one token in a patterns.
 You can create group of tokens by separating them using commas.
 The comma has the meaning of logical OR.
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{m,f:Ladies and Gentlemen|n:You}!"
-===== Code
+
+*Code:*
   I18n.t('welcome', :gender => :f)
   # => Hello Ladies and Gentlemen!
 
@@ -316,12 +327,14 @@ You can use inversed matching of tokens in token groups but
 note that putting more than one inversed token to a group
 will cause the expression to mach every time.
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{!m:Ladies|n:You}!"
 
-===== Code
+*Code:*
+
   I18n.t('welcome', :gender => :n)
   # => Hello Ladies!
   
@@ -333,14 +346,18 @@ Note: <em>Uses inflection configuration given in the first example.</em>
   
 === Wildcard tokens
 You may use the wildcard character, a star (+*+), in place of token
-group to create a virtual token that matches any time. Example:
+group to create a virtual token that matches any token of a parsed kind.
+For example:
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
+
   en:
     welcome:  "Hello @{n:you|*:ladies and gentlemen}!"
 
-===== Code
+*Code:*
+
   I18n.t('welcome', :gender => :n)
   # => Hello you!
   
@@ -348,16 +365,23 @@ Note: <em>Uses inflection configuration given in the first example.</em>
   # => Hello ladies and gentlemen!
 
 Note that for simple patterns you can use free text instead, which works
-almost the same way with one difference: free text will be evaluated as
-the last expression, regardless of its placement. On the contrary
-a wildcard token will be evaluated as any other token group and
-may not be used if any previously tested token will match (like
-+n+ in the example above).
+almost the same way with one significant difference: free text will be
+evaluated as the last expression, regardless of its placement.
+On the contrary a wildcard token will be evaluated as any other
+token group and may not be used if any previously tested token
+will match (like +n+ in the example above).
 
-Wildcard token will not validate if the given inflection option
-contains a proper token or even if the required option exists.
-To make use of a default token in such cases place the default
-token before the wildcard token.
+While a wildcard token is processed then the interpolation routine
+will validate if the required inflection option exists and if it contains
+a proper token. Using wildcard token is like using a token group
+for any other token group containing all possible true tokens in it.
+
+In case of regular patterns containing just a wildcard token alone
+there is no way to easily decide which kind the expression
+refers to. To deduce it the first valid inflection option will
+be used. In order to work it must contain some valid token
+identifier. If the token identifier is invalid and there are more
+inflection options then they are tried.
 
 Wildcard tokens are useful in so called complex patterns which
 will be explained later.
@@ -369,12 +393,14 @@ to achieve that. Any matching token in a pattern that has tilde symbol (+~+)
 set as its value will be replaced by its description. In case of
 undescribed aliases, the description from a target token will be used.
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Hello @{m:~|n:~}!"
 
-===== Code
+*Code:*
+
   I18n.t('welcome', :gender => :n)
   # => Hello neuter!
   
@@ -384,8 +410,8 @@ Note: <em>Uses inflection configuration given in the first example.</em>
 To use tilde symbol as the only value of a token you may esape it
 by putting a backslash in front of the symbol.
 
-Note that using loud token with wildcard token will result in
-an empty string.
+Using loud token with wildcard token will result in a description
+of first matching token.
 
 === Aliases in a pattern
 Normally it is possible to use in  patterns only true tokens, not aliases.
@@ -401,11 +427,14 @@ disable the interpolation. These symbols are <tt>\\</tt> and +@+
 and they should be placed just before a pattern that should
 be left untouched. For instance:
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "This is the @@{pattern}!"
-===== Code
+
+*Code:*
+
   I18n.t('welcome', :gender => :m, :locale => :xx)
   # => This is the @{pattern}!
 
@@ -699,11 +728,14 @@ containing unknown tokens no errors are generated.
 
 === Usage of +:inflector_raises+ option
 
-===== YAML
+*YAML:*
+
 Note: <em>Uses inflection configuration given in the first example.</em> 
   en:
     welcome:  "Dear @{m:Sir|f:Madam|Fallback}"
-===== Code
+
+*Code:*
+
   I18n.t('welcome', :inflector_raises => true)
   # => I18n::InflectionOptionNotFound: en.welcome:
   #      @{m:Sir|f:Madam|Fallback}" - required option :gender was not found
@@ -786,40 +818,64 @@ and in options.
 
 ==== Reserved characters in kinds
 ===== Passed as inflection options
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Kinds::OPTION
-====== List
+
+*List:*
+
 <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
 
 ===== Given in a configuration
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Kinds::DB
-====== List
+
+*List:*
+
 <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
 
 ===== Placed in patterns
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Kinds::PATTERN
-====== List
+
+*List:*
+
 <tt>+ | : , ! @ { }</tt> and <tt>,</tt> (comma).
 
 ==== Reserved characters in tokens
 ===== Passed as values of inflection options
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Tokens::OPTION
-====== List
+
+*List:*
+
 <tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Given in a configuration
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Tokens::DB
-====== List
+
+*List:*
+
 <tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Placed in patterns
-====== Code
+
+*Code:*
+
   puts I18n.inflector.config::Reserved::Tokens::PATTERN
-====== List
+
+*List:*
+
 <tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 == Operators and markers

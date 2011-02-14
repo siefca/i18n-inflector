@@ -11,8 +11,8 @@
 
 == Features
 
-* Inline inflection using patterns.
-* Key-based inflection using inflection keys.
+* Inline inflection using patterns in translation data.
+* Key-based inflection using individual inflection keys.
 * Definable inflection kinds and tokens.
 * Easy to use public API for inflection data.
 * Configurable using special scope of translation data.
@@ -121,7 +121,8 @@ you need Rails integration.
 
 Detailed example:
 
-===== YAML:
+*YAML:*
+
   en:
     i18n:
       inflections:
@@ -134,7 +135,8 @@ Detailed example:
    
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
 
-===== Code:
+*Code:*
+
    I18n.t('welcome')
    # => "Dear You"
    

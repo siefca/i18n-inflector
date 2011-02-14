@@ -8,6 +8,7 @@
 * minor enhancements
 
   * Added I18n::Inflector::Config::Markers::STRICT_KIND (character used when passing strict kinds)
+  * Important documentation moved to the USAGE file
 
 * minor bugfixes
 
