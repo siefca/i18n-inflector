@@ -261,17 +261,7 @@ module I18n
             if passed_kinds.has_key?(expected_kind)
               passed_token = passed_kinds[expected_kind]
               if (passed_token.is_a?(Proc) || passed_token.is_a?(Method))
-                begin
-                  passed_token = case passed_token.arity
-                  when 0 then passed_token.call
-                  when 1 then passed_token.call(expected_kind)
-                  else
-                    passed_token.call(expected_kind, locale)
-                  end
-                rescue
-                  raise if raises
-                  passed_token = nil
-                end
+                passed_token = passed_token.call { next expected_kind, locale }
                 passed_kinds[expected_kind] = passed_token # cache the result
               end
               orig_passed_token = passed_token
@@ -333,17 +323,7 @@ module I18n
               expected_kind = parsed_kind unless passed_kinds.has_key?(expected_kind)
               t = passed_kinds[expected_kind]
               if (t.is_a?(Proc) || t.is_a?(Method))
-                begin
-                  t = case t.arity
-                  when 0      then t.call
-                  when 1      then t.call(expected_kind)
-                  else
-                    t.call(expected_kind, locale)
-                  end
-                rescue
-                  raise if raises
-                  t = nil
-                end
+                t = t.call { next expected_kind, locale }
                 passed_kinds[expected_kind] = t # cache the result
               end
               result = subdb.has_token?(t, parsed_kind) ? default_value : nil
