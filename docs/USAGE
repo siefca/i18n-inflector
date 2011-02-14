@@ -175,7 +175,7 @@ determines the kind of all tokens used in that pattern. You can pass
 many inflection options, each one designated for transporting a token of a
 different kind.
 
-=== Examples
+==== Examples
 
 *YAML:*
 
@@ -209,23 +209,32 @@ because the routine had been unable to find the token called +:unknown+.
 That differs from the latest example, in which there was no option given,
 so the default token for a kind had been applied (in this case +n+).
 
-The inflection option may contain an object that is the kind of Method or
-Proc. The token will be obtained by calling the given method or a block when
+==== Inflection options as Methods or Procs
+The inflection option may contain an object that is a kind of Method or
+a Proc. The token will be obtained by calling the given method or a block when
 interpolation routine will need it.
 
-The passed method or a block should return an object that is the kind of
+The passed method or a block should return an object that is a kind of
 Symbol. It will be used as an inflection token.
 
-Optionally the inflection method or a passed code block may make use of
-a block that is passed to it. Currently two parameters can be obtained
-using the keyword +yield+. Fist is the currenty parsed kind (including
-+@+ character in case of a strict kind) and second is the locale;
-both are the kind of Symbol. Example:
+Optionally the inflection method may make use of a block that is passed
+to it. Currently two parameters can be obtained using the keyword +yield+.
+Fist is the currenty parsed kind (including +@+ character in case of
+a strict kind) and second is the locale; both are the kind of Symbol. Example:
 
   def get_gender
     kind, locale = yield  # optional
     :n                    # return token n
   end
+  
+  translate('welcome', :gender => method(:get_gender))
+  
+In case of Proc, the arguments are passed in a more comprehensive way,
+as parameters passed to a block. Such a block must handle exactly
+two arguments:
+
+  p = lambda{ |kind, locale| :m }
+  translate('welcome', :gender => p)
 
 Note that if there will be any error that causes exception to be
 raised by such a method or a block then it will be raised regardless
@@ -799,7 +808,7 @@ Reserved keys, that cannot be used as names of inflection
 options and as names of kinds in the configuration
 are available after issuing:
 
-  puts I18n.inflector.config::Reserved::KEYS.to_a
+  I18n::Inflector::Config::Reserved::KEYS.to_a
 
 Here is the current list: <tt>:scope, :default, :separator,
 :resolve, :object, :fallback, :format, :cascade,
@@ -819,64 +828,40 @@ and in options.
 ==== Reserved characters in kinds
 ===== Passed as inflection options
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Kinds::OPTION}
 
-  puts I18n.inflector.config::Reserved::Kinds::OPTION
-
-*List:*
-
-<tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
 
 ===== Given in a configuration
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Kinds::DB}
 
-  puts I18n.inflector.config::Reserved::Kinds::DB
-
-*List:*
-
-<tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>+ | : ! { }</tt> and <tt>,</tt> (comma).
 
 ===== Placed in patterns
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Kinds::PATTERN}
 
-  puts I18n.inflector.config::Reserved::Kinds::PATTERN
-
-*List:*
-
-<tt>+ | : , ! @ { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>+ | : , ! @ { }</tt> and <tt>,</tt> (comma).
 
 ==== Reserved characters in tokens
 ===== Passed as values of inflection options
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Tokens::OPTION}
 
-  puts I18n.inflector.config::Reserved::Tokens::OPTION
-
-*List:*
-
-<tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Given in a configuration
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Tokens::DB}
 
-  puts I18n.inflector.config::Reserved::Tokens::DB
-
-*List:*
-
-<tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>* + | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 ===== Placed in patterns
 
-*Code:*
+* *Constant:* {I18n::Inflector::Config::Reserved::Tokens::PATTERN}
 
-  puts I18n.inflector.config::Reserved::Tokens::PATTERN
-
-*List:*
-
-<tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
+* *List:* <tt>+ | : ! @ { }</tt> and <tt>,</tt> (comma).
 
 == Operators and markers
 Here is more formal definition of operators and markers used in patterns.
