@@ -1,5 +1,12 @@
 == Near future
 
+* test for Proc (not just a Method)
+
+* write test for lout token (with strict kind, etc.)
+
+* validations for wildcard tokens and for excluded defaults
+  (where the token is taken from options) - make some testing method
+
 == Distant future
 
 * split interpolate_core and make it more reusable by raw data (e.g. pattern content)

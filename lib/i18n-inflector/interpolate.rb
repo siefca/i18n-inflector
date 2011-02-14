@@ -87,6 +87,7 @@ module I18n
           found           = nil
           default_value   = nil
           tb_raised       = nil
+          wildcard_value  = nil
 
           # leave escaped pattern as-is
           unless pattern_fix.empty?
@@ -175,11 +176,16 @@ module I18n
               next
             end
 
-            # interpolate wildcard
+            # unroll wildcard token
             if ext_token == Operators::Tokens::WILDCARD
-              ext_freetext = ""
-              result = ext_value
-              break
+
+              if parsed_kind.nil?
+                # wildcard for a regular kind that we do not know yet
+                wildcard_value = ext_value
+              else
+                # wildcard for a known strict or regular kind
+                ext_token = subdb.get_true_tokens(parsed_kind).keys.join(Operators::Token::OR)
+              end
             end
 
             # split tokens from group if comma is present and put into fast list
@@ -289,6 +295,14 @@ module I18n
               passed_token = default_token if passed_token.nil? && unknown_defaults
             end
 
+            # handle memorized wildcard waiting for a kind
+            if !wildcard_value.nil? && !parsed_kind.nil?
+              found  = passed_token
+              result = wildcard_value
+              wildcard_value = nil
+              break
+            end
+
             # throw the value if the given option matches one of the tokens from group
             # or negatively matches one of the negated tokens
             case negatives.count
@@ -305,6 +319,29 @@ module I18n
           end # single token (or a group) processing
 
           # RESULTS PROCESSING
+
+          # handle memorized wildcard token
+          # when there was no way to deduce a token or a kind
+          # it's just for regular kinds
+          unless (wildcard_value.nil? || passed_kinds.nil?)
+            parsed_kind = nil
+            found       = nil
+            passed_kinds.each do |k, t|
+              t = subdb.get_true_token(t, k)
+              unless t.nil?
+                found = t
+                parsed_kind = k
+                break
+              end
+            end
+            unless (parsed_kind.nil? || found.nil?)
+              result = wildcard_value
+              wildcard_value = nil
+            else
+              found = nil
+              parsed_kind = nil
+            end
+          end
 
           # if there was no hit for that option
           if result.nil?

@@ -341,7 +341,17 @@ class I18nInflectorTest < Test::Unit::TestCase
     store_translations(:xx, 'hi' => 'Dear @{!n:\\\\~|n:You|All}!')
     assert_equal 'Dear \\~!', I18n.t('hi', :gender => :m, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{*:~|n:You|All}!')
-    assert_equal 'Dear !', I18n.t('hi', :gender => :m, :locale => :xx)
+    assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{*:~|n:You|All}!')
+    assert_equal 'Dear neuter!', I18n.t('hi', :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{m:abc|*:~|n:You|All}!')
+    assert_equal 'Dear neuter!', I18n.t('hi', :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{*:~|All}!')
+    assert_equal 'Dear All!', I18n.t('hi', :gender => :unasdasd, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{*:~|All}!')
+    assert_equal 'Dear All!', I18n.t('hi', :gender => nil, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @{*:~|All}!')
+    assert_equal 'Dear neuter!', I18n.t('hi', :gender => :n, :locale => :xx)
   end
 
   test "backend inflector translate: works with tokens separated by commas" do
@@ -390,7 +400,8 @@ class I18nInflectorTest < Test::Unit::TestCase
   end
 
   test "backend inflector translate: works with Method and Proc object given as inflection options" do
-    def femme(kind, locale)
+    def femme
+      kind, locale = yield
       (locale == :xx && kind == :gender) ? :f : :m
     end
     def excluded
@@ -408,7 +419,6 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => lambda{:m}, :locale => :xx, :inflector_raises  => true)
     assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => true)
     assert_equal 'Dear All!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => false)
-    assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => badmet,     :locale => :xx)
     assert_raise(ArgumentError) { I18n.t('named_welcome', :@gender => badmet,     :locale => :xx, :inflector_raises => true) }
   end
 
