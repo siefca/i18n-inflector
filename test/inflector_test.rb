@@ -330,6 +330,8 @@ class I18nInflectorTest < Test::Unit::TestCase
   test "backend inflector translate: works with loud tokens" do
     store_translations(:xx, 'hi' => 'Dear @{m:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
+    store_translations(:xx, 'hi' => 'Dear @gender{m:~|n:You|All}!')
+    assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{masculine:~|n:You|All}!')
     assert_equal 'Dear male!', I18n.t('hi', :gender => :m, :locale => :xx, :inflector_aliased_patterns => true)
     store_translations(:xx, 'hi' => 'Dear @{f,m:~|n:You|All}!')
@@ -352,6 +354,11 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear All!', I18n.t('hi', :gender => nil, :locale => :xx)
     store_translations(:xx, 'hi' => 'Dear @{*:~|All}!')
     assert_equal 'Dear neuter!', I18n.t('hi', :gender => :n, :locale => :xx)
+    store_translations(:xx, :i18n => { :inflections => { :@tense => { :s => 's', :now => 'now', :past => 'later', :default => 'now' }}})
+    store_translations(:xx, 'hi' => 'Dear @gender+tense{*+*:~|All}!')
+    assert_equal 'Dear male now!', I18n.t('hi', :gender => :m, :person => :i, :locale => :xx)
+    assert_equal 'Dear neuter now!', I18n.t('hi', :locale => :xx)
+    assert_equal 'Dear neuter later!', I18n.t('hi', :tense => :past, :locale => :xx)
   end
 
   test "backend inflector translate: works with tokens separated by commas" do
@@ -416,10 +423,12 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Lady!',    I18n.t('welcome',       :gender  => procek,     :locale => :xx, :inflector_raises  => true)
     assert_equal 'Dear Lady!',    I18n.t('named_welcome', :gender  => procek,     :locale => :xx, :inflector_raises  => true)
     assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => procek,     :locale => :xx, :inflector_raises  => true)
-    assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => lambda{:m}, :locale => :xx, :inflector_raises  => true)
     assert_equal 'Dear You!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => true)
     assert_equal 'Dear All!',     I18n.t('named_welcome', :@gender => procun,     :locale => :xx, :inflector_excluded_defaults => false)
     assert_raise(ArgumentError) { I18n.t('named_welcome', :@gender => badmet,     :locale => :xx, :inflector_raises => true) }
+    assert_equal 'Dear Sir!',     I18n.t('named_welcome', :@gender => lambda{|k,l|:m}, :locale => :xx, :inflector_raises  => true)
+    assert_equal 'Dear Lady!',    I18n.t('welcome',       :gender  => lambda{|k,l| k==:gender ? :f : :s},
+                                                          :locale => :xx, :inflector_raises  => true)
   end
 
   test "backend inflector translate: recognizes named patterns and strict kinds" do

@@ -266,8 +266,11 @@ module I18n
             # get passed token from options or from a default token
             if passed_kinds.has_key?(expected_kind)
               passed_token = passed_kinds[expected_kind]
-              if (passed_token.is_a?(Proc) || passed_token.is_a?(Method))
+              if passed_token.is_a?(Method)
                 passed_token = passed_token.call { next expected_kind, locale }
+                passed_kinds[expected_kind] = passed_token # cache the result
+              elsif passed_token.is_a?(Proc)
+                passed_token = passed_token.call(expected_kind, locale)
                 passed_kinds[expected_kind] = passed_token # cache the result
               end
               orig_passed_token = passed_token
@@ -359,8 +362,11 @@ module I18n
               expected_kind = sym_parsed_kind
               expected_kind = parsed_kind unless passed_kinds.has_key?(expected_kind)
               t = passed_kinds[expected_kind]
-              if (t.is_a?(Proc) || t.is_a?(Method))
+              if t.is_a?(Method)
                 t = t.call { next expected_kind, locale }
+                passed_kinds[expected_kind] = t # cache the result
+              elsif t.is_a?(Proc)
+                t = t.call(expected_kind, locale)
                 passed_kinds[expected_kind] = t # cache the result
               end
               result = subdb.has_token?(t, parsed_kind) ? default_value : nil
