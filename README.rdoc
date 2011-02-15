@@ -159,7 +159,7 @@ Detailed example:
 
 == More information
 
-* See {file:USAGE} for detailed information about the usage.
+* See {file:docs/USAGE} for detailed information about the usage.
 * See {I18n::Inflector::API} class documentation for detailed information about the API.
 * See {I18n::Backend::Inflector} module documentation for detailed information about the internals.
 * See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
@@ -192,8 +192,8 @@ Copyright (c) 2011 by Paweł Wilk.
 
 i18n-inflector is copyrighted software owned by Paweł Wilk (pw@gnu.org).
 You may redistribute and/or modify this software as long as you
-comply with either the terms of the LGPL (see {file:LGPL}),
-or Ruby's license (see {file:COPYING}).
+comply with either the terms of the LGPL (see {file:docs/LGPL}),
+or Ruby's license (see {file:docs/COPYING}).
 
 THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS
 OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION,

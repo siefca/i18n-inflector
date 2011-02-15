@@ -23,7 +23,7 @@ That additional data is called <b>inflection options</b>.
   i18n.inflector.true_tokens.keys
   # => [:f, :m, :n]
 
-See the {file:EXAMPLES} for more information about real-life
+See the {file:docs/EXAMPLES} for more information about real-life
 usage of Inflector.
 
 == Inflection pattern
