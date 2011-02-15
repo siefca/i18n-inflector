@@ -121,7 +121,7 @@ you need Rails integration.
 
 Detailed example:
 
-*YAML:*
+<b>YAML:</b>
 
   en:
     i18n:
@@ -135,7 +135,7 @@ Detailed example:
    
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}"
 
-*Code:*
+<b>Code:</b>
 
    I18n.t('welcome')
    # => "Dear You"
