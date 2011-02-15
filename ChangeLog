@@ -1,3 +1,153 @@
+commit fe4469dc11a908dc6e0174955a8e37db092da674
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 15 01:18:29 2011 +0100
+
+    Added missing token name validation checks to the interpolate method
+
+commit 41a008ed23a89de0cefcd6cb920d3c496eb57ccb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 14 23:01:56 2011 +0100
+
+    Changed arguments passing when Proc objects are passed as inflection options
+
+commit d6da97e49497b8c9d8349d0bafa2d0e801382d56
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 14 23:01:04 2011 +0100
+
+    Documentation updated
+
+commit b025fdbf5f210828b0ddec75f75d694442bda640
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 14 17:48:42 2011 +0100
+
+    Changed wildcard token interpolation according to the principle of least surprise
+
+commit ef7c7c6c786f2deb72e8d449cd0a3d36ccc6b7ce
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 14 17:47:17 2011 +0100
+
+    Arguments to external inflection Methods and Procs are now passed through blocks
+
+commit 2cfcc43a7fd7f343aeb563354bbe46e9db919279
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Feb 14 17:44:26 2011 +0100
+
+    Documentation updated
+
+commit d3b667d9691fc86f4fe02c0e8b19281e22197709
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:22:19 2011 +0100
+
+    Proc and Method object support improved
+
+commit e437ef670a286169f2ebbba31d1ea988c721aabc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:21:40 2011 +0100
+
+    Added wildcard token examples to EXAMPLES
+
+commit 13d8e02ab2369e6b345d28158f5209165c722179
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:21:17 2011 +0100
+
+    TODO updated
+
+commit b755aca6146c010df71e9b79c7faaf3156df559f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:20:57 2011 +0100
+
+    Wildcard token support enabled
+
+commit b52b16e4a61ce20b3e2d4599fee5a4b082a3bf24
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:20:35 2011 +0100
+
+    Removed usage documentation from long_comments.rb
+
+commit 2f222adb9c4368199bb4849190e17afbae1fb482
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:19:43 2011 +0100
+
+    Added wildcard token support
+
+commit a54bae6164a98d0bee29632c678b17b76720c272
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:16:55 2011 +0100
+
+    Documentation: link to USAGE fixed
+
+commit e681df415d2d864678b22107236d430ebf6de27d
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:16:08 2011 +0100
+
+    Documentation updated
+
+commit e459b7471892d1f8dc410a5f89cf706a9b3a3b5e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:15:31 2011 +0100
+
+    docs/RELATIONS removed from static gemspec
+
+commit d8c69ce2e097f1364d22a167dfd6849186738e5b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:15:04 2011 +0100
+
+    Gemfile updated
+
+commit e679fbdf6c901d335fd27cbd664fa8b9b19b251e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 22:00:17 2011 +0100
+
+    Documentation about object relations moved to USAGE
+
+commit dd4c51acb617595d8d3a7ff2cfa4b631e73f87df
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 21:55:23 2011 +0100
+
+    Manifest.txt regenerated
+
+commit 2edaf6479b48ab628c9a52cfc9b443949844e119
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Feb 13 21:55:00 2011 +0100
+
+    Inflector usage documentation moved to USAGE
+
+commit 0e7ef2933baf1abbef13d9516c5f39f8f749bc1e
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 11 13:41:11 2011 +0100
+
+    Exceptions of Methods and Procs are now ignored unless :inflector_raises is set
+
+commit 5556f3ecdc4685f06599ec9b401704194988a3c5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 11 12:19:48 2011 +0100
+
+    Variable number of arguments supported in passed method calls
+
+commit 9ffde532e9a1f2a0bc7ccb04dfbe884031725469
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 11 04:13:42 2011 +0100
+
+    HISTORY & TODO updated
+
+commit ff4f62bb19962559f08c76bdc1a6a3a1135dc1b4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 11 04:13:03 2011 +0100
+
+    Added the ability to pass Proc and Method objects as inflection options, fixed excluded_defaults
+
+commit 9f65a7f971c8942ba99795426039b5ec3f0917e8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 11 04:11:32 2011 +0100
+
+    Added I18n::Inflector::Config::Markers::STRICT_KIND
+
+commit 79809f3644791dc105f2a94c1cb3464f33fa6d53
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 9 21:16:08 2011 +0100
+
+    Typo fixed in README
+
 commit a60370126b5981255aff1b6de47c98ea3e740c04
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Feb 9 18:49:52 2011 +0100
