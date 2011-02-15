@@ -1,3 +1,15 @@
+commit c274ae5e650ffc0abe8095c70104ae74e88c58ff
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 15 02:36:58 2011 +0100
+
+    Fixed documentation links
+
+commit 40e61b0adb92c7e401316f097c2774e48f2629cf
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 15 01:53:37 2011 +0100
+
+    README updated for Github's rdoc parser
+
 commit 76c7a61ca6b96e94a4362f31a36d6c79e476be97
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Tue Feb 15 01:20:52 2011 +0100
