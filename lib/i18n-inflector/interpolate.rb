@@ -329,8 +329,12 @@ module I18n
           unless (wildcard_value.nil? || passed_kinds.nil?)
             parsed_kind = nil
             found       = nil
-            passed_kinds.each do |k, t|
-              t = subdb.get_true_token(t, k)
+            passed_kinds.each do |k, ot|
+              t = subdb.get_true_token(ot, k)
+              if Reserved::Tokens.invalid?(t, :OPTION)
+                raise I18n::InvalidInflectionOption.new(locale, ext_pattern, ot) if raises
+                next
+              end
               unless t.nil?
                 found = t
                 parsed_kind = k
@@ -368,6 +372,9 @@ module I18n
               elsif t.is_a?(Proc)
                 t = t.call(expected_kind, locale)
                 passed_kinds[expected_kind] = t # cache the result
+              end
+              if Reserved::Tokens.invalid?(t, :OPTION)
+                raise I18n::InvalidInflectionOption.new(locale, ext_pattern, t) if raises
               end
               result = subdb.has_token?(t, parsed_kind) ? default_value : nil
             end
