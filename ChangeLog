@@ -1,3 +1,33 @@
+commit 0b49cd677a695db4b8f50151529555155fadce59
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 23:08:06 2011 +0100
+
+    Added tests covering fixed bug that caused Arrays to be interpolated in a wrong way
+
+commit 80fa0b092de9bc08ee16e64ae6d93b799e6ee521
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 23:07:34 2011 +0100
+
+    Interpolation wrapper refactored; it now operates on Arrays, Hashes, Symbols and other objects
+
+commit ab5f5bc04814c1181bd9919ce159292362abc3bb
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 23:06:18 2011 +0100
+
+    Added string version of regexps to constants for debugging purposes
+
+commit 8a27302b1535c68496cc60b55bcdfc958f837300
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 23:05:34 2011 +0100
+
+    Dependencies updated
+
+commit 6d343ad3137735492e130b7abdd8f86bf23a4a06
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 02:20:18 2011 +0100
+
+    Release 2.4.0
+
 commit d8a8354dfa428d649c89157bbcf4f2a4aa2fa74f
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Feb 23 02:19:29 2011 +0100

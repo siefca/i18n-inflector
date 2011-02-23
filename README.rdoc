@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.3</tt></b> (<b><tt>Dogma</tt></b>)
+<b>i18n-inflector version <tt>2.5</tt></b> (<b><tt>Akasha</tt></b>)
 
 
 

@@ -1,8 +1,29 @@
+=== 2.5.0 / 2011-02-24
+
+* major enhancements
+
+  * Interpolation wrapper refactored; works with many types of results
+  * Added :inflector_interpolate_symbols switch
+
+* minor enhancements
+
+  * Added TOKENS_RESTR, MULTI_RESTR and PATTERN_RESTR configuration constants
+  * Dependencies updated
+
+* major bugfixes
+
+  * Fixed interpolation of Arrays
+
+* minor bugfixes
+
+  * Fixed pattern filtering when locale is invalid or not inflected
+
 === 2.4.0 / 2011-02-23
 
 * major enhancements
 
   * Added nested translations (collections) support
+  * Added :inflector_traverses switch
 
 === 2.3.1 / 2011-02-14
 
