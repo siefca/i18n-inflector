@@ -40,29 +40,48 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#cache_aware})
       # @option options [Boolean] :inflector_traverses (true) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#traverses})
+      # @option options [Boolean] :inflector_interpolate_symbols (false) local switch
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#interpolate_symbols})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
 
-        # traverse tree and call interpolate for each value
-        if string.is_a?(Hash)
-          return string unless options[:inflector_traverses]
-          return string.merge(string) do |k, v|
-            interpolate(v, locale, options)
+        case string
+
+        when String
+
+          if (locale.nil? || !inflected_locale?(locale))
+            string.gsub(PATTERN_REGEXP) { Escapes::PATTERN[$1] ? $& : $1 }
+          elsif !string.include?(Markers::PATTERN)
+            string
+          else
+            interpolate_core(string, locale, options)
           end
+
+        when Hash
+
+          options[:inflector_traverses] ?
+            string.merge(string) { |k,v| interpolate(v, locale, options) } : string
+
+        when Array
+
+          options[:inflector_traverses] ?
+            string.map { |v| interpolate(v, locale, options) } : string
+
+        when Symbol
+
+          if options[:inflector_interpolate_symbols]
+            r = interpolate(string.to_s, locale, options)
+            r.to_sym rescue :" "
+          else
+            string
+          end
+
+        else
+
+          string
+
         end
 
-        # return immediatelly if something is wrong with locale (preventive)
-        # return if locale is not inflected - return string cleaned from pattern
-        if (locale.nil? || !inflected_locale?(locale))
-          return string.to_s.gsub(PATTERN_REGEXP) do
-            Escapes::PATTERN[$1] ? $& : ''
-          end
-        end
-
-        # no pattern in a string - return string as is
-        return string unless string.to_s.include?(Markers::PATTERN)
-
-        interpolate_core(string, locale, options)
       end
 
       # This method creates an inflection pattern

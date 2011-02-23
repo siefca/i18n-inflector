@@ -121,6 +121,27 @@ module I18n
       # @param [Boolean] state +true+ enables, +false+ disables this switch
       attr_accessor :traverses
 
+      # This is a switch that enables interpolation of symbols. Whenever
+      # interpolation method will receive a collection of symbols as a result
+      # of calling underlying translation method
+      # it won't process them, returning as they are, unless
+      # this switch is enabled.
+      # 
+      # Note that using symbols as values in translation data creates
+      # I18n aliases. This option is intended to work with arrays of
+      # symbols or hashes with symbols as values, if the original translation
+      # method returns such structures.
+      # 
+      # This switch is by default set to +false+.
+      # 
+      # @note Local option +:inflector_interpolate_symbols+ passed to the
+      #   {I18n::Backend::Inflector#translate} overrides this setting.
+      # 
+      # @api public
+      # @return [Boolean] state of the switch
+      # @param [Boolean] state +true+ enables, +false+ disables this switch
+      attr_accessor :interpolate_symbols
+
       # When this switch is set to +true+ then inflector falls back to the default
       # token for a kind if an inflection option passed to the
       # {I18n::Backend::Inflector#translate} is unknown or +nil+.
@@ -264,6 +285,7 @@ module I18n
       def reset
         @unknown_defaults   = true
         @traverses          = true
+        @interpolate_symbols= false
         @excluded_defaults  = false
         @aliased_patterns   = false
         @cache_aware        = false
