@@ -373,6 +373,32 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal h, I18n.t('welcomes', :gender => :m, :foo => 5, :locale => :xx)
   end
 
+  test "backend inflector translate: works with arrays as results" do
+    a = [ :one, :two, :three ]
+    store_translations(:xx, 'welcomes' => {'hi' => a})
+    store_translations(:uu, 'welcomes' => {'hi' => a})
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :xx)
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :uu)
+    a = [ :one, :two, :"x@{m:man|woman}d" ]
+    store_translations(:xx, 'welcomes' => {'hi' => a})
+    store_translations(:uu, 'welcomes' => {'hi' => a})
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :xx)
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :uu)
+    a = [ :one, :two, :xmand ]
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :xx, :inflector_interpolate_symbols => true)
+    a = [ :one, :two, :xd ]
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :uu, :inflector_interpolate_symbols => true)
+    a = [ :one, :two, :"x@{m:man|woman}d" ]
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :xx, :inflector_traverses => false, :inflector_interpolate_symbols => true)
+    a = [ :one, :two, :"x@{m:man|woman}d" ]
+    assert_equal a, I18n.t('welcomes.hi', :gender => :m, :locale => :uu, :inflector_traverses => false, :inflector_interpolate_symbols => true)
+  end
+
+  test "backend inflector translate: works with other types as results" do
+    store_translations(:xx, 'welcomes' => {'hi' => 31337})
+    assert_equal 31337, I18n.t('welcomes.hi', :gender => :m, :locale => :xx)
+  end
+
   test "backend inflector translate: works with negative tokens" do
     store_translations(:xx, 'hi' => 'Dear @{!m:Lady|m:Sir|n:You|All}!')
     assert_equal 'Dear Lady!',    I18n.t('hi', :gender => :n, :locale => :xx)
