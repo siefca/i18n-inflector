@@ -1,3 +1,15 @@
+commit d8a8354dfa428d649c89157bbcf4f2a4aa2fa74f
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 02:19:29 2011 +0100
+
+    Added collections support
+
+commit ed4cea2f3b809028b02fa19c089fecc7cf56713b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Feb 15 02:39:26 2011 +0100
+
+    Release 2.3.1
+
 commit c274ae5e650ffc0abe8095c70104ae74e88c58ff
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Tue Feb 15 02:36:58 2011 +0100
