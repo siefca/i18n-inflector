@@ -19,13 +19,14 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
-  s.required_rubygems_version = '>= 1.3.5'
+  s.required_rubygems_version = '>= 1.4.0'
   s.specification_version = 3
 
   s.add_dependency             'i18n',              '>= 0.4.1'
   s.add_development_dependency 'test_declarative',  '>= 0.0.4'
   s.add_development_dependency 'rspec',             '>= 2.3.0'
   s.add_development_dependency 'yard',              '>= 1.0.7'
+  s.add_development_dependency 'yard',              '>= 1.0.10'
   s.add_development_dependency 'hoe-yard',          '>= 0.1.2'
   s.add_development_dependency 'hoe-bundler',       '>= 1.0.0'
 

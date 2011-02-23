@@ -56,9 +56,9 @@ Hoe.spec 'i18n-inflector' do
   self.history_file    = 'docs/HISTORY'
 
   extra_deps          << ['i18n',             '>= 0.4.1']
-  extra_dev_deps      << ['test_declarative', '>= 0.0.4'] <<
-                         ['yard',             '>= 0.6.4'] <<
-                         ['bundler',          '>= 1.0.7'] <<
+  extra_dev_deps      << ['test_declarative', '>= 0.0.4']   <<
+                         ['yard',             '>= 0.6.4']   <<
+                         ['bundler',          '>= 1.0.10']  <<
                          ['hoe-bundler',      '>= 1.0.0']
 
   unless extra_dev_deps.flatten.include?('hoe-yard')
