@@ -105,6 +105,22 @@ module I18n
       # @param [Boolean] state +true+ enables, +false+ disables this switch
       attr_accessor :aliased_patterns
 
+      # This is a switch that enables you to interpolate patterns contained
+      # in resulting nested Hashes. It is used when the original translation
+      # method returns a subtree of translation data because the given key
+      # is not pointing to a leaf of the data but to some collection.
+      # 
+      # This switch is by default set to +true+. When you turn it off then
+      # the Inflector won't touch nested results and will return them as they are.
+      # 
+      # @note Local option +:inflector_traverses+ passed to the
+      #   {I18n::Backend::Inflector#translate} overrides this setting.
+      # 
+      # @api public
+      # @return [Boolean] state of the switch
+      # @param [Boolean] state +true+ enables, +false+ disables this switch
+      attr_accessor :traverses
+
       # When this switch is set to +true+ then inflector falls back to the default
       # token for a kind if an inflection option passed to the
       # {I18n::Backend::Inflector#translate} is unknown or +nil+.
@@ -247,6 +263,7 @@ module I18n
       # @return [void]
       def reset
         @unknown_defaults   = true
+        @traverses          = true
         @excluded_defaults  = false
         @aliased_patterns   = false
         @cache_aware        = false

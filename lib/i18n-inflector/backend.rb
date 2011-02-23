@@ -78,19 +78,6 @@ module I18n
           translated_string = @inflector.key_to_pattern(translated_string)
         end
 
-        # return immediatelly if something is wrong with locale (preventive)
-        # return if locale is not inflected - return string cleaned from pattern
-        if (locale.nil? || !@inflector.inflected_locale?(locale))
-          return translated_string.gsub(InflectorCfg::PATTERN_REGEXP) do
-            InflectorCfg::Escapes::PATTERN[$1] ? $& : ''
-          end
-        end
-
-        # no pattern in a string - return string as is
-        unless translated_string.include?(InflectorCfg::Markers::PATTERN)
-          return translated_string
-        end
-
         # interpolate string
         begin
 

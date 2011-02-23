@@ -38,8 +38,30 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#aliased_patterns})
       # @option options [Boolean] :inflector_cache_aware (false) local switch
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#cache_aware})
+      # @option options [Boolean] :inflector_traverses (true) local switch
+      #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#traverses})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
+
+        # traverse tree and call interpolate for each value
+        if string.is_a?(Hash)
+          return string unless options[:inflector_traverses]
+          return string.merge(string) do |k, v|
+            interpolate(v, locale, options)
+          end
+        end
+
+        # return immediatelly if something is wrong with locale (preventive)
+        # return if locale is not inflected - return string cleaned from pattern
+        if (locale.nil? || !inflected_locale?(locale))
+          return string.to_s.gsub(PATTERN_REGEXP) do
+            Escapes::PATTERN[$1] ? $& : ''
+          end
+        end
+
+        # no pattern in a string - return string as is
+        return string unless string.to_s.include?(Markers::PATTERN)
+
         interpolate_core(string, locale, options)
       end
 

@@ -366,6 +366,13 @@ class I18nInflectorTest < Test::Unit::TestCase
     assert_equal 'Dear Someone!', I18n.t('hi', :gender => :m, :locale => :xx)
   end
 
+  test "backend inflector translate: works with collections" do
+    h = Hash.new
+    h[:hi2] = h[:hi] = "Dear Someone!"
+    store_translations(:xx, 'welcomes' => {'hi' => 'Dear @{f,m:Someone|n:You|All}!', 'hi2' => 'Dear @{f,m:Someone|n:You|All}!'})
+    assert_equal h, I18n.t('welcomes', :gender => :m, :foo => 5, :locale => :xx)
+  end
+
   test "backend inflector translate: works with negative tokens" do
     store_translations(:xx, 'hi' => 'Dear @{!m:Lady|m:Sir|n:You|All}!')
     assert_equal 'Dear Lady!',    I18n.t('hi', :gender => :n, :locale => :xx)
