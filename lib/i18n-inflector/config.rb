@@ -258,24 +258,33 @@ module I18n
 
       end # module Reserved
 
-      # A regular expression that catches patterns.
-      PATTERN_REGEXP  = Regexp.new  '(.?)'  + Markers::PATTERN       +
-                                    '([^\\' + Markers::PATTERN_BEGIN + ']*)\\' + Markers::PATTERN_BEGIN +
-                                    '([^\\' + Markers::PATTERN_END   + ']+)\\' + Markers::PATTERN_END   +
-                                    '((?:\\'+ Markers::PATTERN_BEGIN + '([^\\' + Markers::PATTERN_BEGIN +
-                                    ']+)\\' + Markers::PATTERN_END   + ')*)'
+      # A string for regular expression that catches patterns.
+      PATTERN_RESTR   = '(.?)'  + Markers::PATTERN       +
+                        '([^\\' + Markers::PATTERN_BEGIN + ']*)\\' + Markers::PATTERN_BEGIN +
+                        '([^\\' + Markers::PATTERN_END   + ']+)\\' + Markers::PATTERN_END   +
+                        '((?:\\'+ Markers::PATTERN_BEGIN + '([^\\' + Markers::PATTERN_BEGIN +
+                        ']+)\\' + Markers::PATTERN_END   + ')*)'
 
-      # A regular expression that extracts additional patterns attached.
-      MULTI_REGEXP    = Regexp.new  '\\'    + Markers::PATTERN_BEGIN          +
-                                    '([^\\' + Markers::PATTERN_END + ']+)\\'  +
-                                    Markers::PATTERN_END
+      # A string for regular expression that extracts additional patterns attached.
+      MULTI_RESTR     = '\\'    + Markers::PATTERN_BEGIN          +
+                        '([^\\' + Markers::PATTERN_END + ']+)\\'  +
+                        Markers::PATTERN_END
 
       # A regular expression that catches token groups or single tokens.
-      TOKENS_REGEXP   = Regexp.new  '(?:'   +
-                                    '([^'   + Operators::Tokens::ASSIGN + '\\'      + Operators::Tokens::OR + ']+)' +
-                                              Operators::Tokens::ASSIGN + '+'       +
-                                    '([^\\' + Operators::Tokens::OR     + ']+)\1?)' +
-                                    '|([^'  + Operators::Tokens::ASSIGN + '\\'      + Operators::Tokens::OR + ']+)'
+      TOKENS_RESTR   = '(?:'   +
+                       '([^'   + Operators::Tokens::ASSIGN + '\\'      + Operators::Tokens::OR + ']+)' +
+                                 Operators::Tokens::ASSIGN + '+'       +
+                       '([^\\' + Operators::Tokens::OR     + ']+)\1?)' +
+                       '|([^'  + Operators::Tokens::ASSIGN + '\\'      + Operators::Tokens::OR + ']+)'
+
+      # A regular expression that catches patterns.
+      PATTERN_REGEXP  = Regexp.new PATTERN_RESTR
+
+      # A regular expression that extracts additional patterns attached.
+      MULTI_REGEXP    = Regexp.new MULTI_RESTR
+
+      # A regular expression that catches token groups or single tokens.
+      TOKENS_REGEXP   = Regexp.new TOKENS_RESTR
 
     end # module Config
 
