@@ -275,7 +275,7 @@ module I18n
             # validate token's description
             if description.nil?
               raise I18n::BadInflectionToken.new(locale, token, orig_kind, description)
-            elsif description[0..0] == InflectorCfg::Markers::ALIAS
+            elsif description.to_s[0..0] == InflectorCfg::Markers::ALIAS
               next
             end
 
@@ -290,7 +290,7 @@ module I18n
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
           tokens.each_pair do |token, description|
             next if token == :default
-            next if description[0..0] != InflectorCfg::Markers::ALIAS
+            next if description.to_s[0..0] != InflectorCfg::Markers::ALIAS
             real_token = shorten_inflection_alias(token, orig_kind, locale, inflections_tree)
             subdb.add_alias(token, real_token, kind) unless real_token.nil?
           end
