@@ -1,3 +1,15 @@
+commit faba82529657e42fb8b034766a450fc91ebe28bc
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 25 19:32:36 2011 +0100
+
+    Inflector is able to parse symbols as descriptions (and aliases)
+
+commit 2fddd234ffe5847ad21d46c36495c02431684ad4
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Feb 23 23:12:04 2011 +0100
+
+    Release 2.5.0
+
 commit 0b49cd677a695db4b8f50151529555155fadce59
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Feb 23 23:08:06 2011 +0100

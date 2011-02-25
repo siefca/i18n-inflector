@@ -1,3 +1,9 @@
+=== 2.5.1 / 2011-02-25
+
+* minor enhancements
+
+  * Added the ability to use symbols as descriptions (values) in a configuration
+
 === 2.5.0 / 2011-02-24
 
 * major enhancements
