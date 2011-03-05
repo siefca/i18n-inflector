@@ -64,6 +64,34 @@ Elements in the example above are:
 * <tt>@f</tt>, <tt>@m</tt>: pointers to real tokens 
 * +default+: default token for a kind +gender+
 
+=== Note about YAML parsing
+
+The example above is not compatible with Psych parser, which is used
+by Rails 3. There are two ways to solve that problem.
+
+First is to make a change in a YAML file and replace any value that has
+special meaning with a symbol:
+
+  en:
+    i18n:
+      inflections:
+        gender:
+          f:        "female"
+          m:        "male"
+          n:        "neuter"
+          female:   :@f
+          male:     :@m
+          default:  :n
+  
+Second way is to use other parser by adding to +config/boot.rb+:
+
+  require 'yaml'
+  YAML::ENGINE.yamler = 'syck'
+
+Note that all the examples in this documentation use the less strict format.
+If you will encounter any parsing problems in your application then change
+all problematic inflection values in YAML files into symbols.
+
 === Kind
 Note the fourth scope selector in the example above (+gender+). It's called
 the *kind* and contains *tokens*. We have the kind

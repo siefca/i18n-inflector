@@ -62,6 +62,32 @@ Example translation data:
       @prefix:  "Dear "
       @suffix:  "!"
       @free:    "All"
+      
+=== Note about YAML parsing
+
+The example above is not compatible with Psych parser, which is used
+by Rails 3. There are two ways to solve that problem.
+
+First is to change a YAML file and replace any value that has
+special meaning with a symbol:
+
+  en:
+    i18n:
+      inflections:
+        gender:
+          f:        "female"
+          m:        "male"
+          n:        "neuter"
+          female:   :@f
+          male:     :@m
+          default:  :n
+  
+Second way is to use other parser by adding to +config/boot.rb+:
+
+  require 'yaml'
+  YAML::ENGINE.yamler = 'syck'
+
+== New features
 
 From version 2.1.0 the Inflector supports so called named patterns,
 which can be used if there is a need to be strict and/or to
