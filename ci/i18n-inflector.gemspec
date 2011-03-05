@@ -2,6 +2,7 @@
 
 lib = File.expand_path('../../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
+
 require 'i18n-inflector/version'
 
 Gem::Specification.new do |s|
@@ -13,9 +14,9 @@ Gem::Specification.new do |s|
   s.summary      = I18n::Inflector::SUMMARY
   s.description  = I18n::Inflector::DESCRIPTION
 
-  s.files        = Dir.glob("{ci,lib,spec,docs}/**/**") + %w(Gemfile .rspec .yardopts README.rdoc LGPL-LICENSE ChangeLog Manifest.txt)
+  s.files        = Dir.glob("{ci,lib,spec,docs}/**/**") + %w(Gemfile .yardopts README.rdoc LGPL-LICENSE ChangeLog Manifest.txt)
   s.extra_rdoc_files = ["README.rdoc", "docs/USAGE", "docs/EXAMPLES", "docs/TODO", "docs/HISTORY", "docs/LEGAL", "docs/LGPL", "docs/COPYING"]
-  s.rdoc_options = ["--main", "README.rdoc"]
+  s.rdoc_options = [ "--charset=UTF-8", "--main", "README.rdoc"]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
