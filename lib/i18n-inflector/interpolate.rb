@@ -96,11 +96,11 @@ module I18n
         suff = key.delete(:@suffix).to_s
         kind = key.delete(:@kind).to_s
         free = key.delete(:@free)
-        free = free.nil? ? "" : (Operators::Tokens::OR + free.to_s)
+        free = free.nil? ? "" : ("" << Operators::Tokens::OR << free.to_s)
 
-        pref + Markers::PATTERN + kind + Markers::PATTERN_BEGIN  +
-        key.map { |k,v| k.to_s + Operators::Tokens::ASSIGN + v.to_s }.
-        join(Operators::Tokens::OR) + free + Markers::PATTERN_END + suff
+        "" << pref << Markers::PATTERN << kind << Markers::PATTERN_BEGIN  <<
+        key.map { |k,v| "" << k.to_s << Operators::Tokens::ASSIGN << v.to_s }.
+        join(Operators::Tokens::OR) << free << Markers::PATTERN_END << suff
       end
 
       private
@@ -117,11 +117,11 @@ module I18n
         idb_strict        = @idb_strict[locale]
 
         string.gsub(PATTERN_REGEXP) do
-          pattern_fix     = $1
-          strict_kind     = $2
-          pattern_content = $3
-          multipattern    = $4
-          ext_pattern     = $&
+          pattern_fix     = $1  # character sticked to the left side of a pattern
+          strict_kind     = $2  # strict kind(s) if any
+          pattern_content = $3  # content of a pattern
+          multipattern    = $4  # another pattern(s) sticked to the right side of a pattern
+          ext_pattern     = $&  # the matching string
 
           # initialize some defaults
           ext_freetext    = ''
@@ -141,11 +141,13 @@ module I18n
             patterns = []
             patterns << pattern_content
             patterns += multipattern.scan(MULTI_REGEXP).flatten
-            next pattern_fix + patterns.map do |content|
-              interpolate_core(Markers::PATTERN       + strict_kind   +
-                               Markers::PATTERN_BEGIN + content       +
-                               Markers::PATTERN_END, locale, options)
-            end.join
+            next "" << pattern_fix <<
+                       patterns.map do |content|
+                         interpolate_core("" << Markers::PATTERN       << strict_kind   <<
+                                                Markers::PATTERN_BEGIN << content       <<
+                                                Markers::PATTERN_END,
+                                          locale, options)
+                      end.join
           end
 
           # set parsed kind if strict kind is given (named pattern is parsed) 
@@ -156,7 +158,7 @@ module I18n
             default_token   = nil
             subdb           = idb
           else
-            sym_parsed_kind = (Markers::STRICT_KIND + strict_kind).to_sym
+            sym_parsed_kind = ("" << Markers::STRICT_KIND << strict_kind).to_sym
 
             if strict_kind.include?(Operators::Tokens::AND)
 
@@ -181,10 +183,10 @@ module I18n
                   !idb_strict.has_kind?(strict_kind.to_sym))
                 raise I18n::InvalidInflectionKind.new(locale, ext_pattern, sym_parsed_kind) if raises
                 # Take a free text for invalid kind and return it
-                next pattern_fix + pattern_content.scan(TOKENS_REGEXP).reverse.
-                                   select { |t,v,f| t.nil? && !f.nil? }.
-                                   map    { |t,v,f| f.to_s            }.
-                                   first.to_s
+                next "" << pattern_fix << pattern_content.scan(TOKENS_REGEXP).reverse.
+                                          select { |t,v,f| t.nil? && !f.nil? }.
+                                          map    { |t,v,f| f.to_s            }.
+                                          first.to_s
               else
                 strict_kind   = strict_kind.to_sym
                 parsed_kind   = strict_kind
@@ -197,11 +199,11 @@ module I18n
 
           # process pattern content's
           pattern_content.scan(TOKENS_REGEXP) do
-            ext_token     = $1.to_s
-            ext_value     = $2.to_s
-            ext_freetext  = $3.to_s
+            ext_token     = $1.to_s         # token(s)
+            ext_value     = $2.to_s         # value of token(s)
+            ext_freetext  = $3.to_s         # freetext if any
             tokens        = Hash.new(false)
-            negatives     = Hash.new(false)
+            negatives     = Hash.new(false) 
             kind          = nil
             passed_token  = nil
             result        = nil
@@ -432,7 +434,7 @@ module I18n
 
           end
 
-          pattern_fix + (result || ext_freetext)
+          "" << pattern_fix << (result || ext_freetext)
 
         end # single pattern processing
 
@@ -469,13 +471,26 @@ module I18n
             results = tokens.split(Operators::Tokens::AND).map do |token|
               raise IndexError.new if token.empty?
               if value == Markers::LOUD_VALUE
-                r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
-                                     Operators::Tokens::ASSIGN + value.to_s + Operators::Tokens::OR +
-                                     Markers::PATTERN + Markers::PATTERN_END, locale, options)
+                r = interpolate_core("" <<  Markers::PATTERN          <<
+                                            kinds.next.to_s           <<
+                                            Markers::PATTERN_BEGIN    <<
+                                            token.to_s                <<
+                                            Operators::Tokens::ASSIGN <<
+                                            value.to_s                <<
+                                            Operators::Tokens::OR     <<
+                                            Markers::PATTERN          <<
+                                            Markers::PATTERN_END,
+                                      locale, options)
                 break if r == Markers::PATTERN # using this marker only as a helper to indicate empty result!
               else
-                r = interpolate_core(Markers::PATTERN + kinds.next.to_s + Markers::PATTERN_BEGIN + token.to_s +
-                                     Operators::Tokens::ASSIGN + value.to_s + Markers::PATTERN_END, locale, options)
+                r = interpolate_core("" <<  Markers::PATTERN          <<
+                                            kinds.next.to_s           <<
+                                            Markers::PATTERN_BEGIN    <<
+                                            token.to_s                <<
+                                            Operators::Tokens::ASSIGN <<
+                                            value.to_s                <<
+                                            Markers::PATTERN_END,
+                                     locale, options)
                 break if r != value # stop with this set, because something is not matching
               end
               r

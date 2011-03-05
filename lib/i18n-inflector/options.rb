@@ -45,8 +45,8 @@ module I18n
           r = old_attr_accessor(*args)
           @known ||= Hash.new
           args.each do |arg|
-            key = '@' + arg.to_s
-            @known[key.to_sym] = (OPTION_PREFIX + arg.to_s).to_sym
+            key = '@' << arg.to_s
+            @known[key.to_sym] = ("" << OPTION_PREFIX << arg.to_s).to_sym
           end
           r
         end

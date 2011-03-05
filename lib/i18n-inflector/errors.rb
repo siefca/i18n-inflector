@@ -81,7 +81,7 @@ module I18n
           kindmsg = kind.to_sym.inspect
         end
       end
-      super +
+      "" << super <<
       "required option #{kindmsg} was not found"
     end
 
@@ -92,7 +92,7 @@ module I18n
   class InflectionOptionIncorrect < InvalidOptionForKind
 
     def message
-      super +
+      "" << super <<
       "required value #{@option.inspect} of option #{@kind.inspect} " \
       "does not match any token"
     end
@@ -113,7 +113,7 @@ module I18n
         kind = @kind.to_s.empty? ? "" : @kind.to_sym
         badkind = " (processed kind: #{kind.inspect})"
       end
-      super + "token #{@token.to_s.inspect} is invalid" + badkind
+      "" << super << "token #{@token.to_s.inspect} is invalid" + badkind
     end
 
   end
@@ -127,7 +127,7 @@ module I18n
     end
 
     def message
-      super + "inflection option #{@kind.inspect} is invalid"
+      "" << super << "inflection option #{@kind.inspect} is invalid"
     end
 
   end
@@ -141,7 +141,7 @@ module I18n
     end
 
     def message
-      super + "kind #{@kind.to_s.inspect} is invalid"
+      "" << super << "kind #{@kind.to_s.inspect} is invalid"
     end
 
   end
@@ -156,7 +156,7 @@ module I18n
     end
 
     def message
-      super +
+      "" << super <<
       "token #{@token.to_s.inspect} " \
       "is not of the expected kind #{@kind.inspect}"
     end
@@ -175,7 +175,7 @@ module I18n
     end
 
     def message
-      super + "pattern is malformed; token count differs from kind count"
+      "" << super << "pattern is malformed; token count differs from kind count"
     end
 
   end
@@ -192,7 +192,7 @@ module I18n
     end
 
     def message
-      super +
+      "" << super <<
       "token #{@token.inspect} " \
       "was already assigned to the kind #{@original_kind.inspect}"
     end
@@ -213,7 +213,7 @@ module I18n
 
     def message
       what = token == :default ? "default token" : "alias #{@token.inspect}"
-      super +
+      "" << super <<
       "the #{what} " \
       "points to an unknown token #{@pointer.inspect}"
     end
@@ -233,11 +233,11 @@ module I18n
 
     def message
       if @description.nil?
-        super +
+        "" << super <<
         "inflection token #{@token.inspect} " \
         "has a bad name"
       else
-        super +
+        "" << super <<
         "inflection token #{@token.inspect} " \
         "has a bad description #{@description.inspect}"
       end
@@ -255,7 +255,7 @@ module I18n
     end
 
     def message
-        super +
+        "" << super <<
         "inflection kind #{@kind.inspect} has bad name or type"
     end
 
