@@ -127,9 +127,10 @@ module I18n
       # 
       # @return [void]
       def inflector_try_init
-        return nil if (defined?(@inflector) && !@inflector.nil?)
-        @inflector  = I18n::Inflector::API.new
-        nil
+        unless (defined?(@inflector) && !@inflector.nil?)
+          @inflector = I18n::Inflector::API.new
+          init_translations unless initialized?
+        end
       end
 
       # Takes care of loading inflection tokens
@@ -143,7 +144,9 @@ module I18n
       # @raise [I18n::DuplicatedInflectionToken] if a token has already appeard in loaded configuration
       # @return [Boolean] +true+ if everything went fine
       def init_translations
-        inflector_try_init
+        unless (defined?(@inflector) && !@inflector.nil?)
+          @inflector = I18n::Inflector::API.new
+        end
         super
       end
 
