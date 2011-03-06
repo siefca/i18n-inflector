@@ -55,39 +55,79 @@ module I18n
 
     end
 
-    # This class implements simple enumerators for arrays
-    # that allow to do lazy operations on them.
-    class LazyArrayEnumerator < LazyEnumerator
+    # This class adds some lazy operations for collections
+    class LazyEnumerator
+
+      # Addition operator for collections
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      def +(other)
+        self.class.new do |yielder|
+          self.each do |v|
+            yielder.yield(v)
+          end
+          other.each do |v|
+            yielder.yield(v)
+          end
+        end
+      end
+
+      # Insertion operator for collections
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      def insert(value)
+        self.class.new do |yielder|
+          yielder.yield(value)
+          self.each do |v|
+            yielder.yield(v)
+          end
+        end
+      end
+
+      # Appending operator for collections
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      def append(value)
+        self.class.new do |yielder|
+          self.each do |v|
+            yielder.yield(v)
+          end
+          yielder.yield(value)
+        end
+      end
 
       # Mapping enumerator
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def map(&block)
-        LazyArrayEnumerator.new do |yielder|
+        self.class.new do |yielder|
           self.each do |v|
             yielder.yield(block.call(v))
           end
         end
       end
 
-      # Array selecting enumerator
-      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      # Slecting enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def select(&block)
-        LazyArrayEnumerator.new do |yielder|
+        self.class.new do |yielder|
           self.each do |v|
             yielder.yield(v) if block.call(v)
           end
         end
       end
 
-      # Array rejecting enumerator
-      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      # Rejecting enumerator
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def reject(&block)
-        LazyArrayEnumerator.new do |yielder|
+        self.class.new do |yielder|
           self.each do |v|
             yielder.yield(v) unless block.call(v)
           end
         end
       end
+
+    end
+
+    # This class implements simple enumerators for arrays
+    # that allow to do lazy operations on them.
+    class LazyArrayEnumerator < LazyEnumerator
 
     end
 
@@ -104,6 +144,28 @@ module I18n
         h
       end
 
+      # Insertion operator for Hash enumerators
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def insert(key, value)
+        self.class.new do |yielder|
+          yielder.yield(key, value)
+          self.each do |k,v|
+            yielder.yield(k,v)
+          end
+        end
+      end
+
+      # Appending operator for Hash enumerators
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
+      def append(key, value)
+        self.class.new do |yielder|
+          self.each do |k,v|
+            yielder.yield(k,v)
+          end
+          yielder.yield(key, value)
+        end
+      end
+
       # Hash mapping enumerator
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def map(&block)
@@ -115,7 +177,7 @@ module I18n
       end
 
       # Hash to Array mapping enumerator
-      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def ary_map(&block)
         LazyHashEnumerator.new do |yielder|
           self.each do |value|
@@ -163,7 +225,7 @@ module I18n
       # Hash selecting enumerator
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def select(&block)
-        LazyHashEnumerator.new do |yielder|
+        self.class.new do |yielder|
           self.each do |k,v|
             yielder.yield(k,v) if block.call(k,v)
           end
@@ -173,7 +235,7 @@ module I18n
       # Hash rejecting enumerator
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def reject(&block)
-        LazyHashEnumerator.new do |yielder|
+        self.class.new do |yielder|
           self.each do |k,v|
             yielder.yield(k,v) unless block.call(k,v)
           end
@@ -184,5 +246,3 @@ module I18n
 
   end
 end
-
-

@@ -178,7 +178,7 @@ module I18n
       # Gets locales which have configured inflection support.
       # 
       # @api public
-      # @note That method uses information from both regular and strict kinds.
+      # @note This method uses information from both regular and strict kinds.
       # @return [Array<Symbol>] the array containing locales that support inflection
       # 
       # @overload inflected_locales
@@ -194,9 +194,31 @@ module I18n
         if kind.to_s[0..0] == Markers::STRICT_KIND
           strict.inflected_locales(kind.to_s[1..-1])
         else
-          super | strict.inflected_locales(kind)
+          super.uniq
         end
       end
+
+      # Iterates through locales which have configured inflection support.
+      # 
+      # @api public
+      # @note This method uses information from both regular and strict kinds.
+      #   The locale identifiers may be duplicated!
+      # @return [LazyArrayEnumerator] the lazy enumerator
+      # @yield [locale] optional block in which each kind will be yielded
+      # @yieldparam [Symbol] locale the inflected locale identifier
+      # @yieldreturn [LazyArrayEnumerator] the lazy enumerator
+      # @overload each_inflected_locale
+      #   Iterates through locales which have configured inflection support.
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      # @overload each_inflected_locale(kind)
+      #   Iterates through locales which have configured inflection support for the given +kind+.
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      def each_inflected_locale(kind=nil, &block)
+        super + strict.inflected_locales(kind)
+      end
+      alias_method :each_locale,            :each_inflected_locale
+      alias_method :each_supported_locale,  :each_inflected_locale
 
       # Tests if a kind exists.
       # 

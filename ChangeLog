@@ -1,3 +1,51 @@
+commit d288d47c1249d9b1f2ff02772ab81fd5a4d63946
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Mon Mar 7 00:45:23 2011 +0100
+
+    Release 2.6.0
+
+commit a949e5aad5a2bed695fc3e00f129dd56dda73daa
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Mar 6 23:41:32 2011 +0100
+
+    Engine initialization improved
+
+commit af4ea17f1961dd54bd600d789c33187af9cc9d69
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Mar 6 23:36:15 2011 +0100
+
+    Added union operators to some arrays
+
+commit e21b810282bd98e3e49030267382d2a4358ab285
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sun Mar 6 23:35:14 2011 +0100
+
+    Added lazy iteration interfaces to API and core classes
+
+commit 8f480682b1f5c418c31cbbdfb3b5f1b3d3549713
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 5 14:32:52 2011 +0100
+
+    Added a note about YAML parsing issues.
+
+commit 9fb6687d1e7ae003fb653d2af426e522f6d9f399
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 5 14:32:25 2011 +0100
+
+    Fixed static gemspec
+
+commit 6ccbc782f089c603afeff48a7b7492011b486dfe
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 5 14:31:42 2011 +0100
+
+    Optimized contatenations if Strings
+
+commit b62605859be67525a5c2f902a387fa92f0adebb8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Feb 25 19:33:24 2011 +0100
+
+    Release 2.5.1
+
 commit faba82529657e42fb8b034766a450fc91ebe28bc
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Fri Feb 25 19:32:36 2011 +0100
