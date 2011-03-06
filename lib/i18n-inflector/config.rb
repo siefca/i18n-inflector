@@ -146,7 +146,7 @@ module I18n
         end # module Token
 
         # All operators.
-        ALL = (Tokens::ALL + Token::ALL).uniq
+        ALL = Tokens::ALL | Token::ALL
 
       end # module Operators
 
@@ -164,7 +164,7 @@ module I18n
         module Tokens
 
           # Reserved characters in token identifiers placed in configuration.
-          DB        = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
+          DB        = (Operators::ALL | Markers::ALL) - [Markers::LOUD_VALUE]
 
           # Reserved characters in token identifiers passed as options.
           OPTION    = DB
@@ -212,13 +212,13 @@ module I18n
         module Kinds
 
           # Reserved characters in kind identifiers placed in configuration.
-          DB        = (Operators::ALL + Markers::ALL - [Markers::ALIAS, Markers::LOUD_VALUE]).uniq
+          DB        = (Operators::ALL | Markers::ALL) - [Markers::ALIAS, Markers::LOUD_VALUE]
 
           # Reserved characters in kind identifiers passed as option values.
           OPTION    = DB
 
           # Reserved characters in kind identifiers placed in patterns.
-          PATTERN   = (Operators::ALL + Markers::ALL - [Markers::LOUD_VALUE]).uniq
+          PATTERN   = (Operators::ALL | Markers::ALL) - [Markers::LOUD_VALUE]
 
           # This module contains constants defining
           # regular expressions for reserved characters
