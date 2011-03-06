@@ -57,6 +57,7 @@ module I18n
       def initialize(idb=nil, options=nil)
         @idb      = idb.nil?      ? {} : idb
         @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new : options
+        @lazy_locales = LazyHashEnumerator.new(@idb)
       end
 
       # Creates an empty strict inflections database for the specified locale.
@@ -120,6 +121,29 @@ module I18n
       alias_method :locale?,            :inflected_locale?
       alias_method :locale_supported?,  :inflected_locale?
 
+      # Iterates through locales which have configured strict inflection support.
+      # 
+      # @api public
+      # @return [LazyArrayEnumerator] the lazy enumerator
+      # @yield [locale] optional block in which each kind will be yielded
+      # @yieldparam [Symbol] locale the inflected locale identifier
+      # @yieldreturn [LazyArrayEnumerator] the lazy enumerator
+      # @overload each_inflected_locale
+      #   Iterates through locales which have configured inflection support.
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      # @overload each_inflected_locale(kind)
+      #   Iterates through locales which have configured inflection support for the given +kind+.
+      #   @param [Symbol] kind the identifier of a kind
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      def each_inflected_locale(kind=nil, &block)
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        i = @lazy_locales.reject  { |lang,data| data.empty?           }
+        i = i.select              { |lang,data| data.has_kind?(kind)  } unless kind.nil?
+        i.each_key(&block)
+      end
+      alias_method :each_locale,            :each_inflected_locale
+      alias_method :each_supported_locale,  :each_inflected_locale
+
       # Gets locales which have configured strict inflection support.
       # 
       # @api public
@@ -132,18 +156,30 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Array<Symbol>] the array containing locales that support inflection
       def inflected_locales(kind=nil)
-        return [] if (!kind.nil? && kind.to_s.empty?)
-        inflected_locales = LazyHashEnumerator.new(@idb || {})
-        inflected_locales = inflected_locales.
-                            reject{ |lang,data| data.nil? || data.empty? }
-        return inflected_locales.keys if kind.nil?
-        kind = kind.to_sym
-        inflected_locales.
-          reject{|land,data| !data.has_kind?(kind)}.
-          keys
+        each_inflected_locale(kind).to_a
       end
       alias_method :locales,            :inflected_locales
       alias_method :supported_locales,  :inflected_locales
+
+      # Iterates through known strict inflection kinds.
+      # 
+      # @api public
+      # @return [LazyArrayEnumerator] the lazy enumerator
+      # @yield [kind] optional block in which each kind will be yielded
+      # @yieldparam [Symbol] kind the inflection kind
+      # @yieldreturn [LazyArrayEnumerator] the lazy enumerator
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @overload kinds
+      #   Iterates through known inflection kinds for the current locale.
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      # @overload kinds(locale)
+      #   Iterates through known inflection kinds for the given +locale+.
+      #   @param [Symbol] locale the locale for which kinds should be listed
+      #   @return [LazyArrayEnumerator] the lazy enumerator
+      def each_kind(locale=nil, &block)
+        data_safe(locale).each_kind(&block)
+      end
+      alias_method :each_inflection_kind, :each_kind
 
       # Gets known strict inflection kinds.
       # 
@@ -156,9 +192,9 @@ module I18n
       # @overload kinds(locale)
       #   Gets known inflection kinds for the given +locale+.
       #   @param [Symbol] locale the locale for which kinds should be listed
-      #   @return [Array<Symbol>] the array containing known inflection kinds
+      #   @return [Array<Symbol>] the array containing known inflection kinds      
       def kinds(locale=nil)
-        data_safe(locale).get_kinds
+        each_kind(locale).to_a
       end
       alias_method :inflection_kinds, :kinds
 
@@ -325,6 +361,35 @@ module I18n
         data_safe(locale).get_kind(token.to_sym, kind.to_sym)
       end
 
+      # Iterates through available inflection tokens belonging to a strict kind and their descriptions.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      # @note You cannot deduce where aliases are pointing to, since the information
+      #   about a target is replaced by the description. To get targets use the
+      #   {#raw_tokens} method. To simply list aliases and their targets use
+      #   the {#aliases} method.
+      # @overload each_token(kind)
+      #   Iterates through available inflection tokens and their descriptions for some +kind+ and
+      #   the current locale.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token(kind, locale)
+      #   Iterates through available inflection tokens and their descriptions of the given
+      #   +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      def each_token(kind=nil, locale=nil, &block)
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        data_safe(locale).each_token(kind, &block)
+      end
+
       # Gets available inflection tokens belonging to a strict kind and their descriptions.
       # 
       # @api public
@@ -348,9 +413,35 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens (including
       #     aliases) as keys and their descriptions as values
       def tokens(kind=nil, locale=nil)
-        return {} if (kind.nil? || kind.to_s.empty?)
-        data_safe(locale).get_tokens(kind.to_sym)
+        each_token(kind, locale).to_h
       end
+
+      # Iterates through available inflection tokens belonging to a strict kind and their values.
+      # 
+      # @api public
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @yield [token, value] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [Symbol, String] value a description string for a token or a target (if alias)
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note You may deduce whether the returned values are aliases or true tokens
+      #   by testing if a value is a kind of Symbol or a String.
+      # @overload each_token_raw(kind)
+      #   Iterates through available inflection tokens and their values of the given +kind+ and
+      #   the current locale.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @overload each_token_raw(kind, locale)
+      #   Iterates through available inflection tokens (and their values) of the given +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      def each_token_raw(kind=nil, locale=nil, &block)
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        data_safe(locale).each_raw_token(kind, &block)
+      end
+      alias_method :each_raw_token, :each_token_raw
 
       # Gets available inflection tokens belonging to a strict kind and their values.
       # 
@@ -374,10 +465,35 @@ module I18n
       #     and their descriptions as values. In case of aliases the returned
       #     values are Symbols
       def tokens_raw(kind=nil, locale=nil)
-        return {} if (kind.nil? || kind.to_s.empty?)
-        data_safe(locale).get_raw_tokens(kind.to_sym)
+        each_token_raw(kind, locale).to_h
       end
       alias_method :raw_tokens, :tokens_raw
+
+      # Iterates through inflection tokens belonging to a strict kind and their values.
+      # 
+      # @api public
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @note It returns only true tokens, not aliases.
+      # @overload each_token_true(kind)
+      #   Iterates through true inflection tokens (and their values) of the given +kind+ and
+      #   the current locale.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token_true(kind, locale)
+      #   Iterates through true inflection tokens (and their values) of the given +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of inflection tokens to be returned
+      #   @param [Symbol] locale the locale to use
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      def each_token_true(kind=nil, locale=nil, &block)
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        data_safe(locale).each_true_token(kind, &block)
+      end
+      alias_method :each_true_token, :each_token_true
 
       # Gets true inflection tokens belonging to a strict kind and their values.
       # 
@@ -398,10 +514,32 @@ module I18n
       #   @return [Hash] the hash containing available inflection tokens as keys
       #     and their descriptions as values
       def tokens_true(kind=nil, locale=nil)
-        return {} if (kind.nil? || kind.to_s.empty?)
-        data_safe(locale).get_true_tokens(kind.to_sym)
+        each_token_true(kind, locale).to_h
       end
       alias_method :true_tokens, :tokens_true
+
+      # Iterates through inflection aliases belonging to a strict kind and their pointers.
+      # 
+      # @api public
+      # @raise [I18n::InvalidLocale] if there is no proper locale name
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      # @yield [alias, target] optional block in which each alias will be yielded
+      # @yieldparam [Symbol] alias an alias
+      # @yieldparam [Symbol] target a name of the target token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      # @overload each_alias(kind)
+      #   Iterates through inflection aliases (and their pointers) of the given +kind+ and the current locale.
+      #   @param [Symbol,String] kind the kind of aliases to get
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      # @overload each_alias(kind, locale)
+      #   Iterates through inflection aliases (and their pointers) of the given +kind+ and +locale+.
+      #   @param [Symbol,String] kind the kind of aliases to get
+      #   @param [Symbol] locale the locale to use
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      def each_alias(kind=nil, locale=nil, &block)
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        data_safe(locale).each_alias(kind, &block)
+      end
 
       # Gets inflection aliases belonging to a strict kind and their pointers.
       # 
@@ -418,8 +556,7 @@ module I18n
       #   @param [Symbol] locale the locale to use
       #   @return [Hash] the Hash containing available inflection aliases
       def aliases(kind=nil, locale=nil)
-        return {} if (kind.nil? || kind.to_s.empty?)
-        data_safe(locale).get_aliases(kind.to_sym)
+        each_alias(kind, locale).to_h
       end
 
       # Gets the description of the given inflection token belonging to a strict kind.
@@ -509,7 +646,7 @@ module I18n
       # @return [Symbol] the given locale or the global locale
       def prep_locale(locale=nil)
         locale ||= I18n.locale
-        raise I18n::InvalidLocale.new(locale) if (locale.nil? || locale.to_s.empty?)
+        raise I18n::InvalidLocale.new(locale) if locale.to_s.empty?
         locale.to_sym
       end
 

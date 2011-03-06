@@ -140,6 +140,26 @@ module I18n
         return ary
       end
 
+      # Keys enumerator
+      # @return [I18n::Inflector::LazyArrayEnumerator.new] the enumerator
+      def each_key(&block)
+        LazyArrayEnumerator.new do |yielder|
+          self.each do |k,v|
+            yielder.yield(k)
+          end
+        end
+      end
+
+      # Values enumerator
+      # @return [I18n::Inflector::LazyArrayEnumerator.new] the enumerator
+      def each_value(&block)
+        LazyArrayEnumerator.new do |yielder|
+          self.each do |k,v|
+            yielder.yield(v)
+          end
+        end
+      end
+
       # Hash selecting enumerator
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def select(&block)
@@ -164,3 +184,5 @@ module I18n
 
   end
 end
+
+

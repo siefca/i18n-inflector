@@ -202,6 +202,7 @@ module I18n
             ext_token     = $1.to_s         # token(s)
             ext_value     = $2.to_s         # value of token(s)
             ext_freetext  = $3.to_s         # freetext if any
+            ext_tokens    = nil
             tokens        = Hash.new(false)
             negatives     = Hash.new(false) 
             kind          = nil
@@ -221,18 +222,20 @@ module I18n
 
             # unroll wildcard token
             if ext_token == Operators::Tokens::WILDCARD
-
               if parsed_kind.nil?
                 # wildcard for a regular kind that we do not know yet
                 wildcard_value = ext_value
               else
                 # wildcard for a known strict or regular kind
-                ext_token = subdb.get_true_tokens(parsed_kind).keys.join(Operators::Token::OR)
+                ext_tokens = subdb.each_true_token(parsed_kind).each_key.map{|k|k.to_s}
               end
             end
 
-            # split tokens from group if comma is present and put into fast list
-            ext_token.split(Operators::Token::OR).each do |t|
+            # split groupped tokens if comma is present and put into fast list
+            ext_tokens = ext_token.split(Operators::Token::OR) if ext_tokens.nil?
+
+            # for each token from group
+            ext_tokens.each do |t|
               # token name corrupted
               if t.to_s.empty?
                 raise I18n::InvalidInflectionToken.new(locale, ext_pattern, t) if raises

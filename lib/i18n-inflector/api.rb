@@ -178,7 +178,7 @@ module I18n
       # Gets locales which have configured inflection support.
       # 
       # @api public
-      # @note That method uses information from regular and strict kinds.
+      # @note That method uses information from both regular and strict kinds.
       # @return [Array<Symbol>] the array containing locales that support inflection
       # 
       # @overload inflected_locales
@@ -194,7 +194,7 @@ module I18n
         if kind.to_s[0..0] == Markers::STRICT_KIND
           strict.inflected_locales(kind.to_s[1..-1])
         else
-          (super + strict.inflected_locales(kind)).uniq
+          super | strict.inflected_locales(kind)
         end
       end
 
@@ -480,159 +480,139 @@ module I18n
         data_safe(locale).get_kind(token.to_sym, kind)
       end
 
-      # Gets available inflection tokens and their descriptions.
+      # Iterates through available inflection tokens and their descriptions.
       # 
       # @api public
       # @note By default it uses regular kinds database, not strict kinds.
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @return [Hash] the hash containing available inflection tokens and descriptions
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       # @note You cannot deduce where aliases are pointing to, since the information
       #   about a target is replaced by the description. To get targets use the
       #   {#raw_tokens} method. To simply list aliases and their targets use
       #   the {#aliases} method.
-      # @overload tokens
-      #   Gets available inflection tokens and their descriptions.
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values, including aliases,
-      #     for all kinds.
-      # @overload tokens(kind)
-      #   Gets available inflection tokens and their descriptions for some +kind+.
+      # @overload each_token
+      #   Iterates through available inflection tokens and their descriptions.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token(kind)
+      #   Iterates through available inflection tokens and their descriptions for some +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values, including aliases, for current locale.
-      # @overload tokens(kind, locale)
-      #   Gets available inflection tokens and their descriptions for some +kind+ and +locale+.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token(kind, locale)
+      #   Iterates through available inflection tokens and their descriptions for some +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values, including aliases, for current locale
-      def tokens(kind=nil, locale=nil)
-        unless kind.nil?
-          kind = kind.to_s
-          return {} if kind.empty?
-          if kind[0..0] == Markers::STRICT_KIND
-            return strict.tokens(kind[1..-1], locale)
-          end
-          kind = kind.to_sym
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      def each_token(kind=nil, locale=nil)
+        if kind.to_s[0..0] == Markers::STRICT_KIND
+          return strict.each_token(kind.to_s[1..-1], locale)
         end
-        data_safe(locale).get_tokens(kind)
+        super
       end
 
-      # Gets available inflection tokens and their values.
+      # Iterates through available inflection tokens and their values.
       # 
       # @api public
-      # @return [Hash] the hash containing available inflection tokens and descriptions (or alias pointers)
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @yield [token, value] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [Symbol, String] value a description string for a token or a target (if alias)
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note You may deduce whether the returned values are aliases or true tokens
       #   by testing if a value is a type of Symbol or String.
-      # @overload tokens_raw
-      #   Gets available inflection tokens and their values for regular kinds.
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values. In case of aliases the returned
-      #     values are Symbols
-      # @overload tokens_raw(kind)
-      #   Gets available inflection tokens and their values for the given +kind+.
+      # @overload each_token_raw
+      #   Iterates through available inflection tokens and their values for regular kinds.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @overload each_token_raw(kind)
+      #   Iterates through available inflection tokens and their values for the given +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token_raw})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values. In case of aliases the returned
-      #     values are Symbols
-      # @overload tokens_raw(kind, locale)
-      #   Gets available inflection tokens and their values for the given +kind+ and +locale+.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @overload each_token_raw(kind, locale)
+      #   Iterates through available inflection tokens and their values for the given +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_raw})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token_raw})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values. In case of aliases the returned
-      #     values are Symbols
-      def tokens_raw(kind=nil, locale=nil)
-        unless kind.nil?
-          kind = kind.to_s
-          return {} if kind.empty?
-          if kind[0..0] == Markers::STRICT_KIND
-            return strict.tokens_raw(kind[1..-1], locale)
-          end
-          kind = kind.to_sym
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      def each_token_raw(kind=nil, locale=nil)
+        if kind.to_s[0..0] == Markers::STRICT_KIND
+          return strict.each_token_raw(kind.to_s[1..-1], locale)
         end
-        data_safe(locale).get_raw_tokens(kind)
+        super
       end
-      alias_method :raw_tokens, :tokens_raw
+      alias_method :each_raw_token, :each_token_raw
 
-      # Gets true inflection tokens and their values.
+      # Iterates through true inflection tokens and their values.
       # 
       # @api public
-      # @return [Hash] the hash containing available inflection tokens and descriptions
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       # @raise [I18n::InvalidLocale] if there is no proper locale name
       # @note It returns only true tokens, not aliases.
-      # @overload tokens_true
-      #   Gets true inflection tokens and their values for regular kinds.
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values
-      # @overload tokens_true(kind)
-      #   Gets true inflection tokens and their values for the given +kind+.
+      # @overload each_token_true
+      #   Iterates through true inflection tokens and their values for regular kinds.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token_true(kind)
+      #   Iterates through true inflection tokens and their values for the given +kind+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token_true})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values
-      # @overload tokens_true(kind, locale)
-      #   Gets true inflection tokens and their values for the given +kind+ and +value+.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @overload each_token_true(kind, locale)
+      #   Iterates through true inflection tokens and their values for the given +kind+ and +value+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#tokens_true})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_token_true})
       #   @param [Symbol,String] kind the kind of inflection tokens to be returned
       #   @param [Symbol] locale the locale to use
-      #   @return [Hash] the hash containing available inflection tokens as keys
-      #     and their descriptions as values
-      def tokens_true(kind=nil, locale=nil)
-        unless kind.nil?
-          kind = kind.to_s
-          return {} if kind.empty?
-          if kind[0..0] == Markers::STRICT_KIND
-            return strict.tokens_true(kind[1..-1], locale)
-          end
-          kind = kind.to_sym
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      def each_token_true(kind=nil, locale=nil, &block)
+        if kind.to_s[0..0] == Markers::STRICT_KIND
+          return strict.each_token_true(kind.to_s[1..-1], locale, &block)
         end
-        data_safe(locale).get_true_tokens(kind)
+        super
       end
-      alias_method :true_tokens, :tokens_true
+      alias_method :each_true_token, :each_token_true
 
-      # Gets inflection aliases and their pointers.
+      # Iterates through inflection aliases and their pointers.
       # 
       # @api public
       # @raise [I18n::InvalidLocale] if there is no proper locale name
-      # @return [Hash] the Hash containing available inflection aliases (<tt>alias => target</tt>)
-      # @overload aliases
-      #   Gets inflection aliases and their pointers for regular kinds.
-      #   @return [Hash] the Hash containing available inflection aliases
-      # @overload aliases(kind)
-      #   Gets inflection aliases and their pointers for the given +kind+.
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      # @yield [alias, target] optional block in which each alias will be yielded
+      # @yieldparam [Symbol] alias an alias
+      # @yieldparam [Symbol] target a name of the target token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      # @overload each_alias(kind)
+      #   Iterates through inflection aliases (and their pointers) of the given +kind+ and the current locale.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_alias})
       #   @param [Symbol,String] kind the kind of aliases to get
-      #   @return [Hash] the Hash containing available inflection aliases
-      # @overload aliases(kind, locale)
-      #   Gets inflection aliases and their pointers for the given +kind+ and +locale+.
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      # @overload each_alias(kind, locale)
+      #   Iterates through inflection aliases (and their pointers) of the given +kind+ and +locale+.
       #   @note If +kind+ begins with the +@+ symbol then the variant of this method
-      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#aliases})
+      #     operating on strict kinds will be called ({I18n::Inflector::API_Strict#each_alias})
       #   @param [Symbol,String] kind the kind of aliases to get
       #   @param [Symbol] locale the locale to use
-      #   @return [Hash] the Hash containing available inflection aliases
-      def aliases(kind=nil, locale=nil)
-        unless kind.nil?
-          kind = kind.to_s
-          return nil if kind.empty?
-          if kind[0..0] == Markers::STRICT_KIND
-            return strict.aliases(kind[1..-1], locale)
-          end
-          kind = kind.to_sym
+      #   @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      def each_alias(kind=nil, locale=nil, &block)
+        if kind.to_s[0..0] == Markers::STRICT_KIND
+          return strict.each_alias(kind.to_s[1..-1], locale, &block)
         end
-        data_safe(locale).get_aliases(kind)
+        super
       end
 
       # Gets the description of the given inflection token.

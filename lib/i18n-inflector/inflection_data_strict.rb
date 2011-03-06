@@ -26,15 +26,11 @@ module I18n
       # It makes chaining calls to internal data easier.
       DUMMY_TOKENS  = Hash.new(DUMMY_TOKEN).freeze
 
-      # This constant contains a dummy iterator for hash of hashes.
-      # It makes chaining calls to internal data easier.
-      DUMMY_T_LAZY  = LazyHashEnumerator.new(DUMMY_TOKENS).freeze
-
       # This constant contains a dummy hash. It makes
       # chaining calls to internal data easier.
       DUMMY_HASH    = Hash.new.freeze
 
-      # Locale that this database works for.
+      # Locale this database works for.
       attr_reader :locale
 
       # Initializes internal structures.
@@ -43,9 +39,8 @@ module I18n
       #   the object to be labeled with
       def initialize(locale=nil)
         @tokens       = Hash.new(DUMMY_TOKENS)
-        @lazy_tokens  = Hash.new(DUMMY_T_LAZY)
+        @lazy_kinds   = LazyArrayEnumerator.new(@tokens)
         @defaults     = Hash.new
-        @known_kinds  = nil
         @locale       = locale
       end
 
@@ -83,9 +78,7 @@ module I18n
         kind      = kind.to_sym
         kind_tree = @tokens[kind]
         if kind_tree.equal?(DUMMY_TOKENS)
-          @known_kinds = nil
           kind_tree = @tokens[kind] = Hash.new(DUMMY_TOKEN)
-          @lazy_tokens[kind] = LazyHashEnumerator.new(kind_tree)
         end
         token = kind_tree[token] = {}
         token[:description] = description.to_s
@@ -155,56 +148,70 @@ module I18n
         not @tokens[kind][alias_name][:target].nil?
       end
 
-      # Reads all the true tokens (not aliases) of the
+      # Iterates through all the true tokens (not aliases) of the
       # given strict kind.
       # 
       # @param [Symbol] kind the identifier of a kind
-      # @return [Hash] the true tokens of the given kind in a
-      #   form of Hash (<tt>token => description</tt>)
-      def get_true_tokens(kind)
-        @lazy_tokens[kind].
-        reject { |token,data| !data[:target].nil? }.
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      def each_true_token(kind, &block)
+        LazyHashEnumerator.new(@tokens[kind]).
+        select { |token,data| data[:target].nil?  }.
         map    { |token,data| data[:description]  }.
-        to_h
+        each(&block)
       end
 
-      # Reads all the aliases of the given strict kind.
+      # Iterates through all the aliases of the given strict kind.
       # 
       # @param [Symbol] kind the identifier of a kind
-      # @return [Hash] the aliases of the given kind in a
-      #   form of Hash (<tt>alias => target</tt>)
-      def get_aliases(kind)
-        @lazy_tokens[kind].
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => target</tt>)
+      # @yield [alias, target] optional block in which each alias will be yielded
+      # @yieldparam [Symbol] alias an alias
+      # @yieldparam [Symbol] target a name of the target token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      def each_alias(kind, &block)
+        LazyHashEnumerator.new(@tokens[kind]).
         reject { |token,data| data[:target].nil?  }.
         map    { |token,data| data[:target]       }.
-        to_h
+        each(&block)
       end
 
-      # Reads all the tokens of the given strict kind
+      # Iterates through all the tokens of the given strict kind
       # in a way that it is possible to
       # distinguish true tokens from aliases.
       # 
       # @note True tokens have descriptions (String) and aliases
       #   have targets (Symbol) assigned.
       # @param [Symbol] kind the identifier of a kind
-      # @return [Hash] the tokens of the given kind in a
-      #   form of Hash (<tt>token => description|target</tt>)
-      def get_raw_tokens(kind)
-        @lazy_tokens[kind].
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description|target</tt>)
+      # @yield [token, value] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [Symbol, String] value a description string for a token or a target (if alias)
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      def each_raw_token(kind, &block)
+        LazyHashEnumerator.new(@tokens[kind]).
         map { |token,data| data[:target] || data[:description] }.
-        to_h
+        each(&block)
       end
 
-      # Reads all the tokens (including aliases) of the given
+      # Iterates through all the tokens (including aliases) of the given
       # strict kind.
       # 
-      # @note Use {#get_raw_tokens} if you want to distinguish
+      # @note Use {#each_raw_token} if you want to distinguish
       #   true tokens from aliases.
       # @param [Symbol] kind the identifier of a kind
-      # @return [Hash] the tokens of the given kind in a
-      #   form of Hash (<tt>token => description</tt>)
-      def get_tokens(kind)
-        @lazy_tokens[kind].map{ |token,data| data[:description] }.to_h
+      # @return [LazyHashEnumerator] the lazy enumerator (<tt>token => description</tt>)
+      # @yield [token, description] optional block in which each token will be yielded
+      # @yieldparam [Symbol] token a token
+      # @yieldparam [String] description a description string for a token
+      # @yieldreturn [LazyHashEnumerator] the lazy enumerator
+      def each_token(kind, &block)
+        LazyHashEnumerator.new(@tokens[kind]).
+        map{ |token,data| data[:description] }.
+        each(&block)
       end
 
       # Gets a target token for the given alias of a strict kind.
@@ -249,12 +256,14 @@ module I18n
         o[:target].nil? ? token : o[:target]
       end
 
-      # Gets all known strict kinds.
+      # Iterates through all known strict kinds.
       # 
-      # @return [Array<Symbol>] an array containing all the known strict
-      #   kinds
-      def get_kinds
-        @known_kinds ||= @tokens.keys
+      # @return [LazyArrayEnumerator] the lazy enumerator
+      # @yield [kind] optional block in which each kind will be yielded
+      # @yieldparam [Symbol] kind the inflection kind
+      # @yieldreturn [LazyArrayEnumerator] the lazy enumerator
+      def each_kind(&block)
+        @lazy_kinds.map{|k,v| k}.each(&block)
       end
 
       # Reads the default token of a strict kind.

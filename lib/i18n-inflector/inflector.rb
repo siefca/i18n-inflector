@@ -22,7 +22,7 @@ module I18n
     end
   end
 
-  # @version 2.5
+  # @version 2.6
   # @api public
   # 
   # This module contains inflection classes and modules for enabling
