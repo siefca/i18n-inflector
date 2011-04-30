@@ -34,6 +34,11 @@ module I18n
               @final_block.call(*arg)
             end
           end
+
+          if method_defined?(:yield) and not method_defined?(:"<<")
+            alias_method :"<<", :yield
+          end
+
         end
 
         unless (self.new{} rescue false)
@@ -43,7 +48,7 @@ module I18n
         end
 
         if method_defined?(:with_object) and not method_defined?(:each_with_object)
-          alias_method :with_object, :each_with_object
+          alias_method :each_with_object, :with_object
         end
 
       end # class LazyEnumerator for ruby18
@@ -62,11 +67,11 @@ module I18n
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def +(other)
         self.class.new do |yielder|
-          self.each do |v|
-            yielder.yield(v)
+          each do |v|
+            yielder << v
           end
           other.each do |v|
-            yielder.yield(v)
+            yielder << v
           end
         end
       end
@@ -75,9 +80,9 @@ module I18n
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def insert(value)
         self.class.new do |yielder|
-          yielder.yield(value)
-          self.each do |v|
-            yielder.yield(v)
+          yielder << value
+          each do |v|
+            yielder << v
           end
         end
       end
@@ -86,10 +91,10 @@ module I18n
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def append(value)
         self.class.new do |yielder|
-          self.each do |v|
-            yielder.yield(v)
+          each do |v|
+            yielder << v
           end
-          yielder.yield(value)
+          yielder << value
         end
       end
 
@@ -97,18 +102,18 @@ module I18n
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def map(&block)
         self.class.new do |yielder|
-          self.each do |v|
-            yielder.yield(block.call(v))
+          each do |v|
+            yielder << block[v]
           end
         end
       end
 
-      # Slecting enumerator
+      # Selecting enumerator
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def select(&block)
         self.class.new do |yielder|
-          self.each do |v|
-            yielder.yield(v) if block.call(v)
+          each do |v|
+            yielder << v if block[v]
           end
         end
       end
@@ -117,8 +122,8 @@ module I18n
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def reject(&block)
         self.class.new do |yielder|
-          self.each do |v|
-            yielder.yield(v) unless block.call(v)
+          each do |v|
+            yielder << v unless block[v]
           end
         end
       end
@@ -140,7 +145,7 @@ module I18n
       # @return [Hash] the resulting hash
       def to_h
         h = Hash.new
-        self.each{|k,v| h[k]=v }
+        each{|k,v| h[k]=v }
         h
       end
 
@@ -149,7 +154,7 @@ module I18n
       def insert(key, value)
         self.class.new do |yielder|
           yielder.yield(key, value)
-          self.each do |k,v|
+          each do |k,v|
             yielder.yield(k,v)
           end
         end
@@ -159,7 +164,7 @@ module I18n
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def append(key, value)
         self.class.new do |yielder|
-          self.each do |k,v|
+          each do |k,v|
             yielder.yield(k,v)
           end
           yielder.yield(key, value)
@@ -170,8 +175,8 @@ module I18n
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def map(&block)
         LazyHashEnumerator.new do |yielder|
-          self.each do |k,v|
-            yielder.yield(k,block.call(k,v))
+          each do |k,v|
+            yielder.yield(k,block[k,v])
           end
         end
       end
@@ -180,8 +185,8 @@ module I18n
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def ary_map(&block)
         LazyHashEnumerator.new do |yielder|
-          self.each do |value|
-            yielder.yield(block.call(value))
+          each do |value|
+            yielder << block[value]
           end
         end
       end
@@ -190,7 +195,7 @@ module I18n
       # to an array.
       def keys
         ary = []
-        self.each{ |k,v| ary << k }
+        each{ |k,v| ary << k }
         return ary
       end
 
@@ -198,7 +203,7 @@ module I18n
       # to an array.
       def values
         ary = []
-        self.each{ |k,v| ary << v }
+        each{ |k,v| ary << v }
         return ary
       end
 
@@ -206,8 +211,8 @@ module I18n
       # @return [I18n::Inflector::LazyArrayEnumerator.new] the enumerator
       def each_key(&block)
         LazyArrayEnumerator.new do |yielder|
-          self.each do |k,v|
-            yielder.yield(k)
+          each do |k,v|
+            yielder << k
           end
         end
       end
@@ -216,8 +221,8 @@ module I18n
       # @return [I18n::Inflector::LazyArrayEnumerator.new] the enumerator
       def each_value(&block)
         LazyArrayEnumerator.new do |yielder|
-          self.each do |k,v|
-            yielder.yield(v)
+          each do |k,v|
+            yielder << v
           end
         end
       end
@@ -226,8 +231,8 @@ module I18n
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def select(&block)
         self.class.new do |yielder|
-          self.each do |k,v|
-            yielder.yield(k,v) if block.call(k,v)
+          each do |k,v|
+            yielder.yield(k,v) if block[k,v]
           end
         end
       end
@@ -236,8 +241,8 @@ module I18n
       # @return [I18n::Inflector::LazyHashEnumerator] the enumerator
       def reject(&block)
         self.class.new do |yielder|
-          self.each do |k,v|
-            yielder.yield(k,v) unless block.call(k,v)
+          each do |k,v|
+            yielder.yield(k,v) unless block[k,v]
           end
         end
       end
