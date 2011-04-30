@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:docs/COPYING Ruby License}.
 # 
 # This file contains {I18n::Inflector::API} class,
 # which is public API for I18n Inflector.
@@ -40,7 +40,7 @@ module I18n
     # @see I18n::Inflector::API_Strict The API_Strict class
     #   for accessing inflection data for named
     #   patterns (strict kinds).
-    # @see file:EXAMPLES The examples of real-life usage.
+    # @see file:docs/EXAMPLES The examples of real-life usage.
     # @api public
     class API < API_Strict
 

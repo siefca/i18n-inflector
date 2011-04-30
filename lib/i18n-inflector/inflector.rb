@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:docs/COPYING Ruby License}.
 # 
 # This file contains a stub of I18n::Inflector module,
 # which extends I18n by adding the ability
@@ -32,7 +32,7 @@ module I18n
   # so it will interpolate additional inflection data present
   # in translations.
   # 
-  # @see file:USAGE
+  # @see file:docs/USAGE
   module Inflector
 
   end # module Inflector

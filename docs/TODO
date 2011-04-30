@@ -1,5 +1,9 @@
 == Near future
 
+* check if lazy evaluation of inflection methods is done once for multiple patterns
+* place docs/USAGE links in a better place [done]
+* use temporary hash for joining results of inflected languages
+
 == Distant future
 
 * split interpolate_core and make it more reusable by raw data (e.g. pattern content)

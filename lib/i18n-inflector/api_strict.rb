@@ -2,7 +2,7 @@
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
 # Copyright:: (c) 2011 by Paweł Wilk
-# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:COPYING Ruby License}.
+# License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:docs/COPYING Ruby License}.
 # 
 # This file contains I18n::Inflector::API_Strict class,
 # which handles public API for managing inflection data
