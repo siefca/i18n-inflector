@@ -44,6 +44,7 @@ module I18n
       #   that overrides global setting (see: {I18n::Inflector::InflectionOptions#interpolate_symbols})
       # @return [String] the string with interpolated patterns
       def interpolate(string, locale, options = {})
+        @inflector_opt_cache = nil
 
         case string
 
@@ -107,7 +108,10 @@ module I18n
 
       # @private
       def interpolate_core(string, locale, options)
-        passed_kinds      = options.except(*Reserved::KEYS)
+
+        @inflector_opt_cache ||= options.except(*Reserved::KEYS)
+        passed_kinds = @inflector_opt_cache
+
         raises            = options[:inflector_raises]
         aliased_patterns  = options[:inflector_aliased_patterns]
         unknown_defaults  = options[:inflector_unknown_defaults]
@@ -311,20 +315,29 @@ module I18n
 
             # get passed token from options or from a default token
             if passed_kinds.has_key?(expected_kind)
+
               passed_token = passed_kinds[expected_kind]
+
               if passed_token.is_a?(Method)
+
                 passed_token = passed_token.call { next expected_kind, locale }
-                passed_kinds[expected_kind] = passed_token # cache the result
+                passed_kinds[expected_kind] = passed_token  # cache the result
+
               elsif passed_token.is_a?(Proc)
+
                 passed_token = passed_token.call(expected_kind, locale)
-                passed_kinds[expected_kind] = passed_token # cache the result
+                passed_kinds[expected_kind] = passed_token  # cache the result
+
               end
+
               orig_passed_token = passed_token
+
               # validate passed token's name
               if Reserved::Tokens.invalid?(passed_token, :OPTION)
                 raise I18n::InvalidInflectionOption.new(locale, ext_pattern, orig_passed_token) if raises
                 passed_token = default_token if unknown_defaults
               end
+
             else
               # current inflection option wasn't found
               # but delay this exception because we might use

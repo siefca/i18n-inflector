@@ -1,7 +1,6 @@
 == Near future
 
-* check if lazy evaluation of inflection methods is done once for multiple patterns
-* place docs/USAGE links in a better place [done]
+* check if lazy evaluation of inflection methods is done once for multiple patterns done
 * use temporary hash for joining results of inflected languages
 
 == Distant future

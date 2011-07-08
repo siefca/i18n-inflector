@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.6</tt></b> (<b><tt>Potrzebie</tt></b>)
+<b>i18n-inflector version <tt>2.6</tt></b> (<b><tt>Madonna</tt></b>)
 
 
 
