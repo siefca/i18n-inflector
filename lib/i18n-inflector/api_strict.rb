@@ -58,6 +58,7 @@ module I18n
         @idb      = idb.nil?      ? {} : idb
         @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new : options
         @lazy_locales = LazyHashEnumerator.new(@idb)
+        @inflected_locales_cache = Hash.new
       end
 
       # Creates an empty strict inflections database for the specified locale.
@@ -70,6 +71,7 @@ module I18n
       #   inflection data
       def new_database(locale)
         locale = prep_locale(locale)
+        @inflected_locales_cache.clear
         @idb[locale] = I18n::Inflector::InflectionData_Strict.new(locale)
       end
 
@@ -86,6 +88,7 @@ module I18n
         return nil if db.nil?
         locale = prep_locale(db.locale)
         delete_database(locale)
+        @inflected_locales_cache.clear
         @idb[locale] = db
       end
 
@@ -100,6 +103,7 @@ module I18n
       def delete_database(locale)
         locale = prep_locale(locale)
         return nil if @idb[locale].nil?
+        @inflected_locales_cache.clear
         @idb[locale] = nil
       end
 
@@ -156,7 +160,9 @@ module I18n
       #   @param [Symbol] kind the identifier of a kind
       #   @return [Array<Symbol>] the array containing locales that support inflection
       def inflected_locales(kind=nil)
-        each_inflected_locale(kind).to_a
+        kind = kind.to_s.empty? ? nil : kind.to_sym
+        r = ( @inflected_locales_cache[kind] ||= each_inflected_locale(kind).to_a )
+        r.nil? ? r : r.dup
       end
       alias_method :locales,            :inflected_locales
       alias_method :supported_locales,  :inflected_locales

@@ -194,7 +194,9 @@ module I18n
         if kind.to_s[0..0] == Markers::STRICT_KIND
           strict.inflected_locales(kind.to_s[1..-1])
         else
-          super.uniq
+          kind = kind.to_s.empty? ? nil : kind.to_sym
+          r = ( @inflected_locales_cache[kind] ||= super(kind).uniq )
+          r.nil? ? r : r.dup
         end
       end
 

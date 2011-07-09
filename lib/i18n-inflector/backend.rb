@@ -14,7 +14,7 @@ module I18n
   # @abstract This namespace is shared with I18n subsystem.
   module Backend
 
-    # This module contains methods that are adding
+    # This module contains methods that add
     # tokenized inflection support to internal I18n classes.
     # It is intened to be included in the Simple backend
     # module so that it will patch translate method in order
@@ -114,7 +114,7 @@ module I18n
             subdata = (subdata[:inflections] || subdata['inflections'])
             unless subdata.nil?
               db, db_strict = load_inflection_tokens(locale, r[:i18n][:inflections])
-              @inflector.add_databases(db, db_strict)
+              @inflector.add_database(db, db_strict)
             end
           end
         end

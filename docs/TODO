@@ -1,10 +1,8 @@
 == Near future
 
-* check if lazy evaluation of inflection methods is done once for multiple patterns done
-* use temporary hash for joining results of inflected languages
+
 
 == Distant future
 
 * split interpolate_core and make it more reusable by raw data (e.g. pattern content)
 * allow different descriptions for aliases pointing to the same token, e.g.: now: @present ="description"
-
