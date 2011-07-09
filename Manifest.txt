@@ -1,12 +1,14 @@
 .yardopts
 ChangeLog
 Gemfile
+Gemfile.lock
 LGPL-LICENSE
 Manifest.txt
 README.rdoc
 Rakefile
 ci/i18n-inflector.gemspec
 ci/i18nv4-Gemfile
+ci/i18nv4-Gemfile.lock
 docs/COPYING
 docs/EXAMPLES
 docs/HISTORY

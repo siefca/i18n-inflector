@@ -20,6 +20,14 @@ task :default do
   Rake::Task[:testv4].invoke
 end
 
+# Update Gemfile for I18n in version 4
+task :gemfilev4 do
+  gemprev = ENV['BUNDLE_GEMFILE']
+  ENV['BUNDLE_GEMFILE'] = 'ci/i18nv4-Gemfile'
+  `rake bundler:gemfile`
+  ENV['BUNDLE_GEMFILE'] = gemprev
+end
+
 # Tests for I18n in version 4
 task :testv4 do
   gemprev = ENV['BUNDLE_GEMFILE']
@@ -56,14 +64,16 @@ Hoe.spec 'i18n-inflector' do
   self.history_file    = 'docs/HISTORY'
 
   extra_deps          << ['i18n',             '>= 0.4.1']
-  extra_dev_deps      << ['test_declarative', '>= 0.0.4']   <<
-                         ['yard',             '>= 0.6.4']   <<
-                         ['bundler',          '>= 1.0.10']  <<
-                         ['hoe-bundler',      '>= 1.0.0']
+  extra_dev_deps      << ['test_declarative', '>= 0.0.5']   <<
+                         ['yard',             '>= 0.7.2']   <<
+                         ['rdoc',             '>= 3.8.0']   <<
+                         ['bundler',          '>= 1.0.15']  <<
+                         ['hoe-bundler',      '>= 1.1.0']
 
   unless extra_dev_deps.flatten.include?('hoe-yard')
     extra_dev_deps << ['hoe-yard', '>= 0.1.2']
   end
+
 end
 
 task 'Manifest.txt' do
