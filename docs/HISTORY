@@ -1,3 +1,16 @@
+=== 2.6.1 / 2011-07-10
+
+* major enhancements
+
+  * Handling of methods and Proc objects used to obtain inflection options improved by caching
+  * Added caching for methods reporting locales that support inflection
+  * Lazy operations optimized
+
+* minor enhancements
+
+  * Fixed documentation links
+  * Dependencies updated
+
 === 2.6.0 / 2011-03-08
 
 * minor enhancements

@@ -18,6 +18,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (>= 1.0.15)
+  hoe (~> 2.10)
   hoe-bundler (>= 1.1.0)
   hoe-yard (>= 0.1.2)
   i18n (>= 0.4.1)

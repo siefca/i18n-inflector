@@ -1,4 +1,36 @@
-commit d288d47c1249d9b1f2ff02772ab81fd5a4d63946
+commit 613cf034568c536b2dc0edc2d0cf0e80f95afe6a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 9 18:58:06 2011 +0200
+
+    Added @inflected_locales_cache that speeds up reporting of locales that support inflection
+
+commit 950e6b8589f2d8893d30e1b892c8ed0fa1e26a78
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Jul 9 02:42:14 2011 +0200
+
+    Gem dependencies updated.
+
+commit cd549b15580aff33d212e92870b16942b6cf8f55
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Fri Jul 8 16:30:01 2011 +0200
+
+    Handling methods and Proc objects to obtain inflection options seriously improved
+    
+     - added cache for inflection options that keeps them between calls to interpolate_core.
+
+commit 5858b52225759e9760ec2301671cf78e64d02f33
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Apr 30 18:47:04 2011 +0200
+
+    Lazy operations optimized a bit
+
+commit ee37910a2419afb9710ff0f1472634b29be7f0d8
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Apr 30 18:46:23 2011 +0200
+
+    Fixed documentation links
+
+commit e6b753ac280b14a7c32de2bab3dd9540d72cde72
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Mar 7 00:45:23 2011 +0100
 
