@@ -44,6 +44,8 @@ end
 
 ### Gem
 
+YAML::ENGINE.yamler = 'syck'
+
 Hoe.plugin :bundler
 Hoe.plugin :yard
 
