@@ -5,7 +5,9 @@ $:.unshift lib unless $:.include?(lib)
 
 require 'i18n-inflector/version'
 
-YAML::ENGINE.yamler = 'syck'
+if !defined?(YAML::ENGINE).nil? && YAML::ENGINE.respond_to?(:yamler)
+  YAML::ENGINE.yamler = 'syck'
+end
 
 Gem::Specification.new do |s|
   s.name         = I18n::Inflector::NAME
