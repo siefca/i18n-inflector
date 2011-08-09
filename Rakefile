@@ -48,8 +48,6 @@ if !defined?(YAML::ENGINE).nil? && YAML::ENGINE.respond_to?(:yamler)
   YAML::ENGINE.yamler = 'syck'
 end
 
-exit(0)
-
 Hoe.plugin :bundler
 Hoe.plugin :yard
 
