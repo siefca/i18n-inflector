@@ -1,3 +1,13 @@
+=== 2.6.4 / 2012-03-10
+
+* minor enhancements
+
+  * Changed documentation examples for calling rake
+  * Tested against Ruby 1.9.3-p0
+  * Updated dependencies
+  * Updated copyright notices
+  * Started codenaming each version (including minor version numbers)
+
 === 2.6.2 / 2011-08-07
 
 * minor bugfixes

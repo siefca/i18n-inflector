@@ -1,3 +1,21 @@
+commit eae90eb5992e189ffc8678c4f810befd8a541cf2
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 20:19:12 2012 +0100
+
+    README updated, I18n Inflector tested against Ruby 1.9.3-p0.
+
+commit cf59982df41b4a541345e5846d909df727f2ea0b
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 20:17:53 2012 +0100
+
+    Copyright notices updated.
+
+commit 901c65c683fdf0d7a814756aa071a6ff25119263
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 20:16:47 2012 +0100
+
+    Dependencies updated.
+
 commit dd71d4a5d82417a09393d6aa936f5e59e4c495e5
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Tue Aug 9 17:13:15 2011 +0200
