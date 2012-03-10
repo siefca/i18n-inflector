@@ -1,7 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.6</tt></b> (<b><tt>Madonna</tt></b>)
-
+<b>i18n-inflector version <tt>2.6.4</tt></b> (<b><tt>Healthy Beaver</tt></b>)
 
 
 * https://rubygems.org/gems/i18n-inflector
@@ -124,6 +123,12 @@ you need Rails integration.
 * i18n[https://rubygems.org/gems/i18n]
 * rake[https://rubygems.org/gems/rake]
 * rubygems[http://docs.rubygems.org/]
+* bundler[http://gembundler.com/]
+
+== Important documentation and more on usage
+
+* See {file:docs/USAGE} for detailed information about the usage.
+* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
 
 == Download
 
@@ -185,27 +190,25 @@ Detailed example:
 
 == More information
 
-* See {file:docs/USAGE} for detailed information about the usage.
 * See {I18n::Inflector::API} class documentation for detailed information about the API.
 * See {I18n::Backend::Inflector} module documentation for detailed information about the internals.
-* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
 
 == Tests
 
 You can run tests both with
 
-* <tt>rake test</tt> or just <tt>rake</tt>
+* <tt>bundle exec rake test</tt> or just <tt>bundle exec rake</tt>
+* run <tt>bundle exec rake testv4</tt> to test with version 4 of I18n
 * run a test file directly, e.g. <tt>ruby -Ilib -Itest test/inflector_test.rb</tt>
-* run <tt>rake testv4</tt> to test with version 4 of I18n
 
 == Common rake tasks
 
-* <tt>rake bundler:gemfile</tt> – regenerate the +Gemfile+
-* <tt>rake docs</tt> – render the documentation (output in the subdirectory directory +doc+)
-* <tt>rake gem</tt> – builds package (output in the subdirectory +pkg+)
-* <tt>rake test</tt>, <tt>rake testv4</tt> – performs tests
-* <tt>rake Manifest.txt</tt> – regenerates the +Manifest.txt+ file
-* <tt>rake ChangeLog</tt> – regenerates the +ChangeLog+ file
+* <tt>bundle exec rake bundler:gemfile</tt> – regenerate the +Gemfile+
+* <tt>bundle exec rake docs</tt> – render the documentation (output in the subdirectory directory +doc+)
+* <tt>bundle exec rake gem</tt> – builds package (output in the subdirectory +pkg+)
+* <tt>bundle exec rake test</tt>, <tt>bundle exec rake testv4</tt> – performs tests
+* <tt>bundle exec rake Manifest.txt</tt> – regenerates the +Manifest.txt+ file
+* <tt>bundle exec rake ChangeLog</tt> – regenerates the +ChangeLog+ file
 
 == Credits
 
@@ -214,7 +217,7 @@ contributed to this library by paying for me to eat when I've been coding.
 
 == License
 
-Copyright (c) 2011 by Paweł Wilk.
+Copyright (c) 2011,2012 by Paweł Wilk.
 
 i18n-inflector is copyrighted software owned by Paweł Wilk (pw@gnu.org).
 You may redistribute and/or modify this software as long as you
