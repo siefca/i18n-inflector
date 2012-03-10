@@ -1,6 +1,6 @@
 = Simple Inflector for I18n
 
-<b>i18n-inflector version <tt>2.6.4</tt></b> (<b><tt>Healthy Beaver</tt></b>)
+<b>i18n-inflector version <tt>2.6.5</tt></b> (<b><tt>Healthy Beaver</tt></b>)
 
 
 * https://rubygems.org/gems/i18n-inflector

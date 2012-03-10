@@ -1,3 +1,9 @@
+=== 2.6.5 / 2012-03-10
+
+* minor enhancements
+
+  * Back to Psych YAML parser while creating gem
+
 === 2.6.4 / 2012-03-10
 
 * minor enhancements
