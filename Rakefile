@@ -44,9 +44,12 @@ end
 
 ### Gem
 
-if !defined?(YAML::ENGINE).nil? && YAML::ENGINE.respond_to?(:yamler)
-  YAML::ENGINE.yamler = 'syck'
-end
+# Issue has been fixed in Psych, see:
+# https://github.com/tenderlove/psych/commit/fe65329ce9ece399d61dadf1610e342ff456654e
+# 
+#if !defined?(YAML::ENGINE).nil? && YAML::ENGINE.respond_to?(:yamler)
+#  YAML::ENGINE.yamler = 'syck'
+#end
 
 Hoe.plugin :bundler
 Hoe.plugin :yard
