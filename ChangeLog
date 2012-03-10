@@ -1,3 +1,15 @@
+commit 2cef335b627a8df8cf595aa8b3507faebc5476a5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 20:59:17 2012 +0100
+
+    Release 2.6.5
+
+commit c59600298fa3f2b5ae860cce89c214da992bb067
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 20:58:55 2012 +0100
+
+    Switched YAML parser back to Psych in gem generation
+
 commit 295a1c59d0d763e758cab6fe2ea05e477125e39a
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Mar 10 20:24:43 2012 +0100
