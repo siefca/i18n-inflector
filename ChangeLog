@@ -1,3 +1,15 @@
+commit dd71d4a5d82417a09393d6aa936f5e59e4c495e5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Aug 9 17:13:15 2011 +0200
+
+    Release 2.6.3
+
+commit f328167d491eb77b346e0d62d56e52397981c729
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Aug 9 17:12:41 2011 +0200
+
+    Release 2.6.3
+
 commit 93cc55bdae5c466b22999e11c0cc020e8bc04a23
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Mon Aug 8 00:13:10 2011 +0200
