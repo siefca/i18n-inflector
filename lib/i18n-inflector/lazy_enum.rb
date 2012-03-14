@@ -128,6 +128,17 @@ module I18n
         end
       end
 
+      # Checks if a collection is empty
+      # @return [Boolean] +true+ if collection is empty, +false+ otherwise
+      def empty?
+        self.class.new do |yielder|
+          each do |k,v|
+            return false
+          end
+        end
+        true
+      end
+
     end
 
     # This class implements simple enumerators for arrays
