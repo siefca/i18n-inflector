@@ -1,3 +1,15 @@
+=== 2.6.6 / 2012-03-14
+
+* major enhancements
+
+  * Added support for integers as token names
+  * Added nice example of "to be" inflection in English
+
+* minor enhancements
+
+  * Documentation updated
+  * Added instance method empty? to LazyEnumerator
+
 === 2.6.5 / 2012-03-10
 
 * minor enhancements

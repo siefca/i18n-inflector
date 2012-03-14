@@ -1,3 +1,27 @@
+commit 3d2292b4dec50c628fc2feaeba2639e21c44c5c7
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Mar 14 02:06:50 2012 +0100
+
+    Added LazyEnumerator#empty?
+
+commit f912309d9f9d0d2e41c901778f885259f907e8ef
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Mar 14 02:06:29 2012 +0100
+
+    Documentation and examples updated
+
+commit 7d5f57ec1ff967051e693b332c0e72f9bbbbea2a
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Mar 14 02:06:04 2012 +0100
+
+    Added support for integers as token names
+
+commit d08273f935a3fecc51e4ce27a3ebe01342a338f3
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Mar 10 21:03:04 2012 +0100
+
+    ChangeLog updated
+
 commit 2cef335b627a8df8cf595aa8b3507faebc5476a5
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Sat Mar 10 20:59:17 2012 +0100
