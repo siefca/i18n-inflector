@@ -57,7 +57,8 @@ module I18n
 
         # All keys
         ALL = HSet.new Config.all_consts(self, Symbol)
-      end
+
+      end # module Keys
 
       # This module contains characters that are markers
       # giving the shape for a pattern and its elements.

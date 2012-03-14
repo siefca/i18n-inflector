@@ -513,7 +513,7 @@ Elements in the example above are:
 * +en+: language
 * +i18n+: configuration scope
 * +inflections+: inflections configuration scope
-* +gender+: <bb>strict kind</bb> scope
+* +gender+: <b>strict kind</b> scope
 * +f+: inflection token
 * <tt>"female"</tt>: token's description
 * +woman+: inflection alias
@@ -630,7 +630,7 @@ containing no tokens but just a free text consisting
 of single space character.
 
 == Complex patterns
-A <bb>complex pattern</bb> is a named pattern that uses more than
+A <b>complex pattern</b> is a named pattern that uses more than
 one inflection kind and sets of a respective tokens. The given identifiers
 of kinds should be separated by the plus sign and instead of single
 tokens there should be token sets (a tokens separated by the plus

@@ -1,12 +1,62 @@
-= Simple Inflector for I18n
+= I18n Inflector
 
-<b>i18n-inflector version <tt>2.6.5</tt></b> (<b><tt>Healthy Beaver</tt></b>)
+<b>i18n-inflector version <tt>2.6.6</tt></b> (<b><tt>Little Kózka</tt></b>)
 
 
 * https://rubygems.org/gems/i18n-inflector
 * https://github.com/siefca/i18n-inflector/tree
 * mailto:pw@gnu.org
 
+
+== Summary
+
+This library contains a backend module for I18n that adds some extra
+functionality to standard backend. It overwrites the translate method
+in a way that it will interpolate additional inflection tokens present
+in translations.
+
+== Synopsis
+
+  require 'i18n-inflector'
+
+  I18n.translate( 'to_be', :number  => :singular,
+                           :tense   => :past,
+                           :person  => 2        )
+  #=> You were here
+
+  I18n.translate('welcome', :gender => :female)
+  #=> Dear Lady
+
+== Why?
+
+You can use I18n Inflector to (relatively easy) create
+translations for highly inflected languages (like those
+belonging to Slavic language family). You can also use it
+in translation services that may operate on sentences
+instead of exact words.
+
+== When?
+
+It is intended to be used in a web projects or other projects where
+translations are performed by many people, yet there is a need to
+inflect sentences with some external variables. To achieve similar
+functionality lambdas can be used but including many Proc objects
+might be considered unsafe or memory consuming.
+
+See i18n-inflector-rails[https://rubygems.org/gems/i18n-inflector-rails] if
+you need Rails integration.
+
+== How?
+
+I18n Inflector lets you build you own inflection patterns
+contained in translation entries. The patterns may contain simple
+conditions and tokens, which combined with parameters
+passed to +I18n.translate+ method can produce inflected
+strings.
+
+* See {USAGE}[http://rubydoc.info/gems/i18n-inflector/file/docs/USAGE] for detailed information about the usage.
+* See {EXAMPLES}[http://rubydoc.info/gems/i18n-inflector/file/docs/EXAMPLES] for examples.
+* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
 
 == Features
 
@@ -21,9 +71,8 @@
 
 == Description
 
-This library contains a backend module for I18n that adds some extra
-functionality to standard backend. It overwrites the translate method
-so that it will interpolate additional inflection tokens present in
+The I18n Inflector extends the translate method from I18n in a way that
+it will interpolate additional inflection tokens present in
 translations. These tokens may appear in *patterns* which are contained
 within <tt>@{</tt> and <tt>}</tt> symbols. Configuration is stored
 also in translation data, in a scope <tt><locale>.i18n.inflections</tt>,
@@ -38,7 +87,9 @@ It adds the +inflector+ object to the default backend so you can use many
 methods for accessing loaded inflection data at runtime, or to set up global
 switches that are controlling the engine.
 
-Example translation data:
+== Short example
+
+Example configuration which uses translation data:
 
   en:
     i18n:
@@ -51,7 +102,10 @@ Example translation data:
           male:     @m
           default:  n
         
-      
+
+Example translation data:
+
+  en:
     welcome:  "Dear @{f:Lady|m:Sir|n:You|All}!"
     
     @same_but_as_key:
@@ -61,7 +115,8 @@ Example translation data:
       @prefix:  "Dear "
       @suffix:  "!"
       @free:    "All"
-      
+    
+  
 === Note about YAML parsing
 
 The example above is not compatible with Psych parser, which is used
@@ -101,34 +156,12 @@ languages. An example pattern:
 
   welcome:  "Dear @gender+number{f+s:Lady|f+p:Ladies|m+s:Sir|m+p:Gentlemen|All}"
 
-== Why?
-
-It's intended to be used in a web projects or other projects where
-translations are performed by many people, yet there is a need to
-inflect sentences with some external variables.
-
-To achieve similar functionality lambdas can be used but including
-Proc objects in translations might be considered unsafe or memory
-consuming.
-
-If you have a troop of happy translators that shouldn't have the
-ability to execute any code yet you need some simple inflection
-then this module might help you.
-
-See i18n-inflector-rails[https://rubygems.org/gems/i18n-inflector-rails] if
-you need Rails integration.
-
 == Requirements
 
 * i18n[https://rubygems.org/gems/i18n]
 * rake[https://rubygems.org/gems/rake]
 * rubygems[http://docs.rubygems.org/]
 * bundler[http://gembundler.com/]
-
-== Important documentation and more on usage
-
-* See {file:docs/USAGE} for detailed information about the usage.
-* See {whole documentation}[http://rubydoc.info/gems/i18n-inflector/] to browse all documents.
 
 == Download
 
@@ -145,12 +178,7 @@ you need Rails integration.
 
 * <tt>gem install i18n-inflector</tt>
 
-== Synopsis
-
-  require 'i18n-inflector'
-  i18n.translate('welcome')
-
-Detailed example:
+== Detailed example
 
 <b>YAML:</b>
 
