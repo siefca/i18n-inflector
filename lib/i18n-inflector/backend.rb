@@ -247,6 +247,7 @@ module I18n
       def load_inflection_tokens(locale, subtree=nil)
         inflections_tree = subtree || inflection_subtree(locale)
         return nil if (inflections_tree.nil? || inflections_tree.empty?)
+        inflections_tree = deep_symbolize(inflections_tree)
 
         idb         = I18n::Inflector::InflectionData.new(locale)
         idb_strict  = I18n::Inflector::InflectionData_Strict.new(locale)
@@ -255,6 +256,7 @@ module I18n
 
         inflections = prepare_inflections(locale, inflections_tree, idb, idb_strict)
 
+        # add inflection tokens and kinds to internal database
         inflections.each do |orig_kind, kind, strict_kind, subdb, tokens|
 
           # validate token's kind
@@ -344,6 +346,16 @@ module I18n
           [orig_kind, kind, strict_kind, subdb, tokens]
         end
       end
+
+      # @private
+      def deep_symbolize(obj)
+        obj.inject({}) do |result, (key, value)|
+          value = deep_symbolize(value) if value.is_a?(Hash)
+          result[(key.to_s.to_sym rescue key) || key] = value
+          result
+        end
+      end
+
 
     end # module Inflector
   end # module Backend

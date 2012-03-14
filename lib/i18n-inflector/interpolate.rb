@@ -353,7 +353,7 @@ module I18n
 
             # resolve token from options and check if it's known
             unless passed_token.nil?
-              passed_token = subdb.get_true_token(passed_token.to_sym, parsed_kind)
+              passed_token = subdb.get_true_token(passed_token.to_s.to_sym, parsed_kind)
               passed_token = default_token if passed_token.nil? && unknown_defaults
             end
 
