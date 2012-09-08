@@ -243,6 +243,12 @@ You can run tests both with
 {Heise Media Polska}[http://www.heise-online.pl/] supports Free Software and has
 contributed to this library by paying for me to eat when I've been coding.
 
+== Donations
+
+If you like my work you can send me some BitCoins:
+
+* <tt>13wZbBjs6yQQuAb3zjfHubQSyer2cLAYzH</tt>
+
 == License
 
 Copyright (c) 2011,2012 by Paweł Wilk.
