@@ -241,13 +241,17 @@ You can run tests both with
 == Credits
 
 {Heise Media Polska}[http://www.heise-online.pl/] supports Free Software and has
-contributed to this library by paying for me to eat when I've been coding.
+contributed to this library by paying for my food during the coding.
 
 == Donations
 
 If you like my work you can send me some BitCoins:
 
 * <tt>13wZbBjs6yQQuAb3zjfHubQSyer2cLAYzH</tt>
+
+Or you can endorse my skills on LinkedIn:
+
+* {pl.linkedin.com/in/pwilk}[http://www.linkedin.com/profile/view?id=4251568#profile-skills]
 
 == License
 
