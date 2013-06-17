@@ -57,7 +57,7 @@ module I18n
       def initialize(idb=nil, options=nil)
         @idb      = idb.nil?      ? {} : idb
         @options  = options.nil?  ? I18n::Inflector::InflectionOptions.new : options
-        @lazy_locales = LazyHashEnumerator.new(@idb)
+        @lazy_locales = LazyHashEnumerator.for(@idb)
         @inflected_locales_cache = Hash.new
       end
 

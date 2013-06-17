@@ -63,6 +63,16 @@ module I18n
     # This class adds some lazy operations for collections
     class LazyEnumerator
 
+      # Create a new instance that iterates over the passed Enumerable
+      # @return [I18n::Inflector::LazyEnumerator] the enumerator
+      def self.for(enumerable)
+        new do |y|
+          enumerable.each do |e|
+            y << e
+          end
+        end
+      end
+
       # Addition operator for collections
       # @return [I18n::Inflector::LazyEnumerator] the enumerator
       def +(other)

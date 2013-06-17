@@ -39,7 +39,7 @@ module I18n
       #   the object to be labeled with
       def initialize(locale=nil)
         @tokens       = Hash.new(DUMMY_TOKENS)
-        @lazy_kinds   = LazyArrayEnumerator.new(@tokens)
+        @lazy_kinds   = LazyArrayEnumerator.for(@tokens)
         @defaults     = Hash.new
         @locale       = locale
       end
@@ -158,7 +158,7 @@ module I18n
       # @yieldparam [String] description a description string for a token
       # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       def each_true_token(kind, &block)
-        LazyHashEnumerator.new(@tokens[kind]).
+        LazyHashEnumerator.for(@tokens[kind]).
         select { |token,data| data[:target].nil?  }.
         map    { |token,data| data[:description]  }.
         each(&block)
@@ -173,7 +173,7 @@ module I18n
       # @yieldparam [Symbol] target a name of the target token
       # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       def each_alias(kind, &block)
-        LazyHashEnumerator.new(@tokens[kind]).
+        LazyHashEnumerator.for(@tokens[kind]).
         reject { |token,data| data[:target].nil?  }.
         map    { |token,data| data[:target]       }.
         each(&block)
@@ -192,7 +192,7 @@ module I18n
       # @yieldparam [Symbol, String] value a description string for a token or a target (if alias)
       # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       def each_raw_token(kind, &block)
-        LazyHashEnumerator.new(@tokens[kind]).
+        LazyHashEnumerator.for(@tokens[kind]).
         map { |token,data| data[:target] || data[:description] }.
         each(&block)
       end
@@ -209,7 +209,7 @@ module I18n
       # @yieldparam [String] description a description string for a token
       # @yieldreturn [LazyHashEnumerator] the lazy enumerator
       def each_token(kind, &block)
-        LazyHashEnumerator.new(@tokens[kind]).
+        LazyHashEnumerator.for(@tokens[kind]).
         map{ |token,data| data[:description] }.
         each(&block)
       end

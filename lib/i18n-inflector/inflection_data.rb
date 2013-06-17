@@ -21,8 +21,8 @@ module I18n
       def initialize(locale=nil)
         @kinds          = Hash.new(false)
         @tokens         = Hash.new(DUMMY_TOKEN)
-        @lazy_tokens    = LazyHashEnumerator.new(@tokens)
-        @lazy_kinds     = LazyArrayEnumerator.new(@kinds)
+        @lazy_tokens    = LazyHashEnumerator.for(@tokens)
+        @lazy_kinds     = LazyArrayEnumerator.for(@kinds)
         @defaults       = Hash.new
         @locale         = locale
       end
