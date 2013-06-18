@@ -1,3 +1,13 @@
+=== 2.6.7 / 2013-06-18
+
+* major compatibility fixes
+
+  * Removed deprecation warnings for Ruby 2.0
+
+* minor enhancements
+
+  * Updated gem dependencies
+
 === 2.6.6 / 2012-03-14
 
 * major enhancements

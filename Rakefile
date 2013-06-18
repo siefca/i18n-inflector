@@ -72,10 +72,10 @@ Hoe.spec 'i18n-inflector' do
 
   extra_deps          << ['i18n',             '>= 0.4.1']
   extra_dev_deps      << ['test_declarative', '>= 0.0.5']   <<
-                         ['yard',             '>= 0.7.2']   <<
+                         ['yard',             '>= 0.8.6']   <<
                          ['rdoc',             '>= 3.8.0']   <<
                          ['bundler',          '>= 1.0.15']  <<
-                         ['hoe-bundler',      '>= 1.1.0']
+                         ['hoe-bundler',      '>= 1.2.0']
 
   unless extra_dev_deps.flatten.include?('hoe-yard')
     extra_dev_deps << ['hoe-yard', '>= 0.1.2']

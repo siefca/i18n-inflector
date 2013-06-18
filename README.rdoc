@@ -1,6 +1,6 @@
 = I18n Inflector
 
-<b>i18n-inflector version <tt>2.6.6</tt></b> (<b><tt>Little Kózka</tt></b>)
+<b>i18n-inflector version <tt>2.6.7</tt></b> (<b><tt>Little Kózka</tt></b>)
 
 
 * https://rubygems.org/gems/i18n-inflector

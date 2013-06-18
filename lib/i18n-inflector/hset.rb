@@ -1,7 +1,7 @@
 # encoding: utf-8
 #
 # Author::    Paweł Wilk (mailto:pw@gnu.org)
-# Copyright:: (c) 2011,2012 by Paweł Wilk
+# Copyright:: (c) 2011,2012,2013 by Paweł Wilk
 # License::   This program is licensed under the terms of {file:docs/LGPL GNU Lesser General Public License} or {file:docs/COPYING Ruby License}.
 # 
 # This file contains more intuitive version of Set.
