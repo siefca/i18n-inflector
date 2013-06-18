@@ -1,3 +1,50 @@
+commit ea2a4c588e4b6a04fe71a255796375c3e03c0cce
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jun 18 18:39:15 2013 +0200
+
+    Release 2.6.7
+
+commit 55d7719d687e2b7d40b04d7b0f925ec5cfcff851
+Merge: a9c8426 36b30d5
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Tue Jun 18 09:10:22 2013 -0700
+
+    Merge pull request #6 from MrZYX/deprecations
+    
+    Remove deprecation warnings for Ruby 2.0 (Thanx MrZYX!!)
+
+commit 36b30d5172072ae1f5bccb1b5b4f2569b25ce226
+Author: Jonne Haß <me@mrzyx.de>
+Date:   Tue Jun 18 00:19:05 2013 +0200
+
+    Add LazyEnumerator::for
+    
+    This wraps Enumerator::new to always pass it a block
+
+commit 9edbc33f904dd3a4a51826763cab9251ba31e121
+Author: Jonne Haß <me@mrzyx.de>
+Date:   Mon Jun 17 23:52:42 2013 +0200
+
+    update gem dependencies
+
+commit a9c84266f993961ed1d53a2485ab7f3e3bcb1120
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Thu Oct 18 22:26:45 2012 +0200
+
+    README updated
+
+commit 67156d6d86160334489da5b99303e2a315043925
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Sat Sep 8 18:57:14 2012 +0200
+
+    README updated
+
+commit 7701498c13e6b2297f7063c7396aada9627d1107
+Author: Paweł Wilk <siefca@gnu.org>
+Date:   Wed Mar 14 09:59:39 2012 +0100
+
+    Changed documentation title; seems it's not so simple anymore
+
 commit c0bcc1dd60256076d9ac79d6f57d11d6a578f3ee
 Author: Paweł Wilk <siefca@gnu.org>
 Date:   Wed Mar 14 02:10:49 2012 +0100
