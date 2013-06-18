@@ -328,7 +328,7 @@ module I18n
         unless inflections.respond_to?(:has_key?)
           raise I18n::BadInflectionKind.new(locale, :INFLECTIONS_ROOT)
         end
-        I18n::Inflector::LazyHashEnumerator.new(inflections).ary_map do |kind, tokens|
+        I18n::Inflector::LazyHashEnumerator.for(inflections).ary_map do |kind, tokens|
           next if (tokens.nil? || tokens.empty?)
           unless tokens.respond_to?(:has_key?)
             raise I18n::BadInflectionKind.new(locale, kind)
