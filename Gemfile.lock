@@ -13,7 +13,7 @@ GEM
     rdoc (4.0.1)
       json (~> 1.4)
     test_declarative (0.0.5)
-    yard (0.8.6.1)
+    yard (0.9.20)
 
 PLATFORMS
   ruby
